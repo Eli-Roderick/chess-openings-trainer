@@ -20,6 +20,10 @@ abstract interface class RunRepository {
   /// newest first (input for the recent-line exclusion).
   Future<List<String>> recentStartedLineKeys(String repertoireId, int n);
 
+  /// SRS reviews (04 §5.2: SRS mode, completed, not deviated, graded) on
+  /// [day], all repertoires: the SRS daily review cap counts these.
+  Future<int> srsReviewsOn(String day);
+
   /// Runs not uploaded yet.
   Future<List<RunRecord>> unsyncedRuns();
 
@@ -141,6 +145,23 @@ final class DriftRunRepository implements RunRepository {
               ..limit(n))
             .get();
     return [for (final r in rows) r.lineKey];
+  }
+
+  @override
+  Future<int> srsReviewsOn(String day) async {
+    final count = _db.runs.id.count();
+    final query = _db.selectOnly(_db.runs)
+      ..addColumns([count])
+      ..where(
+        _db.runs.mode.equals(RunMode.srs.name) &
+            _db.runs.completed.equals(true) &
+            _db.runs.deviated.equals(false) &
+            _db.runs.gradedCount.isBiggerThanValue(0) &
+            _db.runs.localDay.equals(day),
+      );
+    final row = await query.getSingle();
+    final n = row.read(count);
+    return n ?? 0;
   }
 
   @override

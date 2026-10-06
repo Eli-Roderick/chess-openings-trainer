@@ -528,5 +528,122 @@
   "drillLatency": "Drill latency",
   "latencyP50": "Median",
   "latencyP95": "95th percentile",
-  "latencySamples": "Samples"
+  "latencySamples": "Samples",
+  "modeWeak": "Weak lines",
+  "modeWeakCount": "Weak {count}",
+  "@modeWeakCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "modeSrs": "Spaced repetition",
+  "modeSrsLeft": "SRS {count} left",
+  "@modeSrsLeft": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "modeSingle": "Single line",
+  "summary": "Summary",
+  "noWeakLines": "No weak lines. Nice.",
+  "srsLimitReached": "Daily review limit reached.",
+  "allCaughtUp": "All caught up.",
+  "allCaughtUpNext": "All caught up. Next review: {date} ({count, plural, =1{1 line} other{{count} lines}})",
+  "@allCaughtUpNext": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "trainWeakLines": "Train weak lines",
+  "lineAccuracyChange": "Line accuracy (last 10): {before} → {after}",
+  "@lineAccuracyChange": {
+    "placeholders": {
+      "before": {
+        "type": "String"
+      },
+      "after": {
+        "type": "String"
+      }
+    }
+  },
+  "enteredWeakPool": "Entered weak pool",
+  "leftWeakPool": "Left weak pool",
+  "srsNextDue": "Next review: {date}",
+  "@srsNextDue": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "retryThisLine": "Retry this line",
+  "browseThisLine": "Browse this line",
+  "youPlayed": "You played {move}",
+  "@youPlayed": {
+    "placeholders": {
+      "move": {
+        "type": "String"
+      }
+    }
+  },
+  "hintUsed": "Hint used",
+  "modeRandomHint": "All lines, weighted towards weak and stale ones",
+  "weakPoolSize": "{count, plural, =1{1 line in the pool} other{{count} lines in the pool}}",
+  "@weakPoolSize": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "weakPoolEmptyHint": "No weak lines yet: lines enter the pool below the accuracy threshold.",
+  "srsCounts": "{due} due, {fresh} new available",
+  "@srsCounts": {
+    "placeholders": {
+      "due": {
+        "type": "int"
+      },
+      "fresh": {
+        "type": "int"
+      }
+    }
+  },
+  "opponentDeviations": "Opponent deviations",
+  "arrivesLater": "Arrives in a later version",
+  "start": "Start",
+  "continueTraining": "Continue: {name} · {mode}",
+  "@continueTraining": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "mode": {
+        "type": "String"
+      }
+    }
+  },
+  "showLineSummary": "Show line summary",
+  "weakEnterBelow": "Weak pool: enter below accuracy",
+  "weakExitAfter": "Weak pool: leave after clean runs",
+  "srsNewPerDay": "SRS: new lines per day",
+  "srsMaxReviews": "SRS: max reviews per day",
+  "unlimited": "Unlimited",
+  "dayStartsAt": "Day starts at",
+  "percentValue": "{value} %",
+  "@percentValue": {
+    "placeholders": {
+      "value": {
+        "type": "int"
+      }
+    }
+  }
 }

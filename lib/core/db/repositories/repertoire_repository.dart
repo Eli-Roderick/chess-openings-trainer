@@ -22,6 +22,8 @@ final class RepertoireSummary {
     required this.weakCount,
     required this.lastTrainedAt,
     required this.createdAt,
+    this.lastMode,
+    this.startFromBranch = false,
   });
 
   /// Repertoire id.
@@ -51,6 +53,12 @@ final class RepertoireSummary {
   /// Creation time (UTC ms).
   final int createdAt;
 
+  /// Last training mode (`RunMode` name), local only.
+  final String? lastMode;
+
+  /// Drills start at the branch point (mode sheet choice), local only.
+  final bool startFromBranch;
+
   @override
   bool operator ==(Object other) =>
       other is RepertoireSummary &&
@@ -62,7 +70,9 @@ final class RepertoireSummary {
       other.dueCount == dueCount &&
       other.weakCount == weakCount &&
       other.lastTrainedAt == lastTrainedAt &&
-      other.createdAt == createdAt;
+      other.createdAt == createdAt &&
+      other.lastMode == lastMode &&
+      other.startFromBranch == startFromBranch;
 
   @override
   int get hashCode => Object.hash(
@@ -75,6 +85,8 @@ final class RepertoireSummary {
     weakCount,
     lastTrainedAt,
     createdAt,
+    lastMode,
+    startFromBranch,
   );
 
   @override
@@ -114,6 +126,14 @@ abstract interface class RepertoireRepository {
 
   /// Undoes [softDelete].
   Future<void> undoDelete(String id);
+
+  /// Stores the drill choices of [id] (local only, not synced): the last
+  /// mode and whether drills start at the branch point.
+  Future<void> setTrainingPrefs(
+    String id, {
+    String? lastMode,
+    bool? startFromBranch,
+  });
 
   /// The repertoire row, or null if unknown.
   Future<DbRepertoire?> get(String id);
@@ -195,6 +215,7 @@ final class DriftRepertoireRepository implements RepertoireRepository {
     final query = _db.customSelect(
       '''
 SELECT r.id, r.name, r.color, r.last_trained_at, r.created_at,
+  r.last_mode, r.drill_start_from,
   (SELECT COUNT(*) FROM lines l WHERE l.repertoire_id = r.id) AS line_count,
   s.accuracy, COALESCE(s.weak_count, 0) AS weak_count,
   COALESCE(s.due_count, 0) AS due_count
@@ -227,6 +248,8 @@ ORDER BY r.last_trained_at IS NULL, r.last_trained_at DESC, r.created_at DESC
             weakCount: r.read<int>('weak_count'),
             lastTrainedAt: r.readNullable<int>('last_trained_at'),
             createdAt: r.read<int>('created_at'),
+            lastMode: r.readNullable<String>('last_mode'),
+            startFromBranch: r.read<String>('drill_start_from') == 'branch',
           ),
       ],
     );
@@ -397,6 +420,20 @@ ORDER BY r.last_trained_at IS NULL, r.last_trained_at DESC, r.created_at DESC
   @override
   Future<void> softDelete(String id) =>
       _touch(id, const RepertoiresCompanion(deleted: Value(true)));
+
+  @override
+  Future<void> setTrainingPrefs(
+    String id, {
+    String? lastMode,
+    bool? startFromBranch,
+  }) => (_db.update(_db.repertoires)..where((r) => r.id.equals(id))).write(
+    RepertoiresCompanion(
+      lastMode: lastMode == null ? const Value.absent() : Value(lastMode),
+      drillStartFrom: startFromBranch == null
+          ? const Value.absent()
+          : Value(startFromBranch ? 'branch' : 'move1'),
+    ),
+  );
 
   @override
   Future<void> undoDelete(String id) =>

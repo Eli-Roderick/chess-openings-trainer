@@ -10,9 +10,24 @@ abstract final class Routes {
   /// Repertoire detail.
   static String repertoire(String id) => '/repertoire/$id';
 
-  /// Drill; [mode] is random, weak, srs or single.
-  static String train(String id, {String? mode}) =>
-      '/repertoire/$id/train${mode == null ? '' : '?mode=$mode'}';
+  /// Drill; [mode] is random, weak, srs or single ([line] for single);
+  /// [fromBranch] overrides the repertoire's start-from choice.
+  static String train(
+    String id, {
+    String? mode,
+    String? line,
+    bool? fromBranch,
+  }) {
+    final query = {
+      'mode': ?mode,
+      'line': ?line,
+      if (fromBranch != null) 'from': fromBranch ? 'branch' : 'move1',
+    };
+    return Uri(
+      path: '/repertoire/$id/train',
+      queryParameters: query.isEmpty ? null : query,
+    ).toString();
+  }
 
   /// Browse, optionally at [node].
   static String browse(String id, {int? node}) =>

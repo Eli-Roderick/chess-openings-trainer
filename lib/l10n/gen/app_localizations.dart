@@ -1485,6 +1485,216 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Samples'**
   String get latencySamples;
+
+  /// No description provided for @modeWeak.
+  ///
+  /// In en, this message translates to:
+  /// **'Weak lines'**
+  String get modeWeak;
+
+  /// No description provided for @modeWeakCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Weak {count}'**
+  String modeWeakCount(int count);
+
+  /// No description provided for @modeSrs.
+  ///
+  /// In en, this message translates to:
+  /// **'Spaced repetition'**
+  String get modeSrs;
+
+  /// No description provided for @modeSrsLeft.
+  ///
+  /// In en, this message translates to:
+  /// **'SRS {count} left'**
+  String modeSrsLeft(int count);
+
+  /// No description provided for @modeSingle.
+  ///
+  /// In en, this message translates to:
+  /// **'Single line'**
+  String get modeSingle;
+
+  /// No description provided for @summary.
+  ///
+  /// In en, this message translates to:
+  /// **'Summary'**
+  String get summary;
+
+  /// No description provided for @noWeakLines.
+  ///
+  /// In en, this message translates to:
+  /// **'No weak lines. Nice.'**
+  String get noWeakLines;
+
+  /// No description provided for @srsLimitReached.
+  ///
+  /// In en, this message translates to:
+  /// **'Daily review limit reached.'**
+  String get srsLimitReached;
+
+  /// No description provided for @allCaughtUp.
+  ///
+  /// In en, this message translates to:
+  /// **'All caught up.'**
+  String get allCaughtUp;
+
+  /// No description provided for @allCaughtUpNext.
+  ///
+  /// In en, this message translates to:
+  /// **'All caught up. Next review: {date} ({count, plural, =1{1 line} other{{count} lines}})'**
+  String allCaughtUpNext(String date, int count);
+
+  /// No description provided for @trainWeakLines.
+  ///
+  /// In en, this message translates to:
+  /// **'Train weak lines'**
+  String get trainWeakLines;
+
+  /// No description provided for @lineAccuracyChange.
+  ///
+  /// In en, this message translates to:
+  /// **'Line accuracy (last 10): {before} → {after}'**
+  String lineAccuracyChange(String before, String after);
+
+  /// No description provided for @enteredWeakPool.
+  ///
+  /// In en, this message translates to:
+  /// **'Entered weak pool'**
+  String get enteredWeakPool;
+
+  /// No description provided for @leftWeakPool.
+  ///
+  /// In en, this message translates to:
+  /// **'Left weak pool'**
+  String get leftWeakPool;
+
+  /// No description provided for @srsNextDue.
+  ///
+  /// In en, this message translates to:
+  /// **'Next review: {date}'**
+  String srsNextDue(String date);
+
+  /// No description provided for @retryThisLine.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry this line'**
+  String get retryThisLine;
+
+  /// No description provided for @browseThisLine.
+  ///
+  /// In en, this message translates to:
+  /// **'Browse this line'**
+  String get browseThisLine;
+
+  /// No description provided for @youPlayed.
+  ///
+  /// In en, this message translates to:
+  /// **'You played {move}'**
+  String youPlayed(String move);
+
+  /// No description provided for @hintUsed.
+  ///
+  /// In en, this message translates to:
+  /// **'Hint used'**
+  String get hintUsed;
+
+  /// No description provided for @modeRandomHint.
+  ///
+  /// In en, this message translates to:
+  /// **'All lines, weighted towards weak and stale ones'**
+  String get modeRandomHint;
+
+  /// No description provided for @weakPoolSize.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 line in the pool} other{{count} lines in the pool}}'**
+  String weakPoolSize(int count);
+
+  /// No description provided for @weakPoolEmptyHint.
+  ///
+  /// In en, this message translates to:
+  /// **'No weak lines yet: lines enter the pool below the accuracy threshold.'**
+  String get weakPoolEmptyHint;
+
+  /// No description provided for @srsCounts.
+  ///
+  /// In en, this message translates to:
+  /// **'{due} due, {fresh} new available'**
+  String srsCounts(int due, int fresh);
+
+  /// No description provided for @opponentDeviations.
+  ///
+  /// In en, this message translates to:
+  /// **'Opponent deviations'**
+  String get opponentDeviations;
+
+  /// No description provided for @arrivesLater.
+  ///
+  /// In en, this message translates to:
+  /// **'Arrives in a later version'**
+  String get arrivesLater;
+
+  /// No description provided for @start.
+  ///
+  /// In en, this message translates to:
+  /// **'Start'**
+  String get start;
+
+  /// No description provided for @continueTraining.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue: {name} · {mode}'**
+  String continueTraining(String name, String mode);
+
+  /// No description provided for @showLineSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'Show line summary'**
+  String get showLineSummary;
+
+  /// No description provided for @weakEnterBelow.
+  ///
+  /// In en, this message translates to:
+  /// **'Weak pool: enter below accuracy'**
+  String get weakEnterBelow;
+
+  /// No description provided for @weakExitAfter.
+  ///
+  /// In en, this message translates to:
+  /// **'Weak pool: leave after clean runs'**
+  String get weakExitAfter;
+
+  /// No description provided for @srsNewPerDay.
+  ///
+  /// In en, this message translates to:
+  /// **'SRS: new lines per day'**
+  String get srsNewPerDay;
+
+  /// No description provided for @srsMaxReviews.
+  ///
+  /// In en, this message translates to:
+  /// **'SRS: max reviews per day'**
+  String get srsMaxReviews;
+
+  /// No description provided for @unlimited.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlimited'**
+  String get unlimited;
+
+  /// No description provided for @dayStartsAt.
+  ///
+  /// In en, this message translates to:
+  /// **'Day starts at'**
+  String get dayStartsAt;
+
+  /// No description provided for @percentValue.
+  ///
+  /// In en, this message translates to:
+  /// **'{value} %'**
+  String percentValue(int value);
 }
 
 class _AppLocalizationsDelegate

@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:chess_core/chess_core.dart' show accuracyPercent;
+import 'package:chess_core/chess_core.dart' show RunMode, accuracyPercent;
 import 'package:dartchess/dartchess.dart' show Side;
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
@@ -17,8 +17,8 @@ import 'package:repertoire_trainer/features/board/repertoire_actions.dart';
 import 'package:repertoire_trainer/features/home/demo_installer.dart';
 import 'package:repertoire_trainer/l10n/gen/app_localizations.dart';
 
-/// Home (docs/plan/01-product-spec.md §4). The streak card and Continue
-/// button arrive with P08/P10.
+/// Home (docs/plan/01-product-spec.md §4). The streak card arrives with
+/// P10.
 class HomeScreen extends ConsumerStatefulWidget {
   /// Creates Home.
   const new({super.key});
@@ -105,16 +105,26 @@ class _HomeState extends ConsumerState<HomeScreen> {
           onDemo: _tryDemo,
         ),
         AsyncValue(value: final items?) => AdaptiveLayout(
-          phone: ListView.builder(
-            key: const Key('repertoire-list'),
-            padding: const EdgeInsets.fromLTRB(
-              AdaptiveLayout.gutter,
-              8,
-              AdaptiveLayout.gutter,
-              88,
-            ),
-            itemCount: items.length,
-            itemBuilder: (context, i) => RepertoireCard(summary: items[i]),
+          phone: Builder(
+            builder: (context) {
+              final last = items
+                  .where((r) => r.lastTrainedAt != null)
+                  .firstOrNull;
+              final offset = last == null ? 0 : 1;
+              return ListView.builder(
+                key: const Key('repertoire-list'),
+                padding: const EdgeInsets.fromLTRB(
+                  AdaptiveLayout.gutter,
+                  8,
+                  AdaptiveLayout.gutter,
+                  88,
+                ),
+                itemCount: items.length + offset,
+                itemBuilder: (context, i) => i < offset
+                    ? _ContinueButton(summary: last!)
+                    : RepertoireCard(summary: items[i - offset]),
+              );
+            },
           ),
         ),
         _ => const Center(child: CircularProgressIndicator()),
@@ -361,6 +371,41 @@ class ColourDisc extends StatelessWidget {
           color: white ? AppColors.whiteSide : AppColors.blackSide,
           border: Border.all(color: Theme.of(context).colorScheme.outline),
         ),
+      ),
+    );
+  }
+}
+
+/// "Continue": the last trained repertoire in its last mode (01 §4).
+class _ContinueButton extends StatelessWidget {
+  const new({required this.summary});
+
+  final RepertoireSummary summary;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final mode =
+        RunMode.values
+            .where((m) => m.name == summary.lastMode && m != RunMode.single)
+            .firstOrNull ??
+        RunMode.random;
+    final label = switch (mode) {
+      RunMode.weak => l10n.modeWeak,
+      RunMode.srs => l10n.modeSrs,
+      RunMode.random || RunMode.single => l10n.modeRandom,
+    };
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: FilledButton.icon(
+        key: const Key('continue'),
+        icon: const Icon(Icons.play_arrow),
+        label: Text(
+          l10n.continueTraining(summary.name, label),
+          overflow: TextOverflow.ellipsis,
+        ),
+        onPressed: () =>
+            unawaited(context.push(Routes.train(summary.id, mode: mode.name))),
       ),
     );
   }

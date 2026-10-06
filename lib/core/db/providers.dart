@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:chess_core/chess_core.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/misc.dart'
@@ -92,10 +94,23 @@ final statsServiceProvider = Provider<StatsService>((ref) {
   return service;
 });
 
-/// Today's training day (day-start setting applied).
+/// Today's training day (day-start setting applied); recomputed at the next
+/// day start so an app left open overnight shows the new day's due counts.
 final todayProvider = Provider<String>((ref) {
   final settings = ref.watch(settingsProvider).value ?? const AppSettings();
-  return localDay(ref.watch(clockProvider).now(), settings.dayStartHour);
+  final clock = ref.watch(clockProvider);
+  final now = clock.now();
+  final hour = settings.dayStartHour;
+  // Only real time passes by itself; a test clock is advanced by hand.
+  if (clock is SystemClock) {
+    var next = DateTime(now.year, now.month, now.day, hour);
+    if (!next.isAfter(now)) {
+      next = DateTime(now.year, now.month, now.day + 1, hour);
+    }
+    final timer = Timer(next.difference(now), ref.invalidateSelf);
+    ref.onDispose(timer.cancel);
+  }
+  return localDay(now, hour);
 });
 
 /// Home cards, updated live.

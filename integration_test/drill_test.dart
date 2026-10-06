@@ -13,6 +13,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:path/path.dart' as p;
 import 'package:repertoire_trainer/app/bootstrap.dart';
+import 'package:repertoire_trainer/app/router.dart';
+import 'package:repertoire_trainer/app/routes.dart';
 import 'package:repertoire_trainer/core/db/app_database.dart';
 import 'package:repertoire_trainer/core/db/providers.dart';
 import 'package:repertoire_trainer/core/settings/app_settings.dart';
@@ -28,6 +30,8 @@ Future<(ProviderContainer, String, RepertoireTree)> _openDrill(
   required String pgn,
   Side side = Side.white,
   AppSettings Function(AppSettings)? settings,
+  FakeClock? clock,
+  bool openTrain = true,
 }) async {
   final dir = await Directory.systemTemp.createTemp('rt_drill_');
   final file = File(p.join(dir.path, 'db${_n++}.sqlite'));
@@ -38,6 +42,7 @@ Future<(ProviderContainer, String, RepertoireTree)> _openDrill(
         ref.onDispose(db.close);
         return db;
       }),
+      if (clock != null) clockProvider.overrideWithValue(clock),
     ],
   );
   await _until(tester, find.byKey(const Key('create-repertoire')));
@@ -57,11 +62,65 @@ Future<(ProviderContainer, String, RepertoireTree)> _openDrill(
       );
   final tree = await container.read(repertoireRepositoryProvider).loadTree(id);
   await _until(tester, find.text('Drill'));
-  await tester.tap(find.text('Drill'));
-  await _until(tester, find.byKey(const Key('train')));
-  await tester.tap(find.byKey(const Key('train')));
-  await _until(tester, find.byType(RepertoireBoard));
+  if (openTrain) {
+    container.read(routerProvider).go(Routes.train(id));
+    await _until(tester, find.byType(RepertoireBoard));
+  }
   return (container, id, tree);
+}
+
+/// Opens the drill of [id] in [mode] (single: [line]).
+Future<void> _train(
+  ProviderContainer c,
+  WidgetTester tester,
+  String id, {
+  required String mode,
+  String? line,
+}) async {
+  c.read(routerProvider).go(Routes.train(id, mode: mode, line: line));
+  await tester.pump(const Duration(milliseconds: 500));
+  await _until(
+    tester,
+    find.byWidgetPredicate(
+      (w) => w is RepertoireBoard || w.key == const Key('empty-text'),
+    ),
+  );
+}
+
+/// Plays the line on the board to its end, with a wrong first attempt
+/// at every user move when [wrong]; stops the countdown and waits for the
+/// run to be stored.
+Future<String> _finishLine(
+  ProviderContainer c,
+  WidgetTester tester,
+  RepertoireTree tree, {
+  bool wrong = false,
+}) async {
+  String? lineKey;
+  // The previous line's end bar can still be up for a moment.
+  final gone = Stopwatch()..start();
+  while (find.byKey(const Key('end-bar')).evaluate().isNotEmpty &&
+      gone.elapsed.inSeconds < 10) {
+    await tester.pump(const Duration(milliseconds: 50));
+  }
+  while (find.byKey(const Key('end-bar')).evaluate().isEmpty) {
+    await _userTurn(tester);
+    if (find.byKey(const Key('end-bar')).evaluate().isNotEmpty) break;
+    final node = _nodeAt(tree, _board(tester).fen);
+    if (wrong) {
+      await _play(c, tester, _wrongMove(tree, node.fen));
+      await tester.pump(const Duration(milliseconds: 400));
+      await _userTurn(tester);
+    }
+    final next = node.children.firstWhere((ch) => ch.isUserMove);
+    lineKey ??= tree.lines.firstWhere((l) => l.path.contains(next)).key;
+    await _play(c, tester, next.uci!);
+    await tester.pump(const Duration(milliseconds: 100));
+  }
+  await tester.tap(find.byKey(const Key('end-accuracy')));
+  // Stored once pending checks resolve (engine checks: up to 3 s).
+  await tester.pump(const Duration(seconds: 4));
+  return lineKey!;
 }
 
 Future<void> _until(
@@ -77,14 +136,34 @@ Future<void> _until(
   throw TestFailure('Timed out waiting for $finder');
 }
 
+Future<void> _untilGone(WidgetTester tester, Finder finder) async {
+  final watch = Stopwatch()..start();
+  while (watch.elapsed < const Duration(seconds: 20)) {
+    await tester.pump(const Duration(milliseconds: 50));
+    if (finder.evaluate().isEmpty) return;
+  }
+  throw TestFailure('Still present: $finder');
+}
+
 BoardViewState _board(WidgetTester tester) =>
     tester.widget<RepertoireBoard>(find.byType(RepertoireBoard)).state;
 
-/// Waits for the user's turn.
+/// Waits for the user's turn, or the end bar when the line ends on the
+/// opponent's move.
 Future<void> _userTurn(WidgetTester tester) async {
   final watch = Stopwatch()..start();
-  while (_board(tester).movable == PlayerSide.none) {
-    if (watch.elapsed.inSeconds > 20) throw TestFailure('no user turn');
+  bool waiting() =>
+      find.byKey(const Key('end-bar')).evaluate().isEmpty &&
+      (find.byType(RepertoireBoard).evaluate().isEmpty ||
+          _board(tester).movable == PlayerSide.none);
+  while (waiting()) {
+    if (watch.elapsed.inSeconds > 20) {
+      final texts = [
+        for (final e in find.byType(Text).evaluate())
+          (e.widget as Text).data ?? '',
+      ].where((t) => t.isNotEmpty).take(20).join(' | ');
+      throw TestFailure('no user turn; screen: $texts');
+    }
     await tester.pump(const Duration(milliseconds: 20));
   }
 }
@@ -107,6 +186,7 @@ Future<void> _playLine(
 }) async {
   while (find.byKey(const Key('end-bar')).evaluate().isEmpty) {
     await _userTurn(tester);
+    if (find.byKey(const Key('end-bar')).evaluate().isNotEmpty) break;
     final node = _nodeAt(tree, _board(tester).fen);
     final moves = [
       for (final child in node.children)
@@ -241,7 +321,9 @@ void main() {
     final (_, _, tree) = await _openDrill(
       tester,
       pgn: pgn,
-      settings: (s) => s.copyWith(startFromBranchPoint: true),
+      // A long opponent delay: the board is read before the opponent moves.
+      settings: (s) =>
+          s.copyWith(startFromBranchPoint: true, opponentMoveDelayMs: 1500),
     );
     await _until(tester, find.byKey(const Key('skipped-chip')));
     expect(_board(tester).fen, tree.root.children.single.fen);
@@ -261,5 +343,66 @@ void main() {
     expect(run.ucis, line.ucis);
     expect(run.completed, isTrue);
     expect(run.creditSum, run.gradedCount.toDouble());
+  });
+
+  testWidgets('8. weak pool: a missed line enters it, Weak mode picks only '
+      'it, three clean runs remove it', (tester) async {
+    const pgn = '1. e4 e5 (1... c5 2. Nf3) 2. Nf3 *';
+    final (c, id, tree) = await _openDrill(tester, pgn: pgn, openTrain: false);
+    final weak = tree.lines.first.key;
+    await _train(c, tester, id, mode: 'single', line: weak);
+    await _finishLine(c, tester, tree, wrong: true);
+    Future<LineStats> stats(String key) async =>
+        (await c.read(statsRepositoryProvider).lineStats(id))
+            .firstWhere((s) => s.lineKey == key);
+    expect((await stats(weak)).inWeakPool, isTrue);
+    await _train(c, tester, id, mode: 'weak');
+    for (var i = 0; i < 3; i++) {
+      expect(await _finishLine(c, tester, tree), weak);
+      if (i < 2) await tester.tap(find.byKey(const Key('next-line')));
+    }
+    expect((await stats(weak)).inWeakPool, isFalse);
+    await tester.tap(find.byKey(const Key('next-line')));
+    await _until(tester, find.text('No weak lines. Nice.'));
+  });
+
+  testWidgets('9. SRS: new line passed -> due tomorrow; next day due; a '
+      'failure relearns the same day', (tester) async {
+    final clock = FakeClock(DateTime(2026, 10, 6, 12));
+    final (c, id, tree) = await _openDrill(
+      tester,
+      pgn: '1. e4 e5 *',
+      clock: clock,
+      openTrain: false,
+    );
+    final key = tree.lines.single.key;
+    Future<SrsState> srs() async =>
+        (await c.read(statsRepositoryProvider).lineStats(id)).single.srs;
+    await _train(c, tester, id, mode: 'srs');
+    await _finishLine(c, tester, tree);
+    expect((await srs()).dueDay, '2026-10-07');
+    await tester.tap(find.byKey(const Key('next-line')));
+    await _until(tester, find.textContaining('All caught up'));
+
+    // The next day, a new session.
+    clock.advance(const Duration(days: 1));
+    c.read(routerProvider).go(Routes.home);
+    // Let the old drill leave the tree first: re-adding the same location
+    // while its page is still animating out keeps the old screen.
+    await _until(tester, find.byKey(const Key('repertoire-list')));
+    await _untilGone(tester, find.byKey(const Key('empty-text')));
+    await _train(c, tester, id, mode: 'srs');
+    expect(await _finishLine(c, tester, tree, wrong: true), key);
+    // Runs replay in finish order: keep the fixed clock from tying them.
+    clock.advance(const Duration(minutes: 1));
+    final failed = await srs();
+    expect(
+      (failed.phase, failed.dueDay, failed.lapses),
+      (SrsPhase.learning, '2026-10-07', 1),
+    );
+    // Relearn in the same session, the same day.
+    await tester.tap(find.byKey(const Key('next-line')));
+    await _finishLine(c, tester, tree);
+    expect((await srs()).dueDay, '2026-10-08');
   });
 }
