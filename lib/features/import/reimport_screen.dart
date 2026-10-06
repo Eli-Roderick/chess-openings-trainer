@@ -6,6 +6,7 @@ import 'package:repertoire_trainer/app/layout/adaptive_layout.dart';
 import 'package:repertoire_trainer/core/db/app_database.dart';
 import 'package:repertoire_trainer/core/db/providers.dart';
 import 'package:repertoire_trainer/core/db/repositories/mappers.dart';
+import 'package:repertoire_trainer/core/files/file_service.dart';
 import 'package:repertoire_trainer/features/import/import_controller.dart';
 import 'package:repertoire_trainer/features/import/report_view.dart';
 import 'package:repertoire_trainer/features/import/source_picker.dart';
@@ -15,11 +16,15 @@ import 'package:repertoire_trainer/l10n/gen/app_localizations.dart';
 /// Re-import a repertoire (docs/plan/01-product-spec.md §13): same source
 /// choices, colour fixed, report with the diff block, then rebuilds stats.
 class ReimportScreen extends ConsumerStatefulWidget {
-  /// Re-imports repertoire [id].
-  const new({required this.id, super.key});
+  /// Re-imports repertoire [id], with [initialFile] chosen (a PGN opened
+  /// from another app).
+  const new({required this.id, super.key, this.initialFile});
 
   /// Repertoire id.
   final String id;
+
+  /// The file to import, if one was handed over.
+  final PickedFile? initialFile;
 
   @override
   ConsumerState<ReimportScreen> createState() => _ReimportState();
@@ -34,6 +39,12 @@ class _ReimportState extends ConsumerState<ReimportScreen> {
   bool _saving = false;
   ImportDone? _diffFor;
   Future<(ReimportDiff, Map<String, String>)>? _diff;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.initialFile case final file?) _source.file = file;
+  }
 
   @override
   void dispose() {

@@ -422,7 +422,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get framesCount => 'Frames';
 
   @override
-  String get framesJanky => 'Janky frames (over 16.7 ms)';
+  String get framesJanky => 'Frames over budget';
 
   @override
   String get framesAverageBuild => 'Average build';
@@ -1459,4 +1459,108 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get listDriveFiles => 'List Drive files';
+
+  @override
+  String openFileTitle(String name) {
+    return 'Open $name';
+  }
+
+  @override
+  String reimportInto(String name) {
+    return 'Re-import into $name';
+  }
+
+  @override
+  String get shortcutList => 'Keyboard shortcuts';
+
+  @override
+  String get shortcutsAnywhere => 'Anywhere';
+
+  @override
+  String get shortcutsDrill => 'Drill';
+
+  @override
+  String get shortcutsBrowse => 'Browse';
+
+  @override
+  String get shortcutLeave => 'Leave the screen';
+
+  @override
+  String get shortcutHint => 'Hint, then show the move';
+
+  @override
+  String get shortcutBackForward => 'Back / forward one move';
+
+  @override
+  String get shortcutForward => 'Forward (or the chooser at a fork)';
+
+  @override
+  String get shortcutStartEnd => 'Start / end of the line';
+
+  @override
+  String get shortcutSiblings => 'Previous / next sibling move';
+
+  @override
+  String get logsTitle => 'Logs';
+
+  @override
+  String get exportLogs => 'Export logs';
+
+  @override
+  String get logsExported => 'Logs saved';
+
+  @override
+  String get logsUnavailable => 'No log files on this device';
+
+  @override
+  String logsExportFailed(String error) {
+    return 'Could not save the logs: $error';
+  }
+
+  @override
+  String get showVariations => 'Show variations';
+
+  @override
+  String get hideVariations => 'Hide variations';
+
+  @override
+  String get framesBudget => 'Budget (display refresh rate)';
+
+  @override
+  String get framesOverBudget => 'Over budget';
+
+  @override
+  String percentDecimal(String value) {
+    return '$value %';
+  }
+
+  @override
+  String get framesWorstRaster => 'Worst raster';
+
+  @override
+  String get databaseTitle => 'Database';
+
+  @override
+  String get databaseFileSize => 'File size';
+
+  @override
+  String get databaseLastDerivation => 'Last derivation';
+
+  @override
+  String get refresh => 'Refresh';
+
+  @override
+  String get importBenchmark => 'Import benchmark';
+
+  @override
+  String get importBenchmarkHint =>
+      'Imports a 1,000-line synthetic PGN into a temporary repertoire, then deletes it';
+
+  @override
+  String get importBenchmarkRunning => 'Running…';
+
+  @override
+  String importBenchmarkResult(int lines, int total, int import, int store) {
+    return '$lines lines: $total ms (import $import ms, store $store ms)';
+  }
 }

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="ic_launcher_background">#4E7D3A</color>
+    <!-- The app's dark surface (AppColors.darkSurface): the app starts dark
+         whatever the system mode (D-25). -->
+    <color name="launch_background">#121212</color>
+</resources>

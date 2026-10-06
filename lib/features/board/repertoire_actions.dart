@@ -1,12 +1,30 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:logging/logging.dart';
 import 'package:repertoire_trainer/core/db/providers.dart';
+import 'package:repertoire_trainer/core/errors/describe_error.dart';
 import 'package:repertoire_trainer/core/files/file_service.dart';
 import 'package:repertoire_trainer/core/files/providers.dart';
 import 'package:repertoire_trainer/l10n/gen/app_localizations.dart';
 
 // Repertoire management shared by Home and Repertoire detail
 // (docs/plan/01-product-spec.md §4, §6, §14).
+
+final _log = Logger('repertoire');
+
+/// Logs [error] and shows it in a SnackBar of [messenger] (P13 task 7).
+void _showFailure(
+  ScaffoldMessengerState messenger,
+  AppLocalizations l10n,
+  String what,
+  Object error,
+  StackTrace stack,
+) {
+  _log.severe(what, error, stack);
+  messenger.showSnackBar(
+    SnackBar(content: Text(l10n.loadError(describeError(error)))),
+  );
+}
 
 /// Maximum name length (01 §5).
 const maxRepertoireNameLength = 60;
@@ -18,13 +36,20 @@ Future<bool> renameRepertoire(
   required String id,
   required String currentName,
 }) async {
+  final l10n = AppLocalizations.of(context);
+  final messenger = ScaffoldMessenger.of(context);
   final name = await showDialog<String>(
     context: context,
     builder: (context) => _RenameDialog(initial: currentName),
   );
   if (name == null || name == currentName) return false;
-  await ref.read(repertoireRepositoryProvider).rename(id, name);
-  return true;
+  try {
+    await ref.read(repertoireRepositoryProvider).rename(id, name);
+    return true;
+  } on Object catch (e, st) {
+    _showFailure(messenger, l10n, 'Rename failed', e, st);
+    return false;
+  }
 }
 
 /// Owns its text controller so it outlives the dialog's exit animation.
@@ -112,7 +137,12 @@ Future<bool> deleteRepertoire(
   );
   if (confirmed != true) return false;
   final repo = ref.read(repertoireRepositoryProvider);
-  await repo.softDelete(id);
+  try {
+    await repo.softDelete(id);
+  } on Object catch (e, st) {
+    _showFailure(messenger, l10n, 'Delete failed', e, st);
+    return false;
+  }
   messenger
     ..hideCurrentSnackBar()
     ..showSnackBar(
@@ -121,7 +151,12 @@ Future<bool> deleteRepertoire(
         duration: const Duration(seconds: 6),
         action: SnackBarAction(
           label: l10n.undo,
-          onPressed: () => repo.undoDelete(id),
+          onPressed: () => repo
+              .undoDelete(id)
+              .catchError(
+                (Object e, StackTrace st) =>
+                    _showFailure(messenger, l10n, 'Undo failed', e, st),
+              ),
         ),
       ),
     );
@@ -136,9 +171,9 @@ Future<void> exportRepertoirePgn(
 }) async {
   final l10n = AppLocalizations.of(context);
   final messenger = ScaffoldMessenger.of(context);
-  final row = await ref.read(repertoireRepositoryProvider).get(id);
-  if (row == null) return;
   try {
+    final row = await ref.read(repertoireRepositoryProvider).get(id);
+    if (row == null) return;
     final where = await ref
         .read(fileServiceProvider)
         .saveText(fileName: pgnFileName(row.name), text: row.pgn);
@@ -147,7 +182,10 @@ Future<void> exportRepertoirePgn(
         SnackBar(content: Text(l10n.exportedSnack(where))),
       );
     }
-  } on Object catch (e) {
-    messenger.showSnackBar(SnackBar(content: Text(l10n.exportFailed('$e'))));
+  } on Object catch (e, st) {
+    _log.severe('Export failed', e, st);
+    messenger.showSnackBar(
+      SnackBar(content: Text(l10n.exportFailed(describeError(e)))),
+    );
   }
 }

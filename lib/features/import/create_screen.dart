@@ -3,9 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:path/path.dart' as p;
 import 'package:repertoire_trainer/app/layout/adaptive_layout.dart';
 import 'package:repertoire_trainer/app/routes.dart';
 import 'package:repertoire_trainer/core/db/providers.dart';
+import 'package:repertoire_trainer/core/files/file_service.dart';
 import 'package:repertoire_trainer/features/board/repertoire_actions.dart';
 import 'package:repertoire_trainer/features/import/annotation_prompt.dart';
 import 'package:repertoire_trainer/features/import/import_controller.dart';
@@ -18,8 +20,12 @@ import 'package:repertoire_trainer/l10n/gen/app_localizations.dart';
 /// file or pasted PGN, Validate only / Validate and import, Copy annotation
 /// prompt; then the progress and report views.
 class CreateRepertoireScreen extends ConsumerStatefulWidget {
-  /// Creates the screen.
-  const new({super.key});
+  /// Creates the screen, with [initialFile] chosen (a PGN opened from
+  /// another app).
+  const new({super.key, this.initialFile});
+
+  /// The file to import, if one was handed over.
+  final PickedFile? initialFile;
 
   @override
   ConsumerState<CreateRepertoireScreen> createState() => _CreateState();
@@ -32,6 +38,15 @@ class _CreateState extends ConsumerState<CreateRepertoireScreen> {
   bool _submitted = false;
   bool _dryRun = false;
   bool _saving = false;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.initialFile case final file?) {
+      _source.file = file;
+      _name.text = p.basenameWithoutExtension(file.name);
+    }
+  }
 
   @override
   void dispose() {

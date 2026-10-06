@@ -13,6 +13,7 @@ import 'package:repertoire_trainer/core/db/providers.dart';
 import 'package:repertoire_trainer/core/diagnostics/frame_stats.dart';
 import 'package:repertoire_trainer/core/diagnostics/log_setup.dart';
 import 'package:repertoire_trainer/core/diagnostics/startup_timings.dart';
+import 'package:repertoire_trainer/core/errors/error_logging.dart';
 
 final _log = Logger('main');
 
@@ -25,8 +26,12 @@ Future<void> bootstrap({List<Override> overrides = const []}) async {
   // Console logging is ready synchronously; the file sink attaches in the
   // background so it never delays the first frame.
   unawaited(setupLogging());
+  installErrorLogging();
   _registerLicenses();
-  final container = ProviderContainer(overrides: overrides);
+  final container = ProviderContainer(
+    overrides: overrides,
+    observers: const [ErrorLoggingObserver()],
+  );
   runApp(
     UncontrolledProviderScope(
       container: container,

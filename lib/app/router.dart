@@ -2,6 +2,7 @@ import 'package:chess_core/chess_core.dart' show RunMode;
 import 'package:flutter/widgets.dart' show ValueKey;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:repertoire_trainer/core/files/file_service.dart';
 import 'package:repertoire_trainer/features/backup/sync_backup_screen.dart';
 import 'package:repertoire_trainer/features/board/free_move.dart';
 import 'package:repertoire_trainer/features/browse/browse_screen.dart';
@@ -27,7 +28,12 @@ final routerProvider = Provider<GoRouter>((ref) {
         routes: [
           GoRoute(
             path: 'repertoire/new',
-            builder: (context, state) => const CreateRepertoireScreen(),
+            builder: (context, state) => CreateRepertoireScreen(
+              initialFile: switch (state.extra) {
+                final PickedFile file => file,
+                _ => null,
+              },
+            ),
           ),
           GoRoute(
             path: 'repertoire/:id',
@@ -95,8 +101,13 @@ final routerProvider = Provider<GoRouter>((ref) {
               ),
               GoRoute(
                 path: 'reimport',
-                builder: (context, state) =>
-                    ReimportScreen(id: state.pathParameters['id']!),
+                builder: (context, state) => ReimportScreen(
+                  id: state.pathParameters['id']!,
+                  initialFile: switch (state.extra) {
+                    final PickedFile file => file,
+                    _ => null,
+                  },
+                ),
               ),
               GoRoute(
                 path: 'validate',

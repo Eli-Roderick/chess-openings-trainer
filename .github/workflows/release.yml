@@ -8,7 +8,27 @@ permissions:
   contents: read
 
 jobs:
+  # Fails fast, before the builds, when the tag does not match the app
+  # version or CHANGELOG.md has no section for it.
+  check-version:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Tag, pubspec version and CHANGELOG agree
+        run: |
+          version="${GITHUB_REF_NAME#v}"
+          pubspec="$(sed -n 's/^version: \([^+]*\).*/\1/p' pubspec.yaml)"
+          if [ "$version" != "$pubspec" ]; then
+            echo "::error::Tag $GITHUB_REF_NAME does not match pubspec.yaml version $pubspec."
+            exit 1
+          fi
+          if ! grep -qx "## $version" CHANGELOG.md; then
+            echo "::error::CHANGELOG.md has no section '## $version'."
+            exit 1
+          fi
+
   build-android:
+    needs: check-version
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
@@ -66,6 +86,7 @@ jobs:
           if-no-files-found: error
 
   build-windows:
+    needs: check-version
     runs-on: windows-latest
     timeout-minutes: 45
     steps:
@@ -121,8 +142,18 @@ jobs:
         run: |
           tag="$(jq -r .stockfish.tag engine/checksums.json)"
           source="$(jq -r .stockfish.source engine/checksums.json)"
+          version="${GITHUB_REF_NAME#v}"
+          # This version's CHANGELOG section (up to the next "## " heading).
+          changes="$(awk -v h="## $version" '$0 == h {on = 1; next} /^## / {on = 0} on' CHANGELOG.md)"
+          if [ -z "$(printf '%s' "$changes" | tr -d '[:space:]')" ]; then
+            echo "::error::CHANGELOG.md has no section '## $version'."
+            exit 1
+          fi
           cat > notes.md <<NOTES
           Repertoire Trainer $GITHUB_REF_NAME.
+          $changes
+
+          Development progress per phase: [docs/PROGRESS.md](https://github.com/$GITHUB_REPOSITORY/blob/$GITHUB_REF_NAME/docs/PROGRESS.md).
 
           - Android: install \`repertoire-trainer-$GITHUB_REF_NAME-android-arm64-v8a.apk\` (armeabi-v7a only for old 32-bit phones).
           - Windows: unzip \`repertoire-trainer-$GITHUB_REF_NAME-windows-x64.zip\` and run \`repertoire_trainer.exe\`.

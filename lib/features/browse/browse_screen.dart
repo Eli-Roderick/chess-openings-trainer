@@ -12,6 +12,7 @@ import 'package:repertoire_trainer/app/shortcuts.dart';
 import 'package:repertoire_trainer/core/audio/sound_service.dart';
 import 'package:repertoire_trainer/core/db/providers.dart';
 import 'package:repertoire_trainer/core/engine/engine_providers.dart';
+import 'package:repertoire_trainer/core/errors/describe_error.dart';
 import 'package:repertoire_trainer/core/haptics/haptics_service.dart';
 import 'package:repertoire_trainer/core/settings/app_settings.dart';
 import 'package:repertoire_trainer/features/board/board_appearance.dart';
@@ -71,7 +72,7 @@ class BrowseScreen extends ConsumerWidget {
       ),
       AsyncError(:final error) => Scaffold(
         appBar: AppBar(),
-        body: Center(child: Text(l10n.loadError('$error'))),
+        body: Center(child: Text(l10n.loadError(describeError(error)))),
       ),
       _ => Scaffold(
         appBar: AppBar(title: Text(name ?? l10n.browseTitle)),

@@ -17,6 +17,7 @@ import 'package:repertoire_trainer/core/diagnostics/deviation_timings.dart';
 import 'package:repertoire_trainer/core/diagnostics/drill_latency.dart';
 import 'package:repertoire_trainer/core/engine/engine_judge.dart';
 import 'package:repertoire_trainer/core/engine/engine_providers.dart';
+import 'package:repertoire_trainer/core/errors/describe_error.dart';
 import 'package:repertoire_trainer/core/haptics/haptics_service.dart';
 import 'package:repertoire_trainer/core/settings/app_settings.dart';
 import 'package:repertoire_trainer/core/sync/sync_controller.dart';
@@ -210,8 +211,9 @@ class _DrillScreenState extends ConsumerState<DrillScreen> {
         (_) => unawaited(container.read(engineServiceProvider).warmUp()),
       );
       await controller.start();
-    } on Object catch (e) {
-      if (mounted) setState(() => _error = '$e');
+    } on Object catch (e, st) {
+      final message = reportError('Drill start failed', e, st);
+      if (mounted) setState(() => _error = message);
     }
   }
 
@@ -883,10 +885,12 @@ class _MoveLog extends StatelessWidget {
                       },
                       style: TextStyle(
                         color: switch (r) {
-                          GradeResult.correct => AppColors.info,
-                          GradeResult.comparable => AppColors.warning,
+                          GradeResult.correct => AppColors.text(context).info,
+                          GradeResult.comparable => AppColors.text(
+                            context,
+                          ).warning,
                           GradeResult.wrong ||
-                          GradeResult.hint => AppColors.error,
+                          GradeResult.hint => AppColors.text(context).error,
                         },
                       ),
                     ),
@@ -1118,11 +1122,12 @@ class _SummaryMoveTile extends StatelessWidget {
     final l10n = AppLocalizations.of(context);
     final g = move.grade;
     final san = formatSanMoves([move.node.san!], firstPly: move.node.ply);
+    final status = AppColors.text(context);
     final (mark, color) = switch (g.result) {
-      GradeResult.correct => ('✓', AppColors.info),
-      GradeResult.comparable => ('½', AppColors.warning),
-      GradeResult.wrong => ('✗', AppColors.error),
-      GradeResult.hint => ('?', AppColors.error),
+      GradeResult.correct => ('✓', status.info),
+      GradeResult.comparable => ('½', status.warning),
+      GradeResult.wrong => ('✗', status.error),
+      GradeResult.hint => ('?', status.error),
     };
     final why = move.node.comment?.why;
     final missed = g.result != GradeResult.correct;

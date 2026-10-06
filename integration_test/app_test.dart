@@ -52,6 +52,7 @@ final class _PickFile implements FileService {
   Future<String?> saveText({
     required String fileName,
     required String text,
+    String extension = 'pgn',
   }) async => null;
 
   @override

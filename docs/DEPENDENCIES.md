@@ -48,6 +48,8 @@ Versions are the ones resolved in `pubspec.lock` at P00 (Flutter 3.47.6, Dart 3.
 | flutter_test | SDK | Widget tests | BSD-3-Clause |
 | integration_test | SDK | End-to-end tests (Linux desktop in CI, devices manually) | BSD-3-Clause |
 | archive | 4.3.0 | tar/zip extraction in `tool/fetch_engines.dart` only | MIT |
+| flutter_driver | SDK | Host side of `flutter drive` for the profile-mode performance tests | BSD-3-Clause |
+| flutter_launcher_icons | 0.14.4 | Generates the Android (adaptive) and Windows app icons (P13; 02-architecture §6) | MIT |
 
 ## Packages
 

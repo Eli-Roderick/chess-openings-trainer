@@ -159,6 +159,10 @@ abstract interface class RepertoireRepository {
   /// Deletes every repertoire, run and derived row (backup "Replace all").
   Future<void> deleteAll();
 
+  /// Deletes [id] with everything of it and leaves no tombstone: only for
+  /// repertoires that were never synced (the Diagnostics import benchmark).
+  Future<void> remove(String id);
+
   /// The in-memory tree of [id] (cached, LRU of 3).
   Future<RepertoireTree> loadTree(String id);
 }
@@ -539,6 +543,12 @@ ORDER BY r.last_trained_at IS NULL, r.last_trained_at DESC, r.created_at DESC
     await (_db.delete(_db.nodes)..where((n) => n.repertoireId.equals(id))).go();
     await (_db.delete(_db.lines)..where((l) => l.repertoireId.equals(id))).go();
   }
+
+  @override
+  Future<void> remove(String id) => _db.transaction(() async {
+    await purge(id);
+    await (_db.delete(_db.repertoires)..where((r) => r.id.equals(id))).go();
+  });
 
   @override
   Future<void> purge(String id) => _db.transaction(() async {

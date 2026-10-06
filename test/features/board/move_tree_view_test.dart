@@ -5,6 +5,7 @@ import 'package:dartchess/dartchess.dart' show Side;
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:repertoire_trainer/features/board/move_tree_view.dart';
+import 'package:repertoire_trainer/l10n/gen/app_localizations.dart';
 
 String rowText(MoveRow r) => [
   '  ' * r.depth,
@@ -65,6 +66,7 @@ void main() {
     final tapped = <TreeNode>[];
     await tester.pumpWidget(
       MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
         home: Scaffold(
           body: MoveTreeView(
             root: root,

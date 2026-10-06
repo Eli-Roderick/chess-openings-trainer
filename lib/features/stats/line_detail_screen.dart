@@ -8,6 +8,7 @@ import 'package:intl/intl.dart';
 import 'package:repertoire_trainer/app/layout/adaptive_layout.dart';
 import 'package:repertoire_trainer/app/routes.dart';
 import 'package:repertoire_trainer/core/db/providers.dart';
+import 'package:repertoire_trainer/core/errors/describe_error.dart';
 import 'package:repertoire_trainer/core/settings/app_settings.dart';
 import 'package:repertoire_trainer/features/stats/stats_data.dart';
 import 'package:repertoire_trainer/features/stats/stats_providers.dart';
@@ -38,14 +39,21 @@ class LineDetailScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
-    final data = ref.watch(repertoireStatsProvider(id)).value;
-    final all = ref.watch(lineStatsProvider(id)).value;
+    final dataValue = ref.watch(repertoireStatsProvider(id));
+    final allValue = ref.watch(lineStatsProvider(id));
     final history = ref.watch(lineHistoryProvider((id, lineKey)));
     final settings = ref.watch(settingsProvider).value ?? const AppSettings();
+    final data = dataValue.value;
+    final all = allValue.value;
     if (data == null || all == null) {
+      final error = dataValue.error ?? allValue.error;
       return Scaffold(
         appBar: AppBar(title: Text(l10n.lineDetail)),
-        body: const Center(child: CircularProgressIndicator()),
+        body: Center(
+          child: error == null
+              ? const CircularProgressIndicator()
+              : Text(l10n.loadError(describeError(error))),
+        ),
       );
     }
     final line = data.tree.lineByKey(lineKey);

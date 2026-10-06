@@ -84,3 +84,22 @@ const browseShortcuts = <ShortcutActivator, Intent>{
   SingleActivator(LogicalKeyboardKey.arrowDown): SiblingIntent(1),
   SingleActivator(LogicalKeyboardKey.escape): LeaveIntent(),
 };
+
+/// ?: show the shortcut list.
+final class ShowShortcutsIntent extends Intent {
+  /// Creates the intent.
+  const new();
+}
+
+/// Ctrl+, : open Settings.
+final class OpenSettingsIntent extends Intent {
+  /// Creates the intent.
+  const new();
+}
+
+/// App-wide keys (01-product-spec §15, P13).
+const appShortcuts = <ShortcutActivator, Intent>{
+  CharacterActivator('?'): ShowShortcutsIntent(),
+  SingleActivator(LogicalKeyboardKey.comma, control: true):
+      OpenSettingsIntent(),
+};

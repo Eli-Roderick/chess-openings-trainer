@@ -28,6 +28,9 @@ class FlutterWindow : public Win32Window {
 
   // The Flutter instance hosted by this window.
   std::unique_ptr<flutter::FlutterViewController> flutter_controller_;
+
+  // The saved placement was maximized (applied when the window shows).
+  bool maximized_ = false;
 };
 
 #endif  // RUNNER_FLUTTER_WINDOW_H_

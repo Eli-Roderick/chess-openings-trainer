@@ -3,6 +3,7 @@ import 'dart:io' as io;
 import 'package:chess_core/chess_core.dart';
 import 'package:dartchess/dartchess.dart' show Side;
 import 'package:flutter_test/flutter_test.dart';
+import 'package:repertoire_trainer/core/diagnostics/derivation_timings.dart';
 
 import 'db_test_helpers.dart';
 
@@ -195,8 +196,11 @@ void main() {
       for (final s in expected) {
         expect(stored[s.lineKey], s, reason: s.lineKey);
       }
-      // Full rebuild gives the same.
+      // Full rebuild gives the same, and is timed for Diagnostics.
+      DerivationTimings.instance.last = null;
       await t.service.rebuildRepertoire(rep);
+      expect(DerivationTimings.instance.last, isNotNull);
+      expect(DerivationTimings.instance.lastKind, 'repertoire');
       final rebuilt = {
         for (final s in await t.stats.lineStats(rep)) s.lineKey: s,
       };

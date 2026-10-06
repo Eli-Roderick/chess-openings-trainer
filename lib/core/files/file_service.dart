@@ -22,8 +22,13 @@ abstract interface class FileService {
   Future<PickedFile?> pickPgn();
 
   /// Saves [text] (UTF-8) through a save dialog proposing [fileName];
-  /// returns where it was saved, or null if cancelled.
-  Future<String?> saveText({required String fileName, required String text});
+  /// returns where it was saved, or null if cancelled. [extension] is `pgn`
+  /// or `txt`.
+  Future<String?> saveText({
+    required String fileName,
+    required String text,
+    String extension = 'pgn',
+  });
 
   /// Lets the user choose a backup file; null if cancelled.
   Future<PickedFile?> pickBackup();
@@ -58,13 +63,14 @@ final class PlatformFileService implements FileService {
   Future<String?> saveText({
     required String fileName,
     required String text,
+    String extension = 'pgn',
   }) async {
     final uri = await FilePicker.saveFile(
       fileName: fileName,
       bytes: Uint8List.fromList(utf8.encode(text)),
-      mimeType: 'application/x-chess-pgn',
+      mimeType: extension == 'pgn' ? 'application/x-chess-pgn' : 'text/plain',
       type: FileType.custom,
-      allowedExtensions: const ['pgn'],
+      allowedExtensions: [extension],
     );
     if (uri == null) return null;
     return uri.scheme == 'file' ? uri.toFilePath() : uri.pathSegments.last;

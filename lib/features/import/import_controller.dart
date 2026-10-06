@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:chess_core/chess_core.dart';
 import 'package:dartchess/dartchess.dart' show Side;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:repertoire_trainer/core/errors/describe_error.dart';
 import 'package:repertoire_trainer/core/import/import_runner.dart';
 
 /// State of an import screen.
@@ -76,7 +77,8 @@ class ImportController extends Notifier<ImportState> {
               side: side,
             ),
           },
-          onError: (Object e) => state = ImportFailed('$e'),
+          onError: (Object e, StackTrace st) =>
+              state = ImportFailed(reportError('Import failed', e, st)),
         );
   }
 

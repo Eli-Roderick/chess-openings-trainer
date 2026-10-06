@@ -11,6 +11,7 @@ import 'package:repertoire_trainer/app/layout/adaptive_layout.dart';
 import 'package:repertoire_trainer/app/routes.dart';
 import 'package:repertoire_trainer/app/theme/colors.dart';
 import 'package:repertoire_trainer/core/db/providers.dart';
+import 'package:repertoire_trainer/core/errors/describe_error.dart';
 import 'package:repertoire_trainer/features/stats/stats_data.dart';
 import 'package:repertoire_trainer/features/stats/stats_providers.dart';
 import 'package:repertoire_trainer/l10n/gen/app_localizations.dart';
@@ -38,20 +39,16 @@ class StatsScreen extends ConsumerWidget {
         .firstOrNull
         ?.name;
     final data = ref.watch(repertoireStatsProvider(id));
-    final stats = ref.watch(lineStatsProvider(id)).value;
+    final stats = ref.watch(lineStatsProvider(id));
     return Scaffold(
       appBar: AppBar(
         title: Text(name == null ? l10n.stats : l10n.statsOf(name)),
       ),
       body: switch ((data, stats)) {
-        (AsyncValue(:final error?), _) => Center(
-          child: Text(l10n.loadError('$error')),
-        ),
-        (AsyncValue(value: final d?), final s?) => _StatsBody(
-          id: id,
-          data: d,
-          stats: s,
-        ),
+        (AsyncValue(:final error?), _) || (_, AsyncValue(:final error?)) =>
+          Center(child: Text(l10n.loadError(describeError(error)))),
+        (AsyncValue(value: final d?), AsyncValue(value: final s?)) =>
+          _StatsBody(id: id, data: d, stats: s),
         _ => const Center(child: CircularProgressIndicator()),
       },
     );
@@ -173,7 +170,9 @@ class _StatsBody extends ConsumerWidget {
               contentPadding: EdgeInsets.zero,
               leading: Icon(
                 e.event.passed ? Icons.check_circle : Icons.cancel,
-                color: e.event.passed ? AppColors.success : AppColors.warning,
+                color: e.event.passed
+                    ? AppColors.success
+                    : AppColors.text(context).warning,
               ),
               title: Text(data.labelOf(e.lineKey)),
               subtitle: Text(
@@ -404,12 +403,19 @@ class _LineListState extends ConsumerState<LineListScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final data = ref.watch(repertoireStatsProvider(widget.id)).value;
-    final stats = ref.watch(lineStatsProvider(widget.id)).value;
+    final dataValue = ref.watch(repertoireStatsProvider(widget.id));
+    final statsValue = ref.watch(lineStatsProvider(widget.id));
+    final data = dataValue.value;
+    final stats = statsValue.value;
     if (data == null || stats == null) {
+      final error = dataValue.error ?? statsValue.error;
       return Scaffold(
         appBar: AppBar(title: Text(l10n.allLines)),
-        body: const Center(child: CircularProgressIndicator()),
+        body: Center(
+          child: error == null
+              ? const CircularProgressIndicator()
+              : Text(l10n.loadError(describeError(error))),
+        ),
       );
     }
     final tree = data.tree;

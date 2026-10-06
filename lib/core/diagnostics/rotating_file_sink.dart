@@ -26,6 +26,15 @@ class RotatingFileSink {
     for (var i = 1; i < maxFiles; i++) _rotated(i),
   ].where((f) => f.existsSync()).toList();
 
+  /// All log text, oldest first (for "Export logs").
+  Future<String> readAll() async {
+    final buffer = StringBuffer();
+    for (final f in files.reversed) {
+      buffer.write(await f.readAsString());
+    }
+    return buffer.toString();
+  }
+
   void write(LogRecord r) {
     final buffer = StringBuffer()
       ..write(r.time.toIso8601String())

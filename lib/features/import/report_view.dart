@@ -79,7 +79,7 @@ class ImportReportView extends StatelessWidget {
                 if (report.errors.isNotEmpty) ...[
                   _SectionTitle(
                     l10n.reportErrors(report.errors.length),
-                    AppColors.error,
+                    AppColors.text(context).error,
                   ),
                   for (final e in report.errors) _ItemTile(e, side: side),
                   Padding(
@@ -89,7 +89,7 @@ class ImportReportView extends StatelessWidget {
                 ],
                 _SectionTitle(
                   l10n.reportWarnings(report.warnings.length),
-                  AppColors.warning,
+                  AppColors.text(context).warning,
                 ),
                 for (final MapEntry(key: code, value: items)
                     in warningsByCode.entries)
@@ -104,7 +104,7 @@ class ImportReportView extends StatelessWidget {
                     key: const Key('group-info'),
                     title: Text(
                       l10n.reportInfo(report.infos.length),
-                      style: const TextStyle(color: AppColors.info),
+                      style: TextStyle(color: AppColors.text(context).info),
                     ),
                     children: [
                       for (final i in report.infos) _ItemTile(i, side: side),
