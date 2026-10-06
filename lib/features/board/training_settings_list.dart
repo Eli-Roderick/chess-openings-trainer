@@ -96,6 +96,84 @@ class TrainingSettingsList extends ConsumerWidget {
           value: s.showCommentArrows,
           onChanged: (v) => update((s) => s.copyWith(showCommentArrows: v)),
         ),
+        SwitchListTile(
+          key: const Key('show-line-summary'),
+          title: Text(l10n.showLineSummary),
+          value: s.showLineSummary,
+          onChanged: (v) => update((s) => s.copyWith(showLineSummary: v)),
+        ),
+        const Divider(),
+        ListTile(
+          title: Text(l10n.weakEnterBelow),
+          trailing: Text(l10n.percentValue(s.weakEnterBelowPercent)),
+        ),
+        Slider(
+          key: const Key('weak-enter-below'),
+          value: s.weakEnterBelowPercent.toDouble(),
+          min: 50,
+          max: 95,
+          divisions: 9,
+          label: '${s.weakEnterBelowPercent} %',
+          onChanged: (v) =>
+              update((s) => s.copyWith(weakEnterBelowPercent: v.round())),
+        ),
+        ListTile(
+          title: Text(l10n.weakExitAfter),
+          trailing: Text('${s.weakExitCleanRuns}'),
+        ),
+        Slider(
+          key: const Key('weak-exit-after'),
+          value: s.weakExitCleanRuns.toDouble(),
+          min: 1,
+          max: 10,
+          divisions: 9,
+          label: '${s.weakExitCleanRuns}',
+          onChanged: (v) =>
+              update((s) => s.copyWith(weakExitCleanRuns: v.round())),
+        ),
+        const Divider(),
+        ListTile(
+          title: Text(l10n.srsNewPerDay),
+          trailing: Text('${s.srsNewPerDay}'),
+        ),
+        Slider(
+          key: const Key('srs-new-per-day'),
+          value: s.srsNewPerDay.toDouble(),
+          max: 100,
+          divisions: 100,
+          label: '${s.srsNewPerDay}',
+          onChanged: (v) => update((s) => s.copyWith(srsNewPerDay: v.round())),
+        ),
+        ListTile(
+          title: Text(l10n.srsMaxReviews),
+          trailing: DropdownButton<int?>(
+            key: const Key('srs-max-reviews'),
+            value: s.srsMaxReviewsPerDay,
+            onChanged: (v) => update((s) => s.copyWith(srsMaxReviewsPerDay: v)),
+            items: [
+              DropdownMenuItem(child: Text(l10n.unlimited)),
+              for (final n in const [10, 20, 30, 50, 100, 200, 300, 500])
+                DropdownMenuItem(value: n, child: Text('$n')),
+            ],
+          ),
+        ),
+        ListTile(
+          title: Text(l10n.dayStartsAt),
+          trailing: DropdownButton<int>(
+            key: const Key('day-start'),
+            value: s.dayStartHour,
+            onChanged: (v) {
+              if (v != null) update((s) => s.copyWith(dayStartHour: v));
+            },
+            items: [
+              for (var h = 0; h <= 6; h++)
+                DropdownMenuItem(
+                  value: h,
+                  child: Text('${h.toString().padLeft(2, '0')}:00'),
+                ),
+            ],
+          ),
+        ),
       ],
     );
   }

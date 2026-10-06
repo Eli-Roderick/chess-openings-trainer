@@ -806,4 +806,143 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get latencySamples => 'Samples';
+
+  @override
+  String get modeWeak => 'Weak lines';
+
+  @override
+  String modeWeakCount(int count) {
+    return 'Weak $count';
+  }
+
+  @override
+  String get modeSrs => 'Spaced repetition';
+
+  @override
+  String modeSrsLeft(int count) {
+    return 'SRS $count left';
+  }
+
+  @override
+  String get modeSingle => 'Single line';
+
+  @override
+  String get summary => 'Summary';
+
+  @override
+  String get noWeakLines => 'No weak lines. Nice.';
+
+  @override
+  String get srsLimitReached => 'Daily review limit reached.';
+
+  @override
+  String get allCaughtUp => 'All caught up.';
+
+  @override
+  String allCaughtUpNext(String date, int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count lines',
+      one: '1 line',
+    );
+    return 'All caught up. Next review: $date ($_temp0)';
+  }
+
+  @override
+  String get trainWeakLines => 'Train weak lines';
+
+  @override
+  String lineAccuracyChange(String before, String after) {
+    return 'Line accuracy (last 10): $before → $after';
+  }
+
+  @override
+  String get enteredWeakPool => 'Entered weak pool';
+
+  @override
+  String get leftWeakPool => 'Left weak pool';
+
+  @override
+  String srsNextDue(String date) {
+    return 'Next review: $date';
+  }
+
+  @override
+  String get retryThisLine => 'Retry this line';
+
+  @override
+  String get browseThisLine => 'Browse this line';
+
+  @override
+  String youPlayed(String move) {
+    return 'You played $move';
+  }
+
+  @override
+  String get hintUsed => 'Hint used';
+
+  @override
+  String get modeRandomHint =>
+      'All lines, weighted towards weak and stale ones';
+
+  @override
+  String weakPoolSize(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count lines in the pool',
+      one: '1 line in the pool',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get weakPoolEmptyHint =>
+      'No weak lines yet: lines enter the pool below the accuracy threshold.';
+
+  @override
+  String srsCounts(int due, int fresh) {
+    return '$due due, $fresh new available';
+  }
+
+  @override
+  String get opponentDeviations => 'Opponent deviations';
+
+  @override
+  String get arrivesLater => 'Arrives in a later version';
+
+  @override
+  String get start => 'Start';
+
+  @override
+  String continueTraining(String name, String mode) {
+    return 'Continue: $name · $mode';
+  }
+
+  @override
+  String get showLineSummary => 'Show line summary';
+
+  @override
+  String get weakEnterBelow => 'Weak pool: enter below accuracy';
+
+  @override
+  String get weakExitAfter => 'Weak pool: leave after clean runs';
+
+  @override
+  String get srsNewPerDay => 'SRS: new lines per day';
+
+  @override
+  String get srsMaxReviews => 'SRS: max reviews per day';
+
+  @override
+  String get unlimited => 'Unlimited';
+
+  @override
+  String get dayStartsAt => 'Day starts at';
+
+  @override
+  String percentValue(int value) {
+    return '$value %';
+  }
 }

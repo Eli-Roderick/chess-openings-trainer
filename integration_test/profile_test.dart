@@ -240,7 +240,12 @@ void main() {
     final tree = await container
         .read(repertoireRepositoryProvider)
         .loadTree(id);
+    // Train opens the mode sheet (P08); Random is preselected.
     await tester.tap(find.byKey(const Key('train')));
+    await waitFor(find.byKey(const Key('sheet-start')));
+    await tester.ensureVisible(find.byKey(const Key('sheet-start')));
+    await tester.pump(const Duration(milliseconds: 300));
+    await tester.tap(find.byKey(const Key('sheet-start')));
     await waitFor(find.byType(RepertoireBoard));
     DrillLatency.instance.reset();
     BoardViewState board() =>

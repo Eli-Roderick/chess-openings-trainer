@@ -13,6 +13,7 @@ import 'package:repertoire_trainer/features/board/board_appearance.dart';
 import 'package:repertoire_trainer/features/board/board_position.dart';
 import 'package:repertoire_trainer/features/board/repertoire_board.dart';
 import 'package:repertoire_trainer/features/drill/drill_state.dart';
+import 'package:repertoire_trainer/features/drill/line_picker.dart';
 
 /// Comparable checks for wrong moves (the app's `EngineJudge`; a fake in
 /// tests).
@@ -49,6 +50,7 @@ final class DrillDeps {
     required this.check,
     required this.effects,
     this.latency,
+    this.reviewsToday,
   });
 
   /// Time.
@@ -83,6 +85,9 @@ final class DrillDeps {
 
   /// Latency recorder.
   final DrillLatency? latency;
+
+  /// SRS reviews done on a training day, all repertoires (SRS daily cap).
+  final Future<int> Function(String day)? reviewsToday;
 }
 
 /// The drill (docs/plan/phases/P07, 01-product-spec §7) for one repertoire
@@ -94,7 +99,7 @@ final class DrillController extends ChangeNotifier {
     required this.tree,
     required this.repertoireId,
     required this.deps,
-    this.mode = RunMode.random,
+    this.picker = const RandomPicker(),
     bool? startFromBranch,
   }) : _startFromBranch =
            startFromBranch ?? deps.settings().startFromBranchPoint,
@@ -112,8 +117,11 @@ final class DrillController extends ChangeNotifier {
   /// Dependencies.
   final DrillDeps deps;
 
+  /// Chooses the lines (and so the mode).
+  final LinePicker picker;
+
   /// Training mode.
-  final RunMode mode;
+  RunMode get mode => picker.mode;
 
   final bool _startFromBranch;
   DrillState _state;
@@ -186,36 +194,54 @@ final class DrillController extends ChangeNotifier {
         phase: DrillPhase.loading,
         clearEndBar: true,
         clearBanner: true,
+        summaryOpen: false,
       ),
     );
-    final stats = await deps.lineStats();
-    final recentDb = await deps.recentStarted();
+    // The previous run must be in the stats first (weak pool, SRS).
+    final saving = _saving;
+    if (saving != null) await saving;
+    final context = await _context();
     if (token != _token || _disposed) return;
-    final byKey = _statsByKey = {for (final s in stats) s.lineKey: s};
-    final recent = <String>[..._sessionStarts.reversed, ...recentDb];
-    final key = pickRandomLine(
-      lines: [for (final l in tree.lines) _candidate(l, byKey[l.key])],
-      recentNewestFirst: recent,
-      nowMs: _nowMs,
-      rng: deps.rng,
-    );
-    final line = key == null ? null : tree.lineByKey(key);
+    final pick = picker.pick(context);
+    final count = picker.count(context);
+    final line = pick is PickedLine ? tree.lineByKey(pick.key) : null;
     if (line == null) {
-      _emit(_state.copyWith(phase: DrillPhase.empty));
+      _emit(
+        _state.copyWith(
+          phase: DrillPhase.empty,
+          empty: pick is PickedLine ? const NoTrainableLines() : pick,
+          modeCount: count,
+        ),
+      );
       return;
     }
-    _startLine(line);
+    _startLine(line, modeCount: count);
   }
 
-  static PickCandidate _candidate(Line l, LineStats? s) => PickCandidate(
-    key: l.key,
-    ordinal: l.ordinal,
-    userMoveCount: l.userMoveCount,
-    lastPlayedAt: s?.lastPlayedAt,
-    accuracy: s?.accuracy,
-  );
+  PickContext? _lastContext;
 
-  void _startLine(Line line) {
+  Future<PickContext> _context() async {
+    final stats = await deps.lineStats();
+    final recentDb = await deps.recentStarted();
+    final today = localDay(deps.clock.now(), _settings.dayStartHour);
+    final reviews = mode == RunMode.srs && deps.reviewsToday != null
+        ? await deps.reviewsToday!(today)
+        : 0;
+    _statsByKey = {for (final s in stats) s.lineKey: s};
+    return _lastContext = PickContext(
+      lines: tree.lines,
+      stats: _statsByKey,
+      recentNewestFirst: [..._sessionStarts.reversed, ...recentDb],
+      nowMs: _nowMs,
+      today: today,
+      settings: _settings,
+      rng: deps.rng,
+      sessionPickIndex: _sessionStarts.length,
+      reviewsToday: reviews,
+    );
+  }
+
+  void _startLine(Line line, {int? modeCount}) {
     final startPly = _startFromBranch ? line.branchPly : 0;
     _line = line;
     _node = startPly == 0 ? tree.root : line.path[startPly - 1];
@@ -247,6 +273,8 @@ final class DrillController extends ChangeNotifier {
         skippedSans: [for (final n in line.path.take(startPly)) n.san!],
         session: _state.session,
         restarts: _state.restarts,
+        modeCount: modeCount,
+        summary: _state.summary,
       ),
     );
     _continueFromNode(afterUserMove: false, viaDrag: true);
@@ -362,15 +390,11 @@ final class DrillController extends ChangeNotifier {
         for (final l in tree.lines)
           if (l.path.contains(child)) l,
       ];
-      final key = pickBranchSwitch(
-        mode: mode,
-        candidates: [
-          for (final l in candidates) _candidate(l, _statsByKey[l.key]),
-        ],
-        nowMs: _nowMs,
-        rng: deps.rng,
-      );
-      final line = tree.lineByKey(key!)!;
+      final context = _lastContext;
+      final key = context == null
+          ? candidates.first.key
+          : picker.branchSwitch(context, candidates) ?? candidates.first.key;
+      final line = tree.lineByKey(key)!;
       _line = line;
       run.switchLine(lineKey: line.key, ucis: line.ucis);
     }
@@ -585,8 +609,12 @@ final class DrillController extends ChangeNotifier {
   void _completeLine() {
     final run = _run!;
     final finishedAt = _nowMs;
+    final before = _statsByKey[run.lineKey];
     deps.effects.sound(SoundType.lineComplete);
     final s = _settings;
+    // With "Show line summary" on the summary opens instead of the end bar
+    // countdown (01 §7.9).
+    final showSummary = s.showLineSummary;
     final auto = Duration(milliseconds: s.autoAdvanceDelayMs);
     _emit(
       _state.copyWith(
@@ -596,14 +624,26 @@ final class DrillController extends ChangeNotifier {
           graded: _state.graded,
           creditSum: _state.creditSum,
           autoAdvance: auto,
-          counting: true,
+          counting: !showSummary,
           saved: false,
         ),
+        clearSummary: true,
+        summaryOpen: false,
       ),
     );
     final token = _token;
-    _saving = _finalize(run, finishedAt, completed: true).then((record) {
+    _saving = _finalize(run, finishedAt, completed: true).then((record) async {
+      LineStats? after;
+      try {
+        after = (await deps.lineStats())
+            .where((l) => l.lineKey == record.lineKey)
+            .firstOrNull;
+      } on Object {
+        after = null;
+      }
       if (_disposed) return;
+      final current = token == _token;
+      final bar = _state.endBar;
       _emit(
         _state.copyWith(
           session: SessionStats(
@@ -611,18 +651,21 @@ final class DrillController extends ChangeNotifier {
             graded: _state.session.graded + record.gradedCount,
             creditSum: _state.session.creditSum + record.creditSum,
           ),
-          endBar: token == _token && _state.endBar != null
+          endBar: current && bar != null
               ? EndBarState(
                   graded: record.gradedCount,
                   creditSum: record.creditSum,
-                  autoAdvance: _state.endBar!.autoAdvance,
-                  counting: _state.endBar!.counting,
+                  autoAdvance: bar.autoAdvance,
+                  counting: bar.counting,
                   saved: true,
                 )
               : null,
+          summary: current ? _summary(record, before, after) : null,
+          summaryOpen: current && showSummary,
         ),
       );
     });
+    if (showSummary) return;
     if (auto == Duration.zero) {
       unawaited(nextLine());
     } else {
@@ -631,6 +674,43 @@ final class DrillController extends ChangeNotifier {
       });
     }
   }
+
+  LineSummary _summary(RunRecord run, LineStats? before, LineStats? after) {
+    final line = tree.lineByKey(run.lineKey) ?? _line!;
+    String? san(TreeNode node, String? uci) {
+      if (uci == null || uci == node.uci) return null;
+      final move = parseUci(uci);
+      final parent = node.parent;
+      if (move == null || parent == null) return uci;
+      return resolveMove(positionFromFen(parent.fen), move)?.san ?? uci;
+    }
+
+    return LineSummary(
+      line: line,
+      run: run,
+      before: before,
+      after: after,
+      moves: [
+        for (final g in run.grades)
+          if (g.ply >= 1 && g.ply <= line.plies)
+            SummaryMove(
+              node: line.path[g.ply - 1],
+              grade: g,
+              firstAttemptSan: san(line.path[g.ply - 1], g.firstAttempt),
+            ),
+      ],
+    );
+  }
+
+  /// Opens the line summary (end bar "Summary").
+  void openSummary() {
+    if (_state.summary == null) return;
+    cancelAutoAdvance();
+    _emit(_state.copyWith(summaryOpen: true));
+  }
+
+  /// Closes the line summary.
+  void closeSummary() => _emit(_state.copyWith(summaryOpen: false));
 
   /// Waits up to 3 s for the run's pending checks (04 §1), then stores it.
   Future<RunRecord> _finalize(

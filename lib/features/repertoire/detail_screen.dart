@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:chess_core/chess_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -7,6 +9,7 @@ import 'package:repertoire_trainer/app/routes.dart';
 import 'package:repertoire_trainer/core/db/providers.dart';
 import 'package:repertoire_trainer/core/settings/app_settings.dart';
 import 'package:repertoire_trainer/features/board/repertoire_actions.dart';
+import 'package:repertoire_trainer/features/repertoire/mode_sheet.dart';
 import 'package:repertoire_trainer/l10n/gen/app_localizations.dart';
 
 /// Numbers shown on the detail screen (01-product-spec §6).
@@ -183,7 +186,13 @@ class RepertoireDetailScreen extends ConsumerWidget {
               key: const Key('train'),
               icon: const Icon(Icons.play_arrow),
               label: Text(l10n.train),
-              onPressed: () => context.push(Routes.train(id)),
+              onPressed: () => unawaited(
+                showModeSheet(
+                  context,
+                  summary: summary,
+                  newAvailable: counts.newAvailableToday,
+                ),
+              ),
             ),
             const SizedBox(height: 8),
             Row(

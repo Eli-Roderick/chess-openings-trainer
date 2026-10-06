@@ -226,3 +226,19 @@ Details of the plan corrections are in `docs/plan/corrections/P07.md`.
 **D-89 Drill screen.** App bar: name · Random, flip, training settings (a sheet with the same list as Settings → Training). Info panel: "Skipped to move N" chip (tap: the skipped moves), comment panel of the last correct user move ("Your move" / "Opponent to move" otherwise), banner on top. Bottom bar: Hint / Show move, "Move N of M", run accuracy "credit/graded · %", Skip line. Wide: the right panel adds the line's moves with result marks (✓ ½ ✗ ?). Keys: H, F, Space/Enter (next line), Esc.
 
 **D-90 Drill latency metric.** `DrillLatency` (`lib/core/diagnostics/`) keeps the last 200 user-move → opponent-move times; Diagnostics shows p50, p95 and the sample count. The profile integration run asserts p95 ≤ 300 ms with the default 250 ms delay.
+
+## P08 (training modes)
+
+Details of the plan corrections are in `docs/plan/corrections/P08.md`.
+
+**D-91 Start-from rule.** Start from the branch point when the route says `from=branch`, from move 1 when it says `from=move1`; otherwise a repertoire never trained uses Settings → Training → "Start from branch point", and a trained one its own `drill_start_from`. The mode sheet stores the choice and the mode (`last_mode`) when a drill starts; single-line drills do not change `last_mode`.
+
+**D-92 Pickers.** `LinePicker` (`lib/features/drill/line_picker.dart`): `RandomPicker`, `WeakPicker`, `SrsPicker`, `SingleLinePicker`, each with `pick`, `branchSwitch` (04 §3.4) and the app-bar count (Weak: pool size; SRS: due plus new still allowed today). A pick reads a fresh `PickContext` (live line stats, recent starts from the database plus this session, today from the clock and the day-start hour, SRS reviews today) after the previous run has been stored. Outcomes: a line (SRS marks new lines), no trainable line, empty weak pool, or SRS "All caught up" (next due day and its line count, or the daily review limit).
+
+**D-93 SRS limits.** New lines per day count lines whose `firstSeenDay` is today; the review cap counts SRS reviews on the training day across all repertoires. A failed line lapses to learning, due today (04 §5.2), and comes back in the same session once the recent-line exclusion lets it.
+
+**D-94 Line summary.** With "Show line summary" on, the line ends on the summary instead of the end-bar countdown; with it off, the end bar has a Summary button. The summary lists each graded user move (result mark, the first attempt if wrong, the move's comment), run accuracy, line accuracy before → after, weak-pool change ("Entered" / "Left" the weak pool) and the SRS next due day. Buttons: Next line, Retry this line (single-line drill), Browse at this line.
+
+**D-95 Empty screens and Continue.** Weak with an empty pool: "No weak lines. Nice." with Random. SRS caught up: next review date and line count, or the daily limit message, with Weak lines and Random. Home's Continue button (above the cards) opens the most recently trained repertoire in its last mode (single maps to Random).
+
+**D-96 Drill route.** `/repertoire/<id>/train?mode=&line=&from=`; the screen is keyed by the full URI so another mode or line is a new drill. `todayProvider` recomputes at the next day start.

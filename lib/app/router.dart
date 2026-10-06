@@ -1,3 +1,5 @@
+import 'package:chess_core/chess_core.dart' show RunMode;
+import 'package:flutter/widgets.dart' show ValueKey;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:repertoire_trainer/app/placeholder_screen.dart';
@@ -31,8 +33,24 @@ final routerProvider = Provider<GoRouter>((ref) {
             routes: [
               GoRoute(
                 path: 'train',
-                builder: (context, state) =>
-                    DrillScreen(id: state.pathParameters['id']!),
+                builder: (context, state) {
+                  final q = state.uri.queryParameters;
+                  return DrillScreen(
+                    // Same path, other mode or line: a new drill, not an
+                    // update of the running one.
+                    key: ValueKey(state.uri.toString()),
+                    id: state.pathParameters['id']!,
+                    mode: RunMode.values
+                        .where((m) => m.name == q['mode'])
+                        .firstOrNull,
+                    lineKey: q['line'],
+                    fromBranch: switch (q['from']) {
+                      'branch' => true,
+                      'move1' => false,
+                      _ => null,
+                    },
+                  );
+                },
               ),
               GoRoute(
                 path: 'browse',

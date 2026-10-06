@@ -1,6 +1,7 @@
 import 'package:chess_core/chess_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:repertoire_trainer/features/board/repertoire_board.dart';
+import 'package:repertoire_trainer/features/drill/line_picker.dart';
 
 /// Where the drill is (docs/plan/phases/P07 state machine).
 enum DrillPhase {
@@ -120,6 +121,57 @@ final class SessionStats {
   double? get accuracy => graded == 0 ? null : creditSum / graded;
 }
 
+/// One graded user move in the line summary (01 §7.9).
+@immutable
+final class SummaryMove {
+  /// Creates it.
+  const new({required this.node, required this.grade, this.firstAttemptSan});
+
+  /// The repertoire move (expected move, its comment).
+  final TreeNode node;
+
+  /// The grade.
+  final MoveGrade grade;
+
+  /// SAN of the user's first attempt when it was not the expected move.
+  final String? firstAttemptSan;
+}
+
+/// The line summary (01 §7.9) of the last completed run.
+@immutable
+final class LineSummary {
+  /// Creates it.
+  const new({
+    required this.line,
+    required this.run,
+    required this.moves,
+    this.before,
+    this.after,
+  });
+
+  /// The completed line.
+  final Line line;
+
+  /// The stored run.
+  final RunRecord run;
+
+  /// Graded user moves.
+  final List<SummaryMove> moves;
+
+  /// Line stats before the run.
+  final LineStats? before;
+
+  /// Line stats after the run.
+  final LineStats? after;
+
+  /// "Entered weak pool" (true), "Left weak pool" (false), unchanged (null).
+  bool? get weakChange {
+    final was = before?.inWeakPool ?? false;
+    final now = after?.inWeakPool ?? false;
+    return was == now ? null : now;
+  }
+}
+
 /// Everything the drill screen shows.
 @immutable
 final class DrillState {
@@ -142,6 +194,10 @@ final class DrillState {
     this.endBar,
     this.session = const SessionStats(),
     this.restarts = 0,
+    this.empty,
+    this.modeCount,
+    this.summary,
+    this.summaryOpen = false,
   });
 
   /// Phase.
@@ -195,6 +251,18 @@ final class DrillState {
   /// Restart-mode resets so far (the board fades on each).
   final int restarts;
 
+  /// Why there is no line to train ([DrillPhase.empty]).
+  final LinePick? empty;
+
+  /// Weak pool size / SRS lines left, for the app bar.
+  final int? modeCount;
+
+  /// Summary of the last completed line, once stored.
+  final LineSummary? summary;
+
+  /// Whether the summary screen is shown.
+  final bool summaryOpen;
+
   /// A copy with the given fields replaced.
   DrillState copyWith({
     DrillPhase? phase,
@@ -217,6 +285,12 @@ final class DrillState {
     bool clearEndBar = false,
     SessionStats? session,
     int? restarts,
+    LinePick? empty,
+    int? modeCount,
+    bool clearModeCount = false,
+    LineSummary? summary,
+    bool clearSummary = false,
+    bool? summaryOpen,
   }) => DrillState(
     phase: phase ?? this.phase,
     board: board ?? this.board,
@@ -235,5 +309,9 @@ final class DrillState {
     endBar: clearEndBar ? null : endBar ?? this.endBar,
     session: session ?? this.session,
     restarts: restarts ?? this.restarts,
+    empty: empty ?? this.empty,
+    modeCount: clearModeCount ? null : modeCount ?? this.modeCount,
+    summary: clearSummary ? null : summary ?? this.summary,
+    summaryOpen: summaryOpen ?? this.summaryOpen,
   );
 }
