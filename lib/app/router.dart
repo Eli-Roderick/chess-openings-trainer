@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:repertoire_trainer/app/placeholder_screen.dart';
+import 'package:repertoire_trainer/features/browse/browse_screen.dart';
 import 'package:repertoire_trainer/features/home/home_screen.dart';
 import 'package:repertoire_trainer/features/import/create_screen.dart';
 import 'package:repertoire_trainer/features/import/reimport_screen.dart';
@@ -34,8 +35,12 @@ final routerProvider = Provider<GoRouter>((ref) {
               ),
               GoRoute(
                 path: 'browse',
-                builder: (context, state) =>
-                    const PlaceholderScreen(title: 'Browse'),
+                builder: (context, state) => BrowseScreen(
+                  id: state.pathParameters['id']!,
+                  initialNode: int.tryParse(
+                    state.uri.queryParameters['node'] ?? '',
+                  ),
+                ),
               ),
               GoRoute(
                 path: 'stats',

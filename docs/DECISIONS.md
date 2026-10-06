@@ -155,7 +155,7 @@ Details of the plan corrections are in `docs/plan/corrections/P03.md`.
 
 Details of the plan corrections are in `docs/plan/corrections/P04.md`.
 
-**D-61 Cold start is measured AOT in profile mode.** `integration_test/cold_start_test.dart` seeds 10 repertoires into a database file, boots the app through `bootstrap(overrides: ...)` and checks main → Home data < 1 s. CI runs it with `flutter drive --profile -d linux` because Flutter Driver cannot run desktop release builds; under `flutter test` (debug) it checks < 5 s. The timing log line is `Cold start (AOT): main -> runApp …, first frame +…, Home data +…, total … ms`.
+**D-61 Cold start is measured AOT in profile mode.** `integration_test/profile_test.dart` seeds 10 repertoires into a database file, boots the app through `bootstrap(overrides: ...)` and checks main → Home data < 1 s. CI runs it with `flutter drive --profile -d linux` because Flutter Driver cannot run desktop release builds; under `flutter test` (debug) it checks < 5 s. The timing log line is `Cold start (AOT): main -> runApp …, first frame +…, Home data +…, total … ms`.
 
 **D-62 One app launch per integration test file.** On Linux desktop a second file in one `flutter test integration_test` invocation fails to attach, so CI names each file. New integration files need their own CI step (or their tests go into `app_test.dart`).
 
@@ -174,3 +174,21 @@ Details of the plan corrections are in `docs/plan/corrections/P04.md`.
 **D-69 Inter.** Inter 4.1 static TTFs (Regular, Medium, SemiBold, Bold) are bundled in `assets/fonts/` with the OFL text; move text uses tabular figures (`FontFeature.tabularFigures()`). The licence page lists Stockfish (GPL-3.0, source link) and Inter.
 
 **D-70 Layout breakpoint.** `AdaptiveLayout` treats width >= 600 dp or landscape as wide; content is capped at 840 dp and centred, with 16 dp gutters. On wide layouts repertoire cards show a menu button instead of relying on long press.
+
+## P05 (board, sounds, Browse)
+
+Details of the plan corrections are in `docs/plan/corrections/P05.md`.
+
+**D-71 Frame budgets on CI.** `integration_test/profile_test.dart` drags e2-e4 in Browse (20 one-frame steps, drop, Back) for 30 s in profile mode after one warm-up Forward/Back, and asserts at most one frame whose UI-thread build exceeds 16.667 ms. CI sets `LP_NUM_THREADS=1` for llvmpipe. Raster time is printed, not asserted (software rasterization on the runner). Slow builds are printed with the script step they followed.
+
+**D-72 Board wrapper.** `RepertoireBoard` takes an immutable `BoardViewState` (FEN, orientation, movable side, last move, shapes, square highlights, animate) with value equality and drives a chessground `ChessboardController`; it is sized to the largest square that fits and wrapped in a `RepaintBoundary`. Legal moves come from dartchess `makeLegalMoves`. Premoves and user-drawn shapes are off; drag and tap-tap are both on. Each mounted board registers its `RepertoireBoardController` in `activeBoardProvider`; `debugPlayUserMove(uci)` goes through the same handler as a real move (legality and side checks included). Square overlays (hint square, the 300 ms error flash) are drawn by the wrapper, because chessground has no API for arbitrary square highlights.
+
+**D-73 Take-back.** A wrong move is shown by setting the position after it (chessground records the drop, so the dragged piece is not animated again), then the previous FEN with `animate: true`: chessground diffs the two piece maps and translates the piece from the wrong square back to its origin (a captured piece reappears). Verified by a widget test; no custom animation is needed. Changing Animation speed applies to a board on screen (chessground updates the controller's duration in `didUpdateWidget`).
+
+**D-74 Sounds and haptics.** `SoundService` preloads every sound after the first frame through a `SoundBackend` (flutter_soloud; a fake in tests). If audio cannot start (no device, CI), it logs once and stays silent. Volume and mute come from settings on each play. `SoundType.forSan` picks castle, check, capture or move. `HapticsService`: light after a move, medium after a mistake; nothing on Windows or when the setting is off.
+
+**D-75 Move list.** `MoveRows.build` flattens the tree: the main line first; at a fork the first child continues the row, followed by a collapse toggle, each other child starts a variation row one level deeper, and the main line resumes on a new row with its move number. Collapsed forks show "+N". Rows are split into fixed-height lines for the width (see corrections 4). Navigating to a node inside a collapsed fork expands it; the current move is scrolled into view (30 % from the top) only when it is off screen.
+
+**D-76 Browse details.** The start is the root or `?node=<id>` (an unknown id falls back to the root). Board orientation is the repertoire colour; F flips it for the session. Forward at a fork opens the chooser (SAN plus the first 60 characters of Why for user moves); Last follows first children to the end; ↑/↓ cycle siblings in every layout; Space and Enter also go forward; Esc leaves. Swipes (velocity > 200 px/s) on the panel below the board go forward or back. Opponent moves show "<move> · Opponent move" in the comment panel. Any move off the repertoire starts free exploration (italic SAN, "Back to repertoire" chip); Back removes the last exploration move. Comment arrows show for the current user move when "Show comment arrows" is on.
+
+**D-77 Board settings page.** Theme and piece set are drop-downs listing every chessground colour scheme (by name) and piece set (by label). Settings are stored by name; unknown names fall back to brown and cburnett. The preview is a non-interactive `RepertoireBoard` (Italian after 3.Bc4) with the edited settings. Changing the volume plays the move sound; the haptics switch is shown on Android only.

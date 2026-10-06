@@ -118,3 +118,10 @@ final FutureProviderFamily<List<LineRef>, String> lineRefsProvider =
       (ref, repertoireId) =>
           ref.watch(repertoireRepositoryProvider).lineRefs(repertoireId),
     );
+
+/// The parsed tree of one repertoire (released when no screen uses it).
+final FutureProviderFamily<RepertoireTree, String> repertoireTreeProvider =
+    FutureProvider.autoDispose.family<RepertoireTree, String>(
+      (ref, repertoireId) =>
+          ref.watch(repertoireRepositoryProvider).loadTree(repertoireId),
+    );

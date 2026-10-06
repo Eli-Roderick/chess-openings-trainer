@@ -431,7 +431,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get framesCount => 'Frames';
 
   @override
-  String get framesJanky => 'Janky frames (over 16 ms)';
+  String get framesJanky => 'Janky frames (over 16.7 ms)';
 
   @override
   String get framesAverageBuild => 'Average build';
@@ -449,4 +449,106 @@ class AppLocalizationsEn extends AppLocalizations {
   String msValue(String ms) {
     return '$ms ms';
   }
+
+  @override
+  String get noComment => 'No comment for this move';
+
+  @override
+  String get commentWhy => 'Why';
+
+  @override
+  String get commentPlan => 'Plan';
+
+  @override
+  String get commentWatch => 'Watch out';
+
+  @override
+  String get commentAlternatives => 'Alternatives';
+
+  @override
+  String get showAlternatives => 'Show alternatives';
+
+  @override
+  String get hideAlternatives => 'Hide alternatives';
+
+  @override
+  String get browseTitle => 'Browse';
+
+  @override
+  String get browseStart => 'Start position';
+
+  @override
+  String get browseFirst => 'First move';
+
+  @override
+  String get browseBack => 'Back';
+
+  @override
+  String get browseForward => 'Forward';
+
+  @override
+  String get browseLast => 'Last move';
+
+  @override
+  String get flipBoard => 'Flip board';
+
+  @override
+  String get chooseMove => 'Choose a move';
+
+  @override
+  String get backToRepertoire => 'Back to repertoire';
+
+  @override
+  String get exploring => 'Exploring (not saved)';
+
+  @override
+  String get opponentMoveNoComment => 'Opponent move';
+
+  @override
+  String get boardSettingsTitle => 'Board and sound';
+
+  @override
+  String get boardTheme => 'Board theme';
+
+  @override
+  String get pieceSet => 'Piece set';
+
+  @override
+  String get showCoordinates => 'Coordinates';
+
+  @override
+  String get showLegalMoves => 'Legal move dots';
+
+  @override
+  String get highlightLastMove => 'Highlight last move';
+
+  @override
+  String get animationSpeed => 'Animation speed';
+
+  @override
+  String get animationSlow => 'Slow';
+
+  @override
+  String get animationNormal => 'Normal';
+
+  @override
+  String get animationFast => 'Fast';
+
+  @override
+  String get animationOff => 'Off';
+
+  @override
+  String get soundsEnabled => 'Sounds';
+
+  @override
+  String get soundVolume => 'Volume';
+
+  @override
+  String get hapticsEnabled => 'Haptics';
+
+  @override
+  String get framesSlowBuilds => 'Slow builds (UI thread)';
+
+  @override
+  String get framesSlowRasters => 'Slow rasters';
 }

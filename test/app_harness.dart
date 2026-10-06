@@ -9,6 +9,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:repertoire_trainer/app/app.dart';
+import 'package:repertoire_trainer/core/audio/sound_service.dart';
 import 'package:repertoire_trainer/core/db/app_database.dart';
 import 'package:repertoire_trainer/core/db/providers.dart';
 import 'package:repertoire_trainer/core/files/file_service.dart';
@@ -37,16 +38,36 @@ final class FakeFileService implements FileService {
   }
 }
 
+/// Records played sounds instead of playing them.
+final class FakeSoundBackend implements SoundBackend {
+  final played = <String>[];
+  final loaded = <String>{};
+
+  @override
+  Future<void> load(Iterable<String> assets) async => loaded.addAll(assets);
+
+  @override
+  void play(String asset, double volume) => played.add(asset);
+}
+
 /// The real app on an in-memory database with deterministic time and ids,
 /// in-process imports and fake file dialogs.
 final class AppHarness {
-  new _(this.tester, this.container, this.db, this.files, this.clipboard);
+  new _(
+    this.tester,
+    this.container,
+    this.db,
+    this.files,
+    this.clipboard,
+    this.sounds,
+  );
 
   final WidgetTester tester;
   final ProviderContainer container;
   final AppDatabase db;
   final FakeFileService files;
   final List<String> clipboard;
+  final FakeSoundBackend sounds;
 
   /// Pumps the app at [size] with [textScale].
   static Future<AppHarness> pump(
@@ -73,6 +94,7 @@ final class AppHarness {
     );
     final db = AppDatabase.memory();
     final files = FakeFileService();
+    final sounds = FakeSoundBackend();
     var id = 0;
     final container = ProviderContainer(
       overrides: [
@@ -81,13 +103,15 @@ final class AppHarness {
         idGeneratorProvider.overrideWithValue(() => 'id-${++id}'),
         importRunnerProvider.overrideWithValue(inProcessImportRunner),
         fileServiceProvider.overrideWithValue(files),
+        soundBackendProvider.overrideWithValue(sounds),
         demoPgnProvider.overrideWith(
           (ref) async => fixture('demo_italian_white.pgn'),
         ),
         ...overrides,
       ],
     );
-    final h = AppHarness._(tester, container, db, files, clipboard);
+    final h = AppHarness._(tester, container, db, files, clipboard, sounds);
+    await container.read(soundServiceProvider).preload();
     addTearDown(h.dispose);
     await tester.pumpWidget(
       UncontrolledProviderScope(

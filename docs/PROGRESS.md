@@ -9,7 +9,7 @@ One PR per phase, in order (`docs/plan/README.md`). A phase is "done" when its P
 | P02 | Training logic: grading, accuracy, randomizer, weak pool, SRS, streak (pure Dart) | done | [#3](https://github.com/Eli-Roderick/chess-openings-trainer/pull/3) |
 | P03 | Database, repositories, settings, stats derivation | done | [#4](https://github.com/Eli-Roderick/chess-openings-trainer/pull/4) |
 | P04 | App shell, Home, create/import/re-import, management | done | [#5](https://github.com/Eli-Roderick/chess-openings-trainer/pull/5) |
-| P05 | Board, sounds, Browse | not started | |
+| P05 | Board, sounds, Browse | done | |
 | P06 | Stockfish service, analysis board, engine settings | not started | |
 | P07 | Drill core in Random mode | not started | |
 | P08 | Weak pool, SRS, single line, summaries | not started | |
