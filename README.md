@@ -44,7 +44,7 @@ flutter test
 xvfb-run -a flutter test integration_test/app_test.dart -d linux
 xvfb-run -a flutter drive --profile -d linux \
   --driver=test_driver/integration_test.dart \
-  --target=integration_test/cold_start_test.dart   # cold start budget
+  --target=integration_test/profile_test.dart   # cold start budget
 ```
 
 ## Repertoire PGNs

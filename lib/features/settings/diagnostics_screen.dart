@@ -35,6 +35,8 @@ class DiagnosticsScreen extends StatelessWidget {
                 children: [
                   _Value(l10n.framesCount, '${frames.count}'),
                   _Value(l10n.framesJanky, '${frames.janky}'),
+                  _Value(l10n.framesSlowBuilds, '${frames.slowBuilds}'),
+                  _Value(l10n.framesSlowRasters, '${frames.slowRasters}'),
                   _Value(
                     l10n.framesAverageBuild,
                     l10n.msValue(

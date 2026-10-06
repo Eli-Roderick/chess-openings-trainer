@@ -829,7 +829,7 @@ abstract class AppLocalizations {
   /// No description provided for @framesJanky.
   ///
   /// In en, this message translates to:
-  /// **'Janky frames (over 16 ms)'**
+  /// **'Janky frames (over 16.7 ms)'**
   String get framesJanky;
 
   /// No description provided for @framesAverageBuild.
@@ -861,6 +861,210 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{ms} ms'**
   String msValue(String ms);
+
+  /// No description provided for @noComment.
+  ///
+  /// In en, this message translates to:
+  /// **'No comment for this move'**
+  String get noComment;
+
+  /// No description provided for @commentWhy.
+  ///
+  /// In en, this message translates to:
+  /// **'Why'**
+  String get commentWhy;
+
+  /// No description provided for @commentPlan.
+  ///
+  /// In en, this message translates to:
+  /// **'Plan'**
+  String get commentPlan;
+
+  /// No description provided for @commentWatch.
+  ///
+  /// In en, this message translates to:
+  /// **'Watch out'**
+  String get commentWatch;
+
+  /// No description provided for @commentAlternatives.
+  ///
+  /// In en, this message translates to:
+  /// **'Alternatives'**
+  String get commentAlternatives;
+
+  /// No description provided for @showAlternatives.
+  ///
+  /// In en, this message translates to:
+  /// **'Show alternatives'**
+  String get showAlternatives;
+
+  /// No description provided for @hideAlternatives.
+  ///
+  /// In en, this message translates to:
+  /// **'Hide alternatives'**
+  String get hideAlternatives;
+
+  /// No description provided for @browseTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Browse'**
+  String get browseTitle;
+
+  /// No description provided for @browseStart.
+  ///
+  /// In en, this message translates to:
+  /// **'Start position'**
+  String get browseStart;
+
+  /// No description provided for @browseFirst.
+  ///
+  /// In en, this message translates to:
+  /// **'First move'**
+  String get browseFirst;
+
+  /// No description provided for @browseBack.
+  ///
+  /// In en, this message translates to:
+  /// **'Back'**
+  String get browseBack;
+
+  /// No description provided for @browseForward.
+  ///
+  /// In en, this message translates to:
+  /// **'Forward'**
+  String get browseForward;
+
+  /// No description provided for @browseLast.
+  ///
+  /// In en, this message translates to:
+  /// **'Last move'**
+  String get browseLast;
+
+  /// No description provided for @flipBoard.
+  ///
+  /// In en, this message translates to:
+  /// **'Flip board'**
+  String get flipBoard;
+
+  /// No description provided for @chooseMove.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a move'**
+  String get chooseMove;
+
+  /// No description provided for @backToRepertoire.
+  ///
+  /// In en, this message translates to:
+  /// **'Back to repertoire'**
+  String get backToRepertoire;
+
+  /// No description provided for @exploring.
+  ///
+  /// In en, this message translates to:
+  /// **'Exploring (not saved)'**
+  String get exploring;
+
+  /// No description provided for @opponentMoveNoComment.
+  ///
+  /// In en, this message translates to:
+  /// **'Opponent move'**
+  String get opponentMoveNoComment;
+
+  /// No description provided for @boardSettingsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Board and sound'**
+  String get boardSettingsTitle;
+
+  /// No description provided for @boardTheme.
+  ///
+  /// In en, this message translates to:
+  /// **'Board theme'**
+  String get boardTheme;
+
+  /// No description provided for @pieceSet.
+  ///
+  /// In en, this message translates to:
+  /// **'Piece set'**
+  String get pieceSet;
+
+  /// No description provided for @showCoordinates.
+  ///
+  /// In en, this message translates to:
+  /// **'Coordinates'**
+  String get showCoordinates;
+
+  /// No description provided for @showLegalMoves.
+  ///
+  /// In en, this message translates to:
+  /// **'Legal move dots'**
+  String get showLegalMoves;
+
+  /// No description provided for @highlightLastMove.
+  ///
+  /// In en, this message translates to:
+  /// **'Highlight last move'**
+  String get highlightLastMove;
+
+  /// No description provided for @animationSpeed.
+  ///
+  /// In en, this message translates to:
+  /// **'Animation speed'**
+  String get animationSpeed;
+
+  /// No description provided for @animationSlow.
+  ///
+  /// In en, this message translates to:
+  /// **'Slow'**
+  String get animationSlow;
+
+  /// No description provided for @animationNormal.
+  ///
+  /// In en, this message translates to:
+  /// **'Normal'**
+  String get animationNormal;
+
+  /// No description provided for @animationFast.
+  ///
+  /// In en, this message translates to:
+  /// **'Fast'**
+  String get animationFast;
+
+  /// No description provided for @animationOff.
+  ///
+  /// In en, this message translates to:
+  /// **'Off'**
+  String get animationOff;
+
+  /// No description provided for @soundsEnabled.
+  ///
+  /// In en, this message translates to:
+  /// **'Sounds'**
+  String get soundsEnabled;
+
+  /// No description provided for @soundVolume.
+  ///
+  /// In en, this message translates to:
+  /// **'Volume'**
+  String get soundVolume;
+
+  /// No description provided for @hapticsEnabled.
+  ///
+  /// In en, this message translates to:
+  /// **'Haptics'**
+  String get hapticsEnabled;
+
+  /// No description provided for @framesSlowBuilds.
+  ///
+  /// In en, this message translates to:
+  /// **'Slow builds (UI thread)'**
+  String get framesSlowBuilds;
+
+  /// No description provided for @framesSlowRasters.
+  ///
+  /// In en, this message translates to:
+  /// **'Slow rasters'**
+  String get framesSlowRasters;
 }
 
 class _AppLocalizationsDelegate

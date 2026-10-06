@@ -76,11 +76,16 @@ jobs:
       # `flutter test` invocation fails to attach (D-62).
       - name: Integration tests (Linux desktop, debug)
         run: xvfb-run -a flutter test integration_test/app_test.dart -d linux
-      - name: Cold start budget (Linux desktop, profile/AOT)
+      # Cold start and drag frame budgets. The runner has no GPU: llvmpipe
+      # rasterizes in software and is limited to one thread so it does not
+      # starve the UI thread being measured (D-71).
+      - name: Performance budgets (Linux desktop, profile/AOT)
+        env:
+          LP_NUM_THREADS: '1'
         run: >-
           xvfb-run -a flutter drive --profile -d linux
           --driver=test_driver/integration_test.dart
-          --target=integration_test/cold_start_test.dart
+          --target=integration_test/profile_test.dart
 
   build-android:
     runs-on: ubuntu-latest

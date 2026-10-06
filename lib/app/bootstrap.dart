@@ -8,6 +8,7 @@ import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:logging/logging.dart';
 import 'package:repertoire_trainer/app/app.dart';
 import 'package:repertoire_trainer/app/version.dart';
+import 'package:repertoire_trainer/core/audio/sound_service.dart';
 import 'package:repertoire_trainer/core/db/providers.dart';
 import 'package:repertoire_trainer/core/diagnostics/frame_stats.dart';
 import 'package:repertoire_trainer/core/diagnostics/log_setup.dart';
@@ -37,6 +38,7 @@ Future<void> bootstrap({List<Override> overrides = const []}) async {
     timings.markFirstFrame();
     FrameStats.instance.start();
     unawaited(timings.loadProcessStart());
+    unawaited(container.read(soundServiceProvider).preload());
     // The database opens lazily when Home watches it; the device id is
     // created on first launch and the stats service starts listening.
     unawaited(
