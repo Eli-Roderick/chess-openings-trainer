@@ -551,4 +551,137 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get framesSlowRasters => 'Slow rasters';
+
+  @override
+  String get analysisToggle => 'Analysis';
+
+  @override
+  String get engineUnavailable => 'Engine unavailable';
+
+  @override
+  String get analysing => 'Analysing…';
+
+  @override
+  String analysisDepth(int depth) {
+    return 'Depth $depth';
+  }
+
+  @override
+  String engineThreadsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count threads',
+      one: '1 thread',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String engineMnps(String value) {
+    return '$value Mnps';
+  }
+
+  @override
+  String get engineReady => 'ready';
+
+  @override
+  String get engineNotRunning => 'not running';
+
+  @override
+  String get engineStarting => 'starting…';
+
+  @override
+  String engineError(String message) {
+    return 'error ($message); restarts on the next search';
+  }
+
+  @override
+  String engineUnavailableStatus(String message) {
+    return 'unavailable ($message). Tap Restart engine.';
+  }
+
+  @override
+  String get comparableThreshold => 'Comparable threshold';
+
+  @override
+  String pawnsValue(String value) {
+    return '$value pawns';
+  }
+
+  @override
+  String get checkSearchTime => 'Check search time';
+
+  @override
+  String secondsValue(String value) {
+    return '$value s';
+  }
+
+  @override
+  String get engineThreads => 'Threads';
+
+  @override
+  String get engineHash => 'Hash';
+
+  @override
+  String autoValue(String value) {
+    return 'Auto ($value)';
+  }
+
+  @override
+  String get playOnStrength => 'Play-on strength';
+
+  @override
+  String get fullStrength => 'Full';
+
+  @override
+  String get calibration => 'Calibration';
+
+  @override
+  String get notCalibrated => 'Not calibrated yet';
+
+  @override
+  String calibrationValue(String mnps, int depth) {
+    return '$mnps Mnps · depth $depth in 1 s';
+  }
+
+  @override
+  String get runCalibration => 'Run calibration';
+
+  @override
+  String get slowDeviceNote =>
+      'This device usually needs more than 1 s per check; banners may appear a little later.';
+
+  @override
+  String get restartEngine => 'Restart engine';
+
+  @override
+  String get engineTitle => 'Engine';
+
+  @override
+  String get engineBinary => 'Binary';
+
+  @override
+  String get engineMissing => 'Not found';
+
+  @override
+  String get engineVariant => 'Variant';
+
+  @override
+  String get engineVersion => 'Version';
+
+  @override
+  String get engineState => 'State';
+
+  @override
+  String get calibrationNps => 'Calibration nps';
+
+  @override
+  String get calibrationDepth2s => 'Depth in 2 s';
+
+  @override
+  String get calibrationDepth1s => 'Median depth in 1 s';
+
+  @override
+  String get engineRecentJobs => 'Last jobs';
 }

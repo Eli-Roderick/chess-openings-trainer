@@ -10,7 +10,7 @@ One PR per phase, in order (`docs/plan/README.md`). A phase is "done" when its P
 | P03 | Database, repositories, settings, stats derivation | done | [#4](https://github.com/Eli-Roderick/chess-openings-trainer/pull/4) |
 | P04 | App shell, Home, create/import/re-import, management | done | [#5](https://github.com/Eli-Roderick/chess-openings-trainer/pull/5) |
 | P05 | Board, sounds, Browse | done | [#6](https://github.com/Eli-Roderick/chess-openings-trainer/pull/6) |
-| P06 | Stockfish service, analysis board, engine settings | not started | |
+| P06 | Stockfish service, analysis board, engine settings | done | [#7](https://github.com/Eli-Roderick/chess-openings-trainer/pull/7) |
 | P07 | Drill core in Random mode | not started | |
 | P08 | Weak pool, SRS, single line, summaries | not started | |
 | P09 | Opponent deviations, play on vs engine | not started | |

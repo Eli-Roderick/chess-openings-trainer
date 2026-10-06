@@ -12,9 +12,13 @@ import 'package:repertoire_trainer/app/app.dart';
 import 'package:repertoire_trainer/core/audio/sound_service.dart';
 import 'package:repertoire_trainer/core/db/app_database.dart';
 import 'package:repertoire_trainer/core/db/providers.dart';
+import 'package:repertoire_trainer/core/engine/binary_locator.dart';
+import 'package:repertoire_trainer/core/engine/engine_providers.dart';
 import 'package:repertoire_trainer/core/files/file_service.dart';
 import 'package:repertoire_trainer/core/files/providers.dart';
 import 'package:repertoire_trainer/core/import/import_runner.dart';
+
+import 'core/engine/fake_engine.dart';
 
 /// Reads a chess_core fixture.
 String fixture(String name) =>
@@ -75,6 +79,7 @@ final class AppHarness {
     Size size = const Size(400, 800),
     double textScale = 1,
     List<Override> overrides = const [],
+    FakeEngine? engine,
   }) async {
     tester.view
       ..physicalSize = size
@@ -104,6 +109,13 @@ final class AppHarness {
         importRunnerProvider.overrideWithValue(inProcessImportRunner),
         fileServiceProvider.overrideWithValue(files),
         soundBackendProvider.overrideWithValue(sounds),
+        // No real engine process in widget tests.
+        engineBinaryProvider.overrideWith(
+          (ref) async =>
+              engine == null ? null : const EngineBinary('/fake/stockfish'),
+        ),
+        if (engine != null)
+          transportStarterProvider.overrideWithValue(engine.launch),
         demoPgnProvider.overrideWith(
           (ref) async => fixture('demo_italian_white.pgn'),
         ),

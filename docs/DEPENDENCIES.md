@@ -65,6 +65,8 @@ Versions are the ones resolved in `pubspec.lock` at P00 (Flutter 3.47.6, Dart 3.
 | uci_engine | async | 2.13.1 | Stream utilities for the UCI process | BSD-3-Clause |
 | uci_engine | meta | 1.19.0 | Annotations | BSD-3-Clause |
 | uci_engine | collection | 1.19.1 | Collection utilities | BSD-3-Clause |
+| uci_engine | clock | 1.1.3 | Injectable clock for search timing, fake time in tests (P06) | Apache-2.0 |
+| uci_engine (dev) | fake_async | 1.3.3 | Deterministic timers for the job-queue tests (P06) | Apache-2.0 |
 | both (dev) | test | 1.31.1 | Unit tests | BSD-3-Clause |
 | both (dev) | very_good_analysis | 11.0.0 | Strict lint rules | MIT |
 

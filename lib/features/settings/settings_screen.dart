@@ -9,6 +9,7 @@ import 'package:repertoire_trainer/app/version.dart';
 import 'package:repertoire_trainer/core/db/providers.dart';
 import 'package:repertoire_trainer/core/settings/app_settings.dart';
 import 'package:repertoire_trainer/features/settings/board_settings_page.dart';
+import 'package:repertoire_trainer/features/settings/engine_settings_page.dart';
 import 'package:repertoire_trainer/l10n/gen/app_localizations.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -93,6 +94,7 @@ class SettingsSectionScreen extends StatelessWidget {
         phone: switch (section) {
           SettingsSection.appearance => const _Appearance(),
           SettingsSection.board => const BoardSettingsPage(),
+          SettingsSection.engine => const EngineSettingsPage(),
           SettingsSection.about => const _About(),
           _ => Padding(
             padding: const EdgeInsets.all(AdaptiveLayout.gutter),

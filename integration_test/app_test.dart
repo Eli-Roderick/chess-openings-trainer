@@ -14,9 +14,11 @@ import 'package:path_provider/path_provider.dart';
 import 'package:repertoire_trainer/app/bootstrap.dart';
 import 'package:repertoire_trainer/core/db/app_database.dart';
 import 'package:repertoire_trainer/core/db/providers.dart';
+import 'package:repertoire_trainer/core/engine/engine_providers.dart';
 import 'package:repertoire_trainer/core/files/file_service.dart';
 import 'package:repertoire_trainer/core/files/providers.dart';
 import 'package:repertoire_trainer/main.dart' as app;
+import 'package:uci_engine/uci_engine.dart';
 
 /// Returns [picked] from the open dialog.
 final class _PickFile implements FileService {
@@ -179,4 +181,80 @@ void main() {
     expect(worst, lessThan(const Duration(milliseconds: 250)));
     await _pumpUntil(tester, find.text('Import report'));
   });
+
+  testWidgets('Browse analysis with the real engine; leaving stops it', (
+    tester,
+  ) async {
+    final lines = <(DateTime, String)>[];
+    await _boot(
+      tester,
+      await _tempDbFile(),
+      extra: [
+        transportStarterProvider.overrideWithValue(
+          (path) async => _RecordingTransport(
+            await ProcessTransport.start(path),
+            (l) => lines.add((DateTime.now(), l)),
+          ),
+        ),
+      ],
+    );
+    await _pumpUntil(tester, find.byKey(const Key('try-demo')));
+    await tester.tap(find.byKey(const Key('try-demo')));
+    await _pumpUntil(tester, find.text('Demo: Italian (White)'));
+    await tester.tap(find.text('Demo: Italian (White)'));
+    await _pumpUntil(tester, find.byKey(const Key('browse')));
+    await tester.tap(find.byKey(const Key('browse')));
+    await _pumpUntil(tester, find.byKey(const Key('analysis-toggle')));
+    await tester.tap(find.byKey(const Key('analysis-toggle')));
+    await _pumpUntil(tester, find.byKey(const Key('pv-0')));
+    String depth() =>
+        tester.widget<Text>(find.byKey(const Key('analysis-depth'))).data!;
+    final first = depth();
+    await _pumpUntil(
+      tester,
+      find.byWidgetPredicate(
+        (w) =>
+            w.key == const Key('analysis-depth') &&
+            w is Text &&
+            w.data != first,
+      ),
+    );
+    expect(find.textContaining(RegExp(r'^[+-]\d\.\d\d$')), findsWidgets);
+
+    // The app bar's back button (Browse's nav bar has a "Back" too).
+    await tester.tap(find.byType(BackButton));
+    await _pumpUntil(tester, find.byKey(const Key('detail-menu')));
+    final left = DateTime.now();
+    await tester.pump(const Duration(milliseconds: 1200));
+    final late = [
+      for (final (t, l) in lines)
+        if (t.isAfter(left.add(const Duration(milliseconds: 200))) &&
+            l.startsWith('info'))
+          l,
+    ];
+    expect(late, isEmpty);
+  });
+}
+
+/// Passes everything through and records the engine's output lines.
+final class _RecordingTransport implements UciTransport {
+  new(this._inner, this._record);
+
+  final UciTransport _inner;
+  final void Function(String line) _record;
+
+  @override
+  Stream<String> get lines => _inner.lines.map((l) {
+    _record(l);
+    return l;
+  });
+
+  @override
+  Future<int> get exitCode => _inner.exitCode;
+
+  @override
+  void send(String command) => _inner.send(command);
+
+  @override
+  Future<void> kill() => _inner.kill();
 }

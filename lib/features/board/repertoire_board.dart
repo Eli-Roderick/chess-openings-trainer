@@ -225,7 +225,16 @@ class _RepertoireBoardState extends ConsumerState<RepertoireBoard> {
     _flashTimer?.cancel();
     _flashDone?.complete();
     if (identical(_handle._state, this)) _handle._state = null;
-    _active.detach(_handle);
+    // Providers cannot change while the tree is being finalized.
+    final active = _active;
+    final handle = _handle;
+    scheduleMicrotask(() {
+      try {
+        active.detach(handle);
+      } on Object {
+        // The container is already gone.
+      }
+    });
     _board.dispose();
     super.dispose();
   }

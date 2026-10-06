@@ -12,6 +12,7 @@ import 'package:repertoire_trainer/app/theme/colors.dart';
 import 'package:repertoire_trainer/core/db/providers.dart';
 import 'package:repertoire_trainer/core/db/repositories/repertoire_repository.dart';
 import 'package:repertoire_trainer/core/diagnostics/startup_timings.dart';
+import 'package:repertoire_trainer/core/engine/engine_providers.dart';
 import 'package:repertoire_trainer/features/board/repertoire_actions.dart';
 import 'package:repertoire_trainer/features/home/demo_installer.dart';
 import 'package:repertoire_trainer/l10n/gen/app_localizations.dart';
@@ -28,6 +29,27 @@ class HomeScreen extends ConsumerStatefulWidget {
 
 class _HomeState extends ConsumerState<HomeScreen> {
   bool _installingDemo = false;
+  late final CalibrationController _calibration = ref.read(
+    calibrationProvider.notifier,
+  );
+
+  @override
+  void initState() {
+    super.initState();
+    // Engine calibration once per install after 10 s idle on Home
+    // (docs/plan/05-engine.md §9).
+    unawaited(
+      _calibration.scheduleAuto(
+        isIdle: () => mounted && (ModalRoute.of(context)?.isCurrent ?? true),
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _calibration.cancelAuto();
+    super.dispose();
+  }
 
   Future<void> _tryDemo() async {
     final l10n = AppLocalizations.of(context);

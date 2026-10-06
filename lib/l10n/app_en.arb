@@ -338,5 +338,107 @@
   "soundVolume": "Volume",
   "hapticsEnabled": "Haptics",
   "framesSlowBuilds": "Slow builds (UI thread)",
-  "framesSlowRasters": "Slow rasters"
+  "framesSlowRasters": "Slow rasters",
+  "analysisToggle": "Analysis",
+  "engineUnavailable": "Engine unavailable",
+  "analysing": "Analysing…",
+  "analysisDepth": "Depth {depth}",
+  "@analysisDepth": {
+    "placeholders": {
+      "depth": {
+        "type": "int"
+      }
+    }
+  },
+  "engineThreadsCount": "{count, plural, =1{1 thread} other{{count} threads}}",
+  "@engineThreadsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "engineMnps": "{value} Mnps",
+  "@engineMnps": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "engineReady": "ready",
+  "engineNotRunning": "not running",
+  "engineStarting": "starting…",
+  "engineError": "error ({message}); restarts on the next search",
+  "@engineError": {
+    "placeholders": {
+      "message": {
+        "type": "String"
+      }
+    }
+  },
+  "engineUnavailableStatus": "unavailable ({message}). Tap Restart engine.",
+  "@engineUnavailableStatus": {
+    "placeholders": {
+      "message": {
+        "type": "String"
+      }
+    }
+  },
+  "comparableThreshold": "Comparable threshold",
+  "pawnsValue": "{value} pawns",
+  "@pawnsValue": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "checkSearchTime": "Check search time",
+  "secondsValue": "{value} s",
+  "@secondsValue": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "engineThreads": "Threads",
+  "engineHash": "Hash",
+  "autoValue": "Auto ({value})",
+  "@autoValue": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "playOnStrength": "Play-on strength",
+  "fullStrength": "Full",
+  "calibration": "Calibration",
+  "notCalibrated": "Not calibrated yet",
+  "calibrationValue": "{mnps} Mnps · depth {depth} in 1 s",
+  "@calibrationValue": {
+    "placeholders": {
+      "mnps": {
+        "type": "String"
+      },
+      "depth": {
+        "type": "int"
+      }
+    }
+  },
+  "runCalibration": "Run calibration",
+  "slowDeviceNote": "This device usually needs more than 1 s per check; banners may appear a little later.",
+  "restartEngine": "Restart engine",
+  "engineTitle": "Engine",
+  "engineBinary": "Binary",
+  "engineMissing": "Not found",
+  "engineVariant": "Variant",
+  "engineVersion": "Version",
+  "engineState": "State",
+  "calibrationNps": "Calibration nps",
+  "calibrationDepth2s": "Depth in 2 s",
+  "calibrationDepth1s": "Median depth in 1 s",
+  "engineRecentJobs": "Last jobs"
 }
