@@ -11,17 +11,20 @@ abstract final class Routes {
   static String repertoire(String id) => '/repertoire/$id';
 
   /// Drill; [mode] is random, weak, srs or single ([line] for single);
-  /// [fromBranch] overrides the repertoire's start-from choice.
+  /// [fromBranch] overrides the repertoire's start-from choice and
+  /// [deviations] the opponent-deviations setting for this session.
   static String train(
     String id, {
     String? mode,
     String? line,
     bool? fromBranch,
+    bool? deviations,
   }) {
     final query = {
       'mode': ?mode,
       'line': ?line,
       if (fromBranch != null) 'from': fromBranch ? 'branch' : 'move1',
+      if (deviations != null) 'dev': deviations ? 'on' : 'off',
     };
     return Uri(
       path: '/repertoire/$id/train',
@@ -29,9 +32,18 @@ abstract final class Routes {
     ).toString();
   }
 
-  /// Browse, optionally at [node].
-  static String browse(String id, {int? node}) =>
-      '/repertoire/$id/browse${node == null ? '' : '?node=$node'}';
+  /// Browse, optionally at [node], with the analysis on when [analyse]
+  /// (free-exploration moves go in the route's `extra`).
+  static String browse(String id, {int? node, bool analyse = false}) {
+    final query = {
+      if (node != null) 'node': '$node',
+      if (analyse) 'analyse': '1',
+    };
+    return Uri(
+      path: '/repertoire/$id/browse',
+      queryParameters: query.isEmpty ? null : query,
+    ).toString();
+  }
 
   /// Stats.
   static String stats(String id) => '/repertoire/$id/stats';

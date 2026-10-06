@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:repertoire_trainer/app/layout/adaptive_layout.dart';
 import 'package:repertoire_trainer/core/db/providers.dart';
+import 'package:repertoire_trainer/core/diagnostics/deviation_timings.dart';
 import 'package:repertoire_trainer/core/diagnostics/drill_latency.dart';
 import 'package:repertoire_trainer/core/diagnostics/frame_stats.dart';
 import 'package:repertoire_trainer/core/diagnostics/startup_timings.dart';
@@ -89,6 +90,31 @@ class DiagnosticsScreen extends StatelessWidget {
                     _Value(l10n.latencyP50, ms(latency.p50)),
                     _Value(l10n.latencyP95, ms(latency.p95)),
                     _Value(l10n.latencySamples, '${latency.count}'),
+                  ],
+                );
+              },
+            ),
+            _Header(l10n.deviationJobs),
+            ListenableBuilder(
+              listenable: DeviationTimings.instance,
+              builder: (context, _) {
+                final t = DeviationTimings.instance;
+                final rate = t.readyRate;
+                return Column(
+                  key: const Key('diagnostics-deviations'),
+                  children: [
+                    _Value(l10n.latencyP50, ms(t.p50)),
+                    _Value(l10n.latencyP95, ms(t.p95)),
+                    _Value(l10n.deviationJobCount, '${t.jobCount}'),
+                    _Value(
+                      l10n.deviationReadyRate,
+                      rate == null
+                          ? '-'
+                          : l10n.deviationReadyValue(
+                              (rate * 100).round(),
+                              t.neededCount,
+                            ),
+                    ),
                   ],
                 );
               },

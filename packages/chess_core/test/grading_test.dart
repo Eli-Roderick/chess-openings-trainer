@@ -244,6 +244,15 @@ void main() {
             .deviated,
         isFalse,
       );
+
+      // A mid-line deviation whose reply could not be judged.
+      final unjudged = builder()..markDeviated();
+      final record = unjudged.finish(
+        finishedAt: 3,
+        localDay: 'd',
+        completed: true,
+      );
+      expect((record.deviated, record.deviation), (true, null));
     });
   });
 

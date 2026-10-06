@@ -257,6 +257,10 @@ final class RunBuilder {
     if (midLine) _deviated = true;
   }
 
+  /// Marks the run deviated without an event (a mid-line deviation whose
+  /// reply could not be judged).
+  void markDeviated() => _deviated = true;
+
   /// Finishes the run. Pending checks become `timeout` with no credit;
   /// checks arriving afterwards are ignored. [completed] is false for an
   /// abandoned run. Calling it twice returns the same record.

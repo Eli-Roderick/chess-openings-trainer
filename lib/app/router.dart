@@ -3,12 +3,14 @@ import 'package:flutter/widgets.dart' show ValueKey;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:repertoire_trainer/app/placeholder_screen.dart';
+import 'package:repertoire_trainer/features/board/free_move.dart';
 import 'package:repertoire_trainer/features/browse/browse_screen.dart';
 import 'package:repertoire_trainer/features/drill/drill_screen.dart';
 import 'package:repertoire_trainer/features/home/home_screen.dart';
 import 'package:repertoire_trainer/features/import/create_screen.dart';
 import 'package:repertoire_trainer/features/import/reimport_screen.dart';
 import 'package:repertoire_trainer/features/import/validate_stored_screen.dart';
+import 'package:repertoire_trainer/features/play/play_on_screen.dart';
 import 'package:repertoire_trainer/features/repertoire/detail_screen.dart';
 import 'package:repertoire_trainer/features/settings/diagnostics_screen.dart';
 import 'package:repertoire_trainer/features/settings/settings_screen.dart';
@@ -49,6 +51,11 @@ final routerProvider = Provider<GoRouter>((ref) {
                       'move1' => false,
                       _ => null,
                     },
+                    deviations: switch (q['dev']) {
+                      'on' => true,
+                      'off' => false,
+                      _ => null,
+                    },
                   );
                 },
               ),
@@ -59,6 +66,11 @@ final routerProvider = Provider<GoRouter>((ref) {
                   initialNode: int.tryParse(
                     state.uri.queryParameters['node'] ?? '',
                   ),
+                  initialFree: switch (state.extra) {
+                    final List<FreeMove> moves => moves,
+                    _ => const [],
+                  },
+                  analysis: state.uri.queryParameters['analyse'] == '1',
                 ),
               ),
               GoRoute(
@@ -101,8 +113,11 @@ final routerProvider = Provider<GoRouter>((ref) {
           ),
           GoRoute(
             path: 'play-engine',
-            builder: (context, state) =>
-                const PlaceholderScreen(title: 'Play on'),
+            builder: (context, state) => switch (state.extra) {
+              final PlayOnArgs args => PlayOnScreen(args: args),
+              // Opened without a position (a restored deep link).
+              _ => const HomeScreen(),
+            },
           ),
           GoRoute(
             path: 'diagnostics',

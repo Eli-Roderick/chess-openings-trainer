@@ -18,37 +18,36 @@ import 'package:repertoire_trainer/features/board/board_appearance.dart';
 import 'package:repertoire_trainer/features/board/board_position.dart';
 import 'package:repertoire_trainer/features/board/comment_panel.dart';
 import 'package:repertoire_trainer/features/board/eval_bar.dart';
+import 'package:repertoire_trainer/features/board/free_move.dart';
 import 'package:repertoire_trainer/features/board/move_tree_view.dart';
 import 'package:repertoire_trainer/features/board/repertoire_board.dart';
 import 'package:repertoire_trainer/l10n/gen/app_localizations.dart';
 import 'package:uci_engine/uci_engine.dart';
 
-/// A move played off the repertoire in free exploration (never saved).
-@immutable
-final class FreeMove {
-  /// Creates the move.
-  const new({required this.uci, required this.san, required this.fen});
-
-  /// UCI as the tree writes it.
-  final String uci;
-
-  /// SAN.
-  final String san;
-
-  /// Position after the move.
-  final String fen;
-}
-
 /// Browse (01-product-spec §9) without the Analysis toggle (P06).
 class BrowseScreen extends ConsumerWidget {
-  /// Browses repertoire [id], starting at node [initialNode] (`?node=`).
-  const new({required this.id, super.key, this.initialNode});
+  /// Browses repertoire [id], starting at node [initialNode] (`?node=`),
+  /// then [initialFree] moves of free exploration; [analysis] starts with
+  /// the engine on (Play on's Analyse).
+  const new({
+    required this.id,
+    super.key,
+    this.initialNode,
+    this.initialFree = const [],
+    this.analysis = false,
+  });
 
   /// Repertoire id.
   final String id;
 
   /// Node to start at (root when null or unknown).
   final int? initialNode;
+
+  /// Free-exploration moves after [initialNode].
+  final List<FreeMove> initialFree;
+
+  /// Start with analysis on.
+  final bool analysis;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -65,6 +64,8 @@ class BrowseScreen extends ConsumerWidget {
         tree: value,
         title: name ?? l10n.browseTitle,
         initialNode: initialNode,
+        initialFree: initialFree,
+        analysis: analysis,
       ),
       AsyncError(:final error) => Scaffold(
         appBar: AppBar(),
@@ -86,6 +87,8 @@ class BrowseView extends ConsumerStatefulWidget {
     required this.title,
     super.key,
     this.initialNode,
+    this.initialFree = const [],
+    this.analysis = false,
   });
 
   /// The repertoire.
@@ -97,6 +100,12 @@ class BrowseView extends ConsumerStatefulWidget {
   /// Start node id.
   final int? initialNode;
 
+  /// Free-exploration moves after the start node.
+  final List<FreeMove> initialFree;
+
+  /// Start with analysis on.
+  final bool analysis;
+
   @override
   ConsumerState<BrowseView> createState() => _BrowseViewState();
 }
@@ -105,13 +114,13 @@ const _phoneBarWidth = 14.0;
 
 class _BrowseViewState extends ConsumerState<BrowseView> {
   late TreeNode _node = _start();
-  final _free = <FreeMove>[];
+  late final _free = <FreeMove>[...widget.initialFree];
   late Side _orientation = widget.tree.userSide;
   final _board = RepertoireBoardController();
 
   // Analysis (01-product-spec §9): on while [_analysis]; [_update] belongs
   // to [_analysedFen].
-  bool _analysis = false;
+  late bool _analysis = widget.analysis;
   StreamSubscription<AnalysisUpdate>? _analysisSub;
 
   /// Analysis updates arrive 10 times a second; only the eval bar and the
@@ -119,6 +128,12 @@ class _BrowseViewState extends ConsumerState<BrowseView> {
   final _update = ValueNotifier<AnalysisUpdate?>(null);
   String? _analysedFen;
   int? _analysedLines;
+
+  @override
+  void initState() {
+    super.initState();
+    if (_analysis) _syncAnalysis();
+  }
 
   @override
   void dispose() {

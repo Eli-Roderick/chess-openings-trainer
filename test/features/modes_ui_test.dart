@@ -44,12 +44,11 @@ void main() {
     );
     expect(find.textContaining('No weak lines yet'), findsOneWidget);
     expect(find.text('0 due, 1 new available'), findsOneWidget);
-    expect(
-      tester
-          .widget<SwitchListTile>(find.byKey(const Key('sheet-deviations')))
-          .onChanged,
-      isNull,
+    // Deviations: mirrors the setting (off), changeable for the session.
+    final deviations = tester.widget<SwitchListTile>(
+      find.byKey(const Key('sheet-deviations')),
     );
+    expect((deviations.value, deviations.onChanged != null), (false, true));
     await tester.tap(find.byKey(const Key('mode-srs')));
     await tester.tap(find.text('Branch point'));
     await tester.pump();

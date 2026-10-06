@@ -6,12 +6,15 @@ import 'package:chessground/chessground.dart';
 import 'package:dartchess/dartchess.dart' hide File;
 import 'package:flutter/foundation.dart';
 import 'package:repertoire_trainer/core/audio/sound_service.dart';
+import 'package:repertoire_trainer/core/diagnostics/deviation_timings.dart';
 import 'package:repertoire_trainer/core/diagnostics/drill_latency.dart';
 import 'package:repertoire_trainer/core/haptics/haptics_service.dart';
 import 'package:repertoire_trainer/core/settings/app_settings.dart';
 import 'package:repertoire_trainer/features/board/board_appearance.dart';
 import 'package:repertoire_trainer/features/board/board_position.dart';
+import 'package:repertoire_trainer/features/board/free_move.dart';
 import 'package:repertoire_trainer/features/board/repertoire_board.dart';
+import 'package:repertoire_trainer/features/drill/deviation.dart';
 import 'package:repertoire_trainer/features/drill/drill_state.dart';
 import 'package:repertoire_trainer/features/drill/line_picker.dart';
 
@@ -51,6 +54,8 @@ final class DrillDeps {
     required this.effects,
     this.latency,
     this.reviewsToday,
+    this.deviations,
+    this.deviationTimings,
   });
 
   /// Time.
@@ -88,6 +93,37 @@ final class DrillDeps {
 
   /// SRS reviews done on a training day, all repertoires (SRS daily cap).
   final Future<int> Function(String day)? reviewsToday;
+
+  /// Engine for opponent deviations; none means no deviations.
+  final DeviationEngine? deviations;
+
+  /// Deviation job timings (Diagnostics).
+  final DeviationTimings? deviationTimings;
+}
+
+/// The run's off-book challenge plan (05-engine.md §6): rolled at line
+/// start, candidates prefetched at once.
+final class _Plan {
+  new({required this.midLine});
+
+  /// "Anywhere in the line" timing.
+  final bool midLine;
+
+  /// Mid-line: the opponent ply played off-book.
+  int? ply;
+
+  /// The running candidates job.
+  CandidateJob? job;
+
+  /// The picked deviation once candidates are in (null: not ready, or no
+  /// candidates).
+  String? move;
+
+  void cancel() {
+    job?.cancel();
+    job = null;
+    move = null;
+  }
 }
 
 /// The drill (docs/plan/phases/P07, 01-product-spec §7) for one repertoire
@@ -101,8 +137,10 @@ final class DrillController extends ChangeNotifier {
     required this.deps,
     this.picker = const RandomPicker(),
     bool? startFromBranch,
+    bool? deviations,
   }) : _startFromBranch =
            startFromBranch ?? deps.settings().startFromBranchPoint,
+       _deviationsOverride = deviations,
        _state = DrillState(
          phase: DrillPhase.loading,
          board: BoardViewState(fen: tree.root.fen, orientation: tree.userSide),
@@ -124,6 +162,7 @@ final class DrillController extends ChangeNotifier {
   RunMode get mode => picker.mode;
 
   final bool _startFromBranch;
+  final bool? _deviationsOverride;
   DrillState _state;
   Side _orientation = Side.white;
   bool _flipped = false;
@@ -142,6 +181,15 @@ final class DrillController extends ChangeNotifier {
   int _bannerId = 0;
   int? _userMoveAtMs;
   Future<void>? _saving;
+
+  // Opponent deviations (P09).
+  _Plan? _plan;
+  bool _lineDone = false;
+  final _freeMoves = <FreeMove>[];
+  late String _challengeFen;
+  late int _challengePly;
+  String? _deviationUci;
+  bool _replyHinted = false;
 
   /// The current state.
   DrillState get state => _state;
@@ -189,12 +237,16 @@ final class DrillController extends ChangeNotifier {
   Future<void> _pickAndStart() async {
     final token = ++_token;
     _cancelTimers();
+    _plan?.cancel();
+    _plan = null;
     _emit(
       _state.copyWith(
         phase: DrillPhase.loading,
         clearEndBar: true,
         clearBanner: true,
         summaryOpen: false,
+        clearChallenge: true,
+        clearPlayOn: true,
       ),
     );
     // The previous run must be in the stats first (weak pool, SRS).
@@ -258,6 +310,10 @@ final class DrillController extends ChangeNotifier {
       deviceId: deps.deviceId,
     );
     _orientation = _flipped ? tree.userSide.opposite : tree.userSide;
+    _plan?.cancel();
+    _lineDone = false;
+    _freeMoves.clear();
+    _plan = _rollChallenge(line, startPly);
     _emit(
       DrillState(
         phase: DrillPhase.loading,
@@ -281,9 +337,20 @@ final class DrillController extends ChangeNotifier {
   }
 
   /// After the board reached [_node]: the opponent moves after the delay,
-  /// or it is the user's turn.
+  /// or it is the user's turn; at the line's end, the off-book challenge
+  /// if one was rolled.
   void _continueFromNode({required bool afterUserMove, required bool viaDrag}) {
     if (_node!.ply >= _line!.plies) {
+      final plan = _plan;
+      if (plan != null && !plan.midLine && !_lineDone) {
+        _lineDone = true;
+        _endOfLineChallenge(
+          plan,
+          afterUserMove: afterUserMove,
+          viaDrag: viaDrag,
+        );
+        return;
+      }
       _completeLine();
       return;
     }
@@ -297,8 +364,31 @@ final class DrillController extends ChangeNotifier {
       );
       return;
     }
-    // The delay counts from the end of the user's move animation; a dropped
-    // piece does not animate.
+    _afterOpponentDelay(afterUserMove: afterUserMove, viaDrag: viaDrag, () {
+      final plan = _plan;
+      final next = _nextNode!;
+      if (plan != null && plan.midLine && plan.ply == next.ply) {
+        // At most one deviation per run; not ready: the book move.
+        _plan = null;
+        final move = plan.move;
+        deps.deviationTimings?.addNeeded(ready: move != null);
+        if (move != null &&
+            _playDeviation(move, ply: next.ply, kind: ChallengeKind.midLine)) {
+          return;
+        }
+        plan.cancel();
+      }
+      _playOpponent();
+    });
+  }
+
+  /// Runs [action] after the opponent delay. The delay counts from the end
+  /// of the user's move animation; a dropped piece does not animate.
+  void _afterOpponentDelay(
+    void Function() action, {
+    required bool afterUserMove,
+    required bool viaDrag,
+  }) {
     final s = _settings;
     final animation = afterUserMove && !viaDrag ? s.animationSpeed.ms : 0;
     final delay = Duration(milliseconds: animation + s.opponentMoveDelayMs);
@@ -311,18 +401,22 @@ final class DrillController extends ChangeNotifier {
     final token = _token;
     _opponentTimer?.cancel();
     _opponentTimer = Timer(delay, () {
-      if (token == _token) _playOpponent();
+      if (token == _token) action();
     });
   }
 
-  void _playOpponent() {
-    final next = _nextNode!;
-    _node = next;
+  void _recordLatency() {
     final userMoveAt = _userMoveAtMs;
     if (userMoveAt != null) {
       deps.latency?.add(Duration(milliseconds: _nowMs - userMoveAt));
       _userMoveAtMs = null;
     }
+  }
+
+  void _playOpponent() {
+    final next = _nextNode!;
+    _node = next;
+    _recordLatency();
     deps.effects.sound(SoundType.forSan(next.san!));
     _emit(
       _state.copyWith(
@@ -343,6 +437,254 @@ final class DrillController extends ChangeNotifier {
     _continueFromNode(afterUserMove: false, viaDrag: true);
   }
 
+  // ---- Opponent deviations (01-product-spec §8.1, 05-engine §6) ----
+
+  _Plan? _rollChallenge(Line line, int startPly) {
+    final engine = deps.deviations;
+    final s = _settings;
+    if (engine == null || !(_deviationsOverride ?? s.deviationsEnabled)) {
+      return null;
+    }
+    if (!engine.available) return null;
+    if (deps.rng.nextDouble() * 100 >= s.deviationChancePercent) return null;
+    final plan = _Plan(midLine: s.deviationTiming == DeviationTiming.anywhere);
+    _preparePlan(plan, line, afterPly: startPly);
+    return plan.midLine && plan.ply == null ? null : plan;
+  }
+
+  /// (Re)computes [plan] for [line]: mid-line, a ply among the opponent
+  /// plies after [afterPly]; end of line, the candidates after a user leaf.
+  void _preparePlan(_Plan plan, Line line, {required int afterPly}) {
+    plan.cancel();
+    if (plan.midLine) {
+      final plies = [
+        for (final n in line.path)
+          if (!n.isUserMove && n.ply > afterPly) n.ply,
+      ];
+      plan.ply = plies.isEmpty ? null : plies[deps.rng.nextInt(plies.length)];
+      final ply = plan.ply;
+      if (ply == null) return;
+      final at = ply == 1 ? tree.root : line.path[ply - 2];
+      _fetch(plan, at.fen, {for (final c in at.children) c.uci!});
+    } else {
+      final leaf = line.path.last;
+      if (leaf.isUserMove) _fetch(plan, leaf.fen, const {});
+    }
+  }
+
+  void _fetch(_Plan plan, String fen, Set<String> book) {
+    final job = deps.deviations!.candidates(fen, book: book);
+    plan.job = job;
+    final watch = Stopwatch()..start();
+    unawaited(
+      job.result.then((candidates) {
+        if (!identical(plan.job, job)) return;
+        deps.deviationTimings?.addJob(watch.elapsed);
+        plan.move = pickDeviation(candidates, deps.rng);
+      }, onError: (Object _) {}),
+    );
+  }
+
+  void _endOfLineChallenge(
+    _Plan plan, {
+    required bool afterUserMove,
+    required bool viaDrag,
+  }) {
+    final plies = _line!.plies;
+    if (!_line!.path.last.isUserMove) {
+      // The line ended on an opponent move: the user moves directly.
+      _plan = null;
+      _beginReply(
+        ChallengeKind.endFindMove,
+        fen: _node!.fen,
+        ply: plies,
+        deviationUci: null,
+      );
+      return;
+    }
+    _afterOpponentDelay(afterUserMove: afterUserMove, viaDrag: viaDrag, () {
+      _plan = null;
+      final move = plan.move;
+      deps.deviationTimings?.addNeeded(ready: move != null);
+      if (move == null ||
+          !_playDeviation(
+            move,
+            ply: plies + 1,
+            kind: ChallengeKind.endOpponentPlays,
+          )) {
+        // Not ready (or no candidates): no challenge this run.
+        plan.cancel();
+        _completeLine();
+      }
+    });
+  }
+
+  /// Plays the opponent's off-book [uci]; false if it is not legal here.
+  bool _playDeviation(
+    String uci, {
+    required int ply,
+    required ChallengeKind kind,
+  }) {
+    final move = parseUci(uci);
+    final resolved = move == null
+        ? null
+        : resolveMove(positionFromFen(_node!.fen), move);
+    if (resolved == null) return false;
+    final fen = resolved.after.fen;
+    _freeMoves.add(FreeMove(uci: resolved.uci, san: resolved.san, fen: fen));
+    _recordLatency();
+    deps.effects.sound(SoundType.deviation);
+    _emit(
+      _state.copyWith(
+        board: _state.board.copyWith(
+          fen: fen,
+          lastMove: move,
+          shapes: const {},
+          highlights: const {},
+          animate: true,
+        ),
+        log: [
+          ..._state.log,
+          MoveLogEntry(ply: ply, san: resolved.san, isUser: false),
+        ],
+      ),
+    );
+    _beginReply(
+      kind,
+      fen: fen,
+      ply: ply,
+      deviationUci: resolved.uci,
+      deviationSan: resolved.san,
+    );
+    return true;
+  }
+
+  void _beginReply(
+    ChallengeKind kind, {
+    required String fen,
+    required int ply,
+    required String? deviationUci,
+    String? deviationSan,
+  }) {
+    _challengeFen = fen;
+    _challengePly = ply;
+    _deviationUci = deviationUci;
+    _replyHinted = false;
+    if (positionFromFen(fen).isGameOver) {
+      // No reply possible (rare: the deviation ended the game).
+      _finishChallenge(kind);
+      return;
+    }
+    _emit(
+      _state.copyWith(
+        phase: DrillPhase.deviationReply,
+        board: _state.board.copyWith(movable: _userPlayerSide),
+        hintLevel: 0,
+        clearBanner: true,
+        challenge: ChallengeView(kind: kind, deviationSan: deviationSan),
+      ),
+    );
+  }
+
+  Future<void> _reply(String uci, String san, String fenAfter) async {
+    final token = _token;
+    final fen = _challengeFen;
+    final view = _state.challenge!;
+    _freeMoves.add(FreeMove(uci: uci, san: san, fen: fenAfter));
+    deps.effects
+      ..sound(SoundType.forSan(san))
+      ..haptic(HapticKind.light);
+    _emit(
+      _state.copyWith(
+        phase: DrillPhase.judging,
+        board: _state.board.copyWith(
+          fen: fenAfter,
+          lastMove: parseUci(uci),
+          movable: PlayerSide.none,
+          shapes: const {},
+          highlights: const {},
+          animate: true,
+        ),
+        log: [
+          ..._state.log,
+          MoveLogEntry(ply: _challengePly + 1, san: san, isUser: true),
+        ],
+        challenge: view.copyWith(judging: true),
+      ),
+    );
+    DeviationJudgement? judgement;
+    try {
+      judgement = await deps.deviations!.judge(fen, uci);
+    } on Object {
+      judgement = null;
+    }
+    if (token != _token || _disposed) return;
+    if (judgement == null) {
+      _finishChallenge(view.kind);
+      return;
+    }
+    // A hint during the reply fails it (01 §7.8).
+    final passed = judgement.passed && !_replyHinted;
+    _run!.recordDeviation(
+      DeviationEvent(
+        ply: _challengePly,
+        bestUci: judgement.bestUci,
+        passed: passed,
+        deviationUci: _deviationUci,
+        replyUci: uci,
+        lossCp: judgement.lossCp,
+      ),
+      midLine: view.kind == ChallengeKind.midLine,
+    );
+    final bestMove = parseUci(judgement.bestUci);
+    final best = bestMove == null || judgement.bestUci == uci
+        ? null
+        : resolveMove(positionFromFen(fen), bestMove);
+    _emit(
+      _state.copyWith(
+        challenge: view.copyWith(
+          judging: false,
+          passed: passed,
+          lossCp: judgement.lossCp,
+          bestSan: best?.san,
+        ),
+        // Not passed: the position before the reply with the best move
+        // (green) and the reply (red).
+        board: !passed && best != null
+            ? _state.board.copyWith(
+                fen: fen,
+                lastMove: _deviationUci == null
+                    ? null
+                    : parseUci(_deviationUci!),
+                shapes: {
+                  Arrow(
+                    color: shapeColor(ShapeColor.green),
+                    orig: bestMove!.from,
+                    dest: bestMove.to,
+                  ),
+                  if (parseUci(uci) case final NormalMove reply)
+                    Arrow(
+                      color: shapeColor(ShapeColor.red),
+                      orig: reply.from,
+                      dest: reply.to,
+                    ),
+                },
+                animate: false,
+              )
+            : null,
+      ),
+    );
+    _completeLine(afterChallenge: true);
+  }
+
+  /// Ends a challenge without a judged reply (engine failure, or no legal
+  /// reply): no deviation event; a mid-line run still counts as deviated
+  /// because the rest of the line was not played.
+  void _finishChallenge(ChallengeKind kind) {
+    if (kind == ChallengeKind.midLine) _run!.markDeviated();
+    _completeLine(afterChallenge: true);
+  }
+
   List<String> get _accepted => [
     for (final c in _node!.children)
       if (c.isUserMove) c.uci!,
@@ -357,6 +699,10 @@ final class DrillController extends ChangeNotifier {
     required String fenAfter,
     bool viaDrag = false,
   }) {
+    if (_state.phase == DrillPhase.deviationReply) {
+      unawaited(_reply(uci, san, fenAfter));
+      return true;
+    }
     if (_state.phase != DrillPhase.userToMove) return false;
     final run = _run!;
     final node = _node!;
@@ -397,6 +743,12 @@ final class DrillController extends ChangeNotifier {
       final line = tree.lineByKey(key)!;
       _line = line;
       run.switchLine(lineKey: line.key, ucis: line.ucis);
+      // A new line: new candidates / a re-rolled ply (05 §6).
+      final plan = _plan;
+      if (plan != null) {
+        _preparePlan(plan, line, afterPly: child.ply);
+        if (plan.midLine && plan.ply == null) _plan = null;
+      }
     }
     _node = child;
     _userMoveAtMs = _nowMs;
@@ -578,6 +930,10 @@ final class DrillController extends ChangeNotifier {
   /// Hint (01 §7.8): level 1 highlights the from-square, level 2 draws the
   /// move. The ply's grade becomes 0.
   void hint() {
+    if (_state.phase == DrillPhase.deviationReply) {
+      unawaited(_replyHint());
+      return;
+    }
     if (_state.phase != DrillPhase.userToMove) return;
     final level = math.min(2, _state.hintLevel + 1);
     final expected = _nextNode!;
@@ -606,7 +962,63 @@ final class DrillController extends ChangeNotifier {
     _refreshScore();
   }
 
-  void _completeLine() {
+  /// During a deviation reply the hint shows the engine's best move and
+  /// fails the reply (01 §7.8).
+  Future<void> _replyHint() async {
+    if (_replyHinted) return;
+    _replyHinted = true;
+    final token = _token;
+    final fen = _challengeFen;
+    deps.effects.sound(SoundType.hint);
+    _emit(
+      _state.copyWith(
+        hintLevel: 2,
+        challenge: _state.challenge?.copyWith(hinted: true),
+      ),
+    );
+    String? best;
+    try {
+      best = await deps.deviations!.bestMove(fen);
+    } on Object {
+      best = null;
+    }
+    final move = best == null ? null : parseUci(best);
+    if (token != _token ||
+        _state.phase != DrillPhase.deviationReply ||
+        move is! NormalMove) {
+      return;
+    }
+    _emit(
+      _state.copyWith(
+        board: _state.board.copyWith(
+          highlights: {move.from: hintSquareColor},
+          shapes: {
+            Arrow(
+              color: shapeColor(ShapeColor.blue),
+              orig: move.from,
+              dest: move.to,
+            ),
+          },
+        ),
+      ),
+    );
+  }
+
+  PlayOnArgs _playOnArgs() => PlayOnArgs(
+    repertoireId: repertoireId,
+    nodeId: _node!.id,
+    nodeFen: _node!.fen,
+    moves: [..._freeMoves],
+    userSide: tree.userSide,
+    orientation: _orientation,
+  );
+
+  /// The line (and its challenge, if any) is over. After a challenge the
+  /// end bar does not count down, so the result stays visible.
+  void _completeLine({bool afterChallenge = false}) {
+    _plan?.cancel();
+    _plan = null;
+    _lineDone = true;
     final run = _run!;
     final finishedAt = _nowMs;
     final before = _statsByKey[run.lineKey];
@@ -616,6 +1028,7 @@ final class DrillController extends ChangeNotifier {
     // countdown (01 §7.9).
     final showSummary = s.showLineSummary;
     final auto = Duration(milliseconds: s.autoAdvanceDelayMs);
+    final counting = !showSummary && !afterChallenge;
     _emit(
       _state.copyWith(
         phase: DrillPhase.lineComplete,
@@ -624,11 +1037,12 @@ final class DrillController extends ChangeNotifier {
           graded: _state.graded,
           creditSum: _state.creditSum,
           autoAdvance: auto,
-          counting: !showSummary,
+          counting: counting,
           saved: false,
         ),
         clearSummary: true,
         summaryOpen: false,
+        playOn: _playOnArgs(),
       ),
     );
     final token = _token;
@@ -665,7 +1079,7 @@ final class DrillController extends ChangeNotifier {
         ),
       );
     });
-    if (showSummary) return;
+    if (!counting) return;
     if (auto == Duration.zero) {
       unawaited(nextLine());
     } else {
@@ -761,7 +1175,9 @@ final class DrillController extends ChangeNotifier {
     await _pickAndStart();
   }
 
-  /// Skip line: the run is stored as abandoned (01 §7.10).
+  /// Skip line: the run is stored as abandoned (01 §7.10). During an
+  /// end-of-line challenge the line itself is complete: the challenge is
+  /// dropped and the line ends normally.
   Future<void> skipLine() async {
     final run = _run;
     if (run == null || run.isFinished || _state.phase == DrillPhase.loading) {
@@ -769,6 +1185,13 @@ final class DrillController extends ChangeNotifier {
     }
     _token++;
     _cancelTimers();
+    if (_lineDone) {
+      _emit(_state.copyWith(clearChallenge: true));
+      _completeLine();
+      return;
+    }
+    _plan?.cancel();
+    _plan = null;
     await _finalize(run, _nowMs, completed: false);
     await _pickAndStart();
   }
@@ -799,8 +1222,10 @@ final class DrillController extends ChangeNotifier {
     _token++;
     final run = _run;
     _disposed = true;
+    _plan?.cancel();
     if (run != null && !run.isFinished) {
-      await _finalize(run, _nowMs, completed: false);
+      // Leaving during an end-of-line challenge keeps the completed line.
+      await _finalize(run, _nowMs, completed: _lineDone);
     }
     await _saving;
   }

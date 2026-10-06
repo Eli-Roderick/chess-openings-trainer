@@ -12,29 +12,35 @@ import 'package:repertoire_trainer/app/shortcuts.dart';
 import 'package:repertoire_trainer/app/theme/colors.dart';
 import 'package:repertoire_trainer/core/audio/sound_service.dart';
 import 'package:repertoire_trainer/core/db/providers.dart';
+import 'package:repertoire_trainer/core/diagnostics/deviation_timings.dart';
 import 'package:repertoire_trainer/core/diagnostics/drill_latency.dart';
 import 'package:repertoire_trainer/core/engine/engine_judge.dart';
 import 'package:repertoire_trainer/core/engine/engine_providers.dart';
 import 'package:repertoire_trainer/core/haptics/haptics_service.dart';
 import 'package:repertoire_trainer/core/settings/app_settings.dart';
 import 'package:repertoire_trainer/features/board/comment_panel.dart';
+import 'package:repertoire_trainer/features/board/free_move.dart';
 import 'package:repertoire_trainer/features/board/repertoire_board.dart';
 import 'package:repertoire_trainer/features/board/training_settings_list.dart';
+import 'package:repertoire_trainer/features/drill/deviation.dart';
 import 'package:repertoire_trainer/features/drill/drill_controller.dart';
 import 'package:repertoire_trainer/features/drill/drill_state.dart';
 import 'package:repertoire_trainer/features/drill/line_picker.dart';
 import 'package:repertoire_trainer/l10n/gen/app_localizations.dart';
+import 'package:uci_engine/uci_engine.dart';
 
 /// The drill screen (01-product-spec §7.2) in Random mode.
 class DrillScreen extends ConsumerStatefulWidget {
   /// Drills repertoire [id] in [mode] (Random by default; single needs
-  /// [lineKey]); [fromBranch] overrides the repertoire's start-from choice.
+  /// [lineKey]); [fromBranch] overrides the repertoire's start-from choice
+  /// and [deviations] the opponent-deviations setting.
   const new({
     required this.id,
     super.key,
     this.mode,
     this.lineKey,
     this.fromBranch,
+    this.deviations,
   });
 
   /// Repertoire id.
@@ -48,6 +54,9 @@ class DrillScreen extends ConsumerStatefulWidget {
 
   /// Start at the branch point (null: the repertoire's choice).
   final bool? fromBranch;
+
+  /// Opponent deviations for this session (null: the setting).
+  final bool? deviations;
 
   @override
   ConsumerState<DrillScreen> createState() => _DrillScreenState();
@@ -71,6 +80,41 @@ class _Effects implements DrillEffects {
 
   @override
   void sound(SoundType type) => sounds.play(type);
+}
+
+/// Opponent deviations on the app's engine.
+final class _EngineDeviations implements DeviationEngine {
+  new(this._judge, this._available);
+
+  final EngineJudge _judge;
+  final bool Function() _available;
+
+  @override
+  bool get available => _available();
+
+  @override
+  CandidateJob candidates(String fen, {Set<String> book = const {}}) {
+    final token = EngineCancelToken();
+    final result = _judge
+        .deviationCandidates(fen: fen, book: book, cancel: token)
+        .catchError((Object _) => const <PvMove>[]);
+    return (result: result, cancel: token.cancel);
+  }
+
+  @override
+  Future<DeviationJudgement?> judge(String fen, String replyUci) async {
+    final r = await _judge.judgeReply(fen: fen, replyUci: replyUci);
+    return r == null
+        ? null
+        : (
+            passed: r.judgement.passed,
+            lossCp: r.judgement.lossCp,
+            bestUci: r.bestUci,
+          );
+  }
+
+  @override
+  Future<String?> bestMove(String fen) => _judge.bestMove(fen);
 }
 
 class _DrillScreenState extends ConsumerState<DrillScreen> {
@@ -116,6 +160,7 @@ class _DrillScreenState extends ConsumerState<DrillScreen> {
         repertoireId: widget.id,
         picker: pickerFor(mode, lineKey: widget.lineKey),
         startFromBranch: fromBranch,
+        deviations: widget.deviations,
         deps: DrillDeps(
           clock: container.read(clockProvider),
           rng: container.read(rngProvider),
@@ -137,6 +182,13 @@ class _DrillScreenState extends ConsumerState<DrillScreen> {
           ),
           latency: DrillLatency.instance,
           reviewsToday: container.read(runRepositoryProvider).srsReviewsOn,
+          deviations: _EngineDeviations(judge, () {
+            final binary = container.read(engineBinaryProvider);
+            final state = container.read(engineServiceProvider).status.state;
+            return state != EngineState.unavailable &&
+                !(binary.hasValue && binary.value == null);
+          }),
+          deviationTimings: DeviationTimings.instance,
         ),
       );
       setState(() => _controller = controller);
@@ -173,6 +225,15 @@ class _DrillScreenState extends ConsumerState<DrillScreen> {
     } else {
       context.go(Routes.repertoire(widget.id));
     }
+  }
+
+  /// Play on from the end bar or summary; back from it, the drill goes on
+  /// with the next line (01 §8.2).
+  Future<void> _playOn(PlayOnArgs args) async {
+    final controller = _controller;
+    controller?.cancelAutoAdvance();
+    await context.push(Routes.playEngine, extra: args);
+    if (mounted) await controller?.nextLine();
   }
 
   void _openSettings() => unawaited(
@@ -251,6 +312,7 @@ class _DrillScreenState extends ConsumerState<DrillScreen> {
                 onBrowseLine: (node) => unawaited(
                   context.push(Routes.browse(widget.id, node: node)),
                 ),
+                onPlayOn: (args) => unawaited(_playOn(args)),
               ),
             ),
           ),
@@ -271,6 +333,7 @@ class _DrillView extends StatelessWidget {
     required this.onMode,
     required this.onRetryLine,
     required this.onBrowseLine,
+    required this.onPlayOn,
   });
 
   final String title;
@@ -282,6 +345,7 @@ class _DrillView extends StatelessWidget {
   final void Function(RunMode mode) onMode;
   final void Function(String lineKey) onRetryLine;
   final void Function(int nodeId) onBrowseLine;
+  final void Function(PlayOnArgs args) onPlayOn;
 
   String _modeLabel(AppLocalizations l10n) {
     final n = state.modeCount;
@@ -312,6 +376,10 @@ class _DrillView extends StatelessWidget {
           onNext: () => unawaited(controller.nextLine()),
           onRetry: () => onRetryLine(summary.line.key),
           onBrowse: () => onBrowseLine(summary.line.leaf.id),
+          onPlayOn: switch (state.playOn) {
+            final args? => () => onPlayOn(args),
+            null => null,
+          },
         ),
       );
     }
@@ -347,7 +415,11 @@ class _DrillView extends StatelessWidget {
     );
     final info = _InfoPanel(state: state, controller: controller);
     final bottom = state.endBar != null
-        ? _EndBar(bar: state.endBar!, controller: controller)
+        ? _EndBar(
+            bar: state.endBar!,
+            controller: controller,
+            onPlayOn: onPlayOn,
+          )
         : _BottomBar(state: state, controller: controller);
     return Scaffold(
       appBar: AppBar(
@@ -418,7 +490,7 @@ class _InfoPanel extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final placeholder = switch (state.phase) {
-      DrillPhase.userToMove => l10n.yourMove,
+      DrillPhase.userToMove || DrillPhase.deviationReply => l10n.yourMove,
       DrillPhase.opponentToMove => l10n.opponentToMove,
       _ => '',
     };
@@ -459,7 +531,14 @@ class _InfoPanel extends StatelessWidget {
             ],
           ),
         ),
-        if (state.banner case final banner?)
+        if (state.challenge case final challenge?)
+          Positioned(
+            left: 8,
+            right: 8,
+            top: 8,
+            child: _ChallengeBanner(challenge: challenge),
+          )
+        else if (state.banner case final banner?)
           Positioned(
             left: 8,
             right: 8,
@@ -467,6 +546,74 @@ class _InfoPanel extends StatelessWidget {
             child: _Banner(banner: banner, onDismiss: controller.dismissBanner),
           ),
       ],
+    );
+  }
+}
+
+/// The off-book challenge prompt, then its result (01 §8.1).
+class _ChallengeBanner extends StatelessWidget {
+  const new({required this.challenge});
+
+  final ChallengeView challenge;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final scheme = Theme.of(context).colorScheme;
+    final c = challenge;
+    final (text, color) = switch (c) {
+      ChallengeView(judging: true) => (
+        l10n.checkingReply,
+        scheme.surfaceContainerHighest,
+      ),
+      ChallengeView(passed: true) => (l10n.goodReply, AppColors.success),
+      ChallengeView(passed: false, :final bestSan?) => (
+        l10n.inaccurateBestWas(bestSan),
+        AppColors.warning,
+      ),
+      ChallengeView(passed: false) => (l10n.inaccurate, AppColors.warning),
+      ChallengeView(kind: ChallengeKind.midLine) => (
+        l10n.deviationMidLine,
+        scheme.tertiaryContainer,
+      ),
+      ChallengeView(kind: ChallengeKind.endOpponentPlays) => (
+        l10n.deviationEndPlaysOn,
+        scheme.tertiaryContainer,
+      ),
+      ChallengeView(kind: ChallengeKind.endFindMove) => (
+        l10n.deviationEndFindMove,
+        scheme.tertiaryContainer,
+      ),
+    };
+    final result = c.passed != null;
+    return Material(
+      key: const Key('challenge-banner'),
+      color: color,
+      elevation: 3,
+      borderRadius: BorderRadius.circular(8),
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              text,
+              key: const Key('challenge-text'),
+              style: TextStyle(
+                color: switch (c.passed) {
+                  true => Colors.white,
+                  false => Colors.black87,
+                  null => null,
+                },
+                fontWeight: result ? FontWeight.w600 : null,
+              ),
+            ),
+            if (c.hinted && c.passed == null)
+              Text(l10n.hintFailsReply, style: const TextStyle(fontSize: 12)),
+          ],
+        ),
+      ),
     );
   }
 }
@@ -525,7 +672,10 @@ class _BottomBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final canHint = state.phase == DrillPhase.userToMove && state.hintLevel < 2;
+    final canHint =
+        (state.phase == DrillPhase.userToMove && state.hintLevel < 2) ||
+        (state.phase == DrillPhase.deviationReply &&
+            !(state.challenge?.hinted ?? true));
     return Material(
       elevation: 2,
       child: Padding(
@@ -578,10 +728,15 @@ class _BottomBar extends StatelessWidget {
 }
 
 class _EndBar extends StatelessWidget {
-  const new({required this.bar, required this.controller});
+  const new({
+    required this.bar,
+    required this.controller,
+    required this.onPlayOn,
+  });
 
   final EndBarState bar;
   final DrillController controller;
+  final void Function(PlayOnArgs args) onPlayOn;
 
   @override
   Widget build(BuildContext context) {
@@ -595,41 +750,67 @@ class _EndBar extends StatelessWidget {
         color: Theme.of(context).colorScheme.surfaceContainerHigh,
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          // The buttons wrap to a second row on narrow phones.
           child: Row(
             children: [
-              Expanded(
-                child: Text(
-                  _accuracyText(l10n, bar.graded, bar.creditSum),
-                  key: const Key('end-accuracy'),
-                  style: Theme.of(context).textTheme.titleMedium,
-                ),
+              Text(
+                _accuracyText(l10n, bar.graded, bar.creditSum),
+                key: const Key('end-accuracy'),
+                style: Theme.of(context).textTheme.titleMedium,
               ),
-              if (bar.saved && controller.state.summary != null)
-                TextButton(
-                  key: const Key('open-summary'),
-                  onPressed: controller.openSummary,
-                  child: Text(l10n.summary),
-                ),
               const SizedBox(width: 8),
-              FilledButton.icon(
-                key: const Key('next-line'),
-                onPressed: () => unawaited(controller.nextLine()),
-                icon: bar.counting && bar.autoAdvance > Duration.zero
-                    ? SizedBox.square(
-                        dimension: 18,
-                        child: TweenAnimationBuilder<double>(
-                          tween: Tween(begin: 0, end: 1),
-                          duration: bar.autoAdvance,
-                          builder: (context, v, _) => CircularProgressIndicator(
-                            key: const Key('countdown'),
-                            value: v,
-                            strokeWidth: 2.5,
-                            color: Theme.of(context).colorScheme.onPrimary,
-                          ),
-                        ),
+              Expanded(
+                child: Wrap(
+                  alignment: WrapAlignment.end,
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  spacing: 8,
+                  runSpacing: 4,
+                  children: [
+                    if (bar.saved && controller.state.summary != null)
+                      TextButton(
+                        key: const Key('open-summary'),
+                        onPressed: controller.openSummary,
+                        child: Text(l10n.summary),
+                      ),
+                    // Prominent after an off-book challenge (01 §8.1).
+                    if (controller.state.playOn case final args?
+                        when controller.state.challenge != null)
+                      FilledButton.tonal(
+                        key: const Key('play-on'),
+                        onPressed: () => onPlayOn(args),
+                        child: Text(l10n.playOn),
                       )
-                    : const Icon(Icons.skip_next),
-                label: Text(l10n.nextLine),
+                    else if (controller.state.playOn case final args?)
+                      TextButton(
+                        key: const Key('play-on'),
+                        onPressed: () => onPlayOn(args),
+                        child: Text(l10n.playOn),
+                      ),
+                    FilledButton.icon(
+                      key: const Key('next-line'),
+                      onPressed: () => unawaited(controller.nextLine()),
+                      icon: bar.counting && bar.autoAdvance > Duration.zero
+                          ? SizedBox.square(
+                              dimension: 18,
+                              child: TweenAnimationBuilder<double>(
+                                tween: Tween(begin: 0, end: 1),
+                                duration: bar.autoAdvance,
+                                builder: (context, v, _) =>
+                                    CircularProgressIndicator(
+                                      key: const Key('countdown'),
+                                      value: v,
+                                      strokeWidth: 2.5,
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .onPrimary,
+                                    ),
+                              ),
+                            )
+                          : const Icon(Icons.skip_next),
+                      label: Text(l10n.nextLine),
+                    ),
+                  ],
+                ),
               ),
             ],
           ),
@@ -807,6 +988,7 @@ class _SummaryView extends StatelessWidget {
     required this.onNext,
     required this.onRetry,
     required this.onBrowse,
+    this.onPlayOn,
   });
 
   final LineSummary summary;
@@ -814,6 +996,7 @@ class _SummaryView extends StatelessWidget {
   final VoidCallback onNext;
   final VoidCallback onRetry;
   final VoidCallback onBrowse;
+  final VoidCallback? onPlayOn;
 
   @override
   Widget build(BuildContext context) {
@@ -876,6 +1059,13 @@ class _SummaryView extends StatelessWidget {
               onPressed: onBrowse,
               child: Text(l10n.browseThisLine),
             ),
+            if (onPlayOn != null)
+              OutlinedButton.icon(
+                key: const Key('summary-play-on'),
+                onPressed: onPlayOn,
+                icon: const Icon(Icons.smart_toy_outlined),
+                label: Text(l10n.playOn),
+              ),
           ],
         ),
       ],

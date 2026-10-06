@@ -14,6 +14,9 @@ abstract final class AppColors {
   /// Report: warnings.
   static const Color warning = Color(0xFFE3A21A);
 
+  /// Good result (deviation reply).
+  static const Color success = Color(0xFF3F8F3A);
+
   /// Report: infos.
   static const Color info = Color(0xFF8B949E);
 

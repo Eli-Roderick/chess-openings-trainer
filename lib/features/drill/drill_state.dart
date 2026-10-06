@@ -1,6 +1,8 @@
 import 'package:chess_core/chess_core.dart';
 import 'package:flutter/foundation.dart';
+import 'package:repertoire_trainer/features/board/free_move.dart';
 import 'package:repertoire_trainer/features/board/repertoire_board.dart';
+import 'package:repertoire_trainer/features/drill/deviation.dart';
 import 'package:repertoire_trainer/features/drill/line_picker.dart';
 
 /// Where the drill is (docs/plan/phases/P07 state machine).
@@ -19,6 +21,13 @@ enum DrillPhase {
 
   /// A wrong move is being shown (flash, then take back or restart).
   mistake,
+
+  /// The user replies to an off-book position (any legal move, no take
+  /// back; 01-product-spec §8.1).
+  deviationReply,
+
+  /// The reply is being judged by the engine.
+  judging,
 
   /// The line was played to its end; the end bar shows.
   lineComplete,
@@ -198,6 +207,8 @@ final class DrillState {
     this.modeCount,
     this.summary,
     this.summaryOpen = false,
+    this.challenge,
+    this.playOn,
   });
 
   /// Phase.
@@ -263,6 +274,12 @@ final class DrillState {
   /// Whether the summary screen is shown.
   final bool summaryOpen;
 
+  /// The run's off-book challenge, once it started.
+  final ChallengeView? challenge;
+
+  /// Where Play on starts, once the line is complete.
+  final PlayOnArgs? playOn;
+
   /// A copy with the given fields replaced.
   DrillState copyWith({
     DrillPhase? phase,
@@ -291,6 +308,10 @@ final class DrillState {
     LineSummary? summary,
     bool clearSummary = false,
     bool? summaryOpen,
+    ChallengeView? challenge,
+    bool clearChallenge = false,
+    PlayOnArgs? playOn,
+    bool clearPlayOn = false,
   }) => DrillState(
     phase: phase ?? this.phase,
     board: board ?? this.board,
@@ -313,5 +334,7 @@ final class DrillState {
     modeCount: clearModeCount ? null : modeCount ?? this.modeCount,
     summary: clearSummary ? null : summary ?? this.summary,
     summaryOpen: summaryOpen ?? this.summaryOpen,
+    challenge: clearChallenge ? null : challenge ?? this.challenge,
+    playOn: clearPlayOn ? null : playOn ?? this.playOn,
   );
 }
