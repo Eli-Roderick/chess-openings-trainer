@@ -17,7 +17,7 @@ One PR per phase, in order (`docs/plan/README.md`). A phase is "done" when its P
 | P10 | Stats screens, streak | done | [#11](https://github.com/Eli-Roderick/chess-openings-trainer/pull/11) |
 | P11 | Backup and sync core (codec, merge) | done | [#12](https://github.com/Eli-Roderick/chess-openings-trainer/pull/12) |
 | P12 | Google Drive sync | done | [#13](https://github.com/Eli-Roderick/chess-openings-trainer/pull/13) |
-| P13 | Performance pass, polish, release | done | |
+| P13 | Performance pass, polish, release | done | [#14](https://github.com/Eli-Roderick/chess-openings-trainer/pull/14) |
 
 ## P13 (performance, polish, release)
 
