@@ -1,0 +1,16 @@
+[Event "Malformed tags"]
+
+1. e4 {[%why unclosed tag text}
+1... e5
+2. Nf3 {[%why the [c-file] matters later]}
+2... Nc6
+3. Bc4 {[%why first part.] [%why second part.]}
+3... Bc5
+4. c3 {[%why Prepares d4.] loose text here}
+4... Nf6
+5. d3 {[%why Defends e4.] [%cal Gc4f7,Xz9z9,Gc4] [%csl Gd5,Rz1]}
+5... d6
+6. O-O {[%why King safety first.] [%foo bar]}
+6... O-O
+7. Re1 {[%why This explanation is deliberately far too long. This explanation is deliberately far too long. This explanation is deliberately far too long. This explanation is deliberately far too long. This explanation is deliberately far too long. This explanation is deliberately far too long. This explanation is deliberately far too long. This explanation is deliberately far too long. This explanation is deliberately far too long.]}
+*

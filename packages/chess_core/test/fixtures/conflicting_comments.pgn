@@ -1,0 +1,11 @@
+[Event "Game A"]
+
+1. e4 {[%why Takes the centre with a pawn and frees the f1-bishop and the queen.]} e5
+2. Nf3 {[%why First version of the comment on Nf3, attacking the e5-pawn.]} Nc6
+3. Bc4 {[%why After 2...Nc6 the bishop aims at f7.]} *
+
+[Event "Game B"]
+
+1. e4 {[%why Takes the centre with a pawn and frees the f1-bishop and the queen.]} e5
+2. Nf3 {[%why Second, different version of the comment on Nf3.]} Nc6
+3. Bb5 {[%why After 2...Nc6 the bishop attacks the knight that defends e5.]} *

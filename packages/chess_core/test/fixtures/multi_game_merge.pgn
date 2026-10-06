@@ -1,0 +1,19 @@
+[Event "Openings"]
+[ChapterName "Italian"]
+
+1. e4 {[%why Takes the centre with a pawn and frees the f1-bishop and the queen.]} e5
+2. Nf3 {[%why Develops the knight and attacks the e5-pawn, so Black must defend it.]} Nc6
+3. Bc4 {[%why After 2...Nc6 the bishop aims at f7, the square only Black's king protects.]} *
+
+[Event "Openings"]
+[ChapterName "Spanish"]
+
+1. e4 {[%why Takes the centre with a pawn and frees the f1-bishop and the queen.]} e5
+2. Nf3 {[%why Develops the knight and attacks the e5-pawn, so Black must defend it.]} Nc6
+3. Bb5 {[%why After 2...Nc6 the bishop attacks the knight that defends e5.]} *
+
+[Event "Openings"]
+[Opening "Petrov Defence"]
+
+1. e4 e5 2. Nf3 Nf6
+3. Nxe5 {[%why After 2...Nf6 White simply takes the e5-pawn, which is no longer defended.]} *

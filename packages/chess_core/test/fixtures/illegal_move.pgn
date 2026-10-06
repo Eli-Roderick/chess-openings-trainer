@@ -1,0 +1,7 @@
+[Event "Fine game"]
+
+1. e4 {[%why Centre.]} e5 *
+
+[Event "Illegal move"]
+
+1. e4 e5 2. Nf3 Nc6 3. Bb5 a6 4. Bxc7 *

@@ -5,7 +5,7 @@ One PR per phase, in order (`docs/plan/README.md`). A phase is "done" when its P
 | Phase | Name | Status | PR |
 |---|---|---|---|
 | P00 | Repository bootstrap and CI | done | [#1](https://github.com/Eli-Roderick/chess-openings-trainer/pull/1) |
-| P01 | PGN import, comments, validation, lines (pure Dart) | not started | |
+| P01 | PGN import, comments, validation, lines (pure Dart) | in review | |
 | P02 | Training logic: grading, accuracy, randomizer, weak pool, SRS, streak (pure Dart) | not started | |
 | P03 | Database, repositories, settings, stats derivation | not started | |
 | P04 | App shell, Home, create/import/re-import, management | not started | |

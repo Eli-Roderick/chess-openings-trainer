@@ -1,0 +1,60 @@
+[Event "Italian Game repertoire"]
+[Site "?"]
+[White "?"]
+[Black "?"]
+[Result "*"]
+[ChapterName "Italian Game"]
+
+{A solid Italian Game repertoire for White: 1.e4 e5 2.Nf3 Nc6 3.Bc4 with c3 and d3, the Giuoco Pianissimo, plus answers to 2...d6 and Black's main third moves.}
+1. e4 {[%why Takes the centre with a pawn and opens lines for the f1-bishop and the queen; it is the starting point of every Italian Game.] [%plan Follow up with Nf3 and Bc4, then castle quickly.]}
+1... e5
+2. Nf3 {[%why After 1...e5 Black's pawn also claims the centre; Nf3 develops while attacking e5, so Black has to spend the next move defending it.] [%watch Once e5 is defended by ...Nc6 or ...d6, Nxe5 no longer wins a pawn.]}
+2... Nc6
+(2... d6 3. d4 {[%why Black's 2...d6 defends e5 passively and shuts in the dark-squared bishop; d4 challenges the centre at once while Black is cramped.] [%plan Nc3 and Bc4, then castle; keep the central tension rather than releasing it.]}
+3... Nf6 4. Nc3 {[%why After 3...Nf6 the e4-pawn is attacked; Nc3 defends it and develops another piece towards the centre.] [%plan Bc4 and castle, then Re1 and a4.]}
+4... Nbd7 5. Bc4 {[%why Black's 4...Nbd7 holds e5 with a piece instead of giving up the centre, so White develops the bishop to c4, pressing on f7.] [%plan Castle, Re1 and a4, keeping the tension in the centre.] [%cal Gc4f7]}
+5... Be7 6. O-O {[%why After 5...Be7 Black is ready to castle; White castles first, keeping the pawn on d4 to cramp Black and the option of dxe5 for later.] [%plan Re1 and a4 next.]}
+6... O-O 7. Re1 {[%why With both sides castled, Re1 adds a defender to e4 and prepares to use the e-file if the centre is ever opened.] [%plan a4 to stop ...b5, then h3 and Be3 or Bf1 depending on Black's setup.]}
+7... c6 8. a4 {[%why Black's 7...c6 prepares ...b5 to kick the c4-bishop and gain queenside space; a4 stops that idea at once.] [%plan Keep the bishop on c4 or drop it to a2, then continue with h3 and Be3.]})
+3. Bc4 {[%why With 2...Nc6 Black defends e5, so White puts the bishop on its best diagonal, aiming at f7, the square only Black's king protects.] [%plan Castle, then c3 and d3 for a slow build-up, keeping the option of d4.] [%cal Gc4f7]}
+3... Bc5
+(3... Nf6 4. d3 {[%why Black's 3...Nf6 attacks e4; d3 defends it simply and avoids the sharp, heavily analysed lines after 4.Ng5 or 4.d4.] [%plan Castle, c3, Re1 and Nbd2, the same slow build-up as in the main line.] [%watch If Black plays ...Na5, retreat the bishop to b3 to keep it.]}
+4... Be7
+(4... Bc5 5. c3 {[%why Black's 4...Bc5 brings us to the Giuoco Pianissimo; c3 takes the b4- and d4-squares from Black's pieces and prepares d4 to hit the bishop.] [%plan Castle, Re1, a4 and Nbd2-f1-g3, exactly as in the main line.]}
+5... d6 6. O-O {[%why After 5...d6 Black keeps the centre closed, so White castles and connects the rooks before choosing between d4 and the slow knight manoeuvre.] [%plan Re1 next, then a4.]}
+6... O-O 7. Re1 {[%why With both kings castled, Re1 supports e4 and frees f1 for the knight route Nbd2-f1-g3, the standard plan of this structure.] [%plan a4 against ...a6 and ...b5, then Nbd2.]})
+(4... d5 5. exd5 {[%why Black's 4...d5 attacks both the c4-bishop and the e4-pawn; exd5 is the principled reply, removing the attacker and keeping material level.] [%watch After ...Nxd5 the knight is well centralised; do not waste time with the bishop, castle and aim at e5 instead.]}
+5... Nxd5 6. O-O {[%why After 5...Nxd5 Black has an active central knight but a loose e5-pawn; castling brings the rook towards e1 to attack it.] [%plan Re1 to press e5, then Nbd2-e4 or a4.]}
+6... Be7 7. Re1 {[%why Black's 6...Be7 prepares to castle; Re1 at once adds pressure to e5, so Black must spend time defending it.] [%plan Nbd2-e4, a4 and Bb3, aiming at the d5-knight and Black's centre.]})
+(4... Na5 5. Bb3 {[%why Black's 4...Na5 attacks the c4-bishop; Bb3 keeps it on the a2-g8 diagonal instead of retreating passively.] [%plan If Black takes on b3, recapture axb3 to open the a-file for the rook.]}
+5... Nxb3 6. axb3 {[%why After 5...Nxb3 Black gains the bishop pair, but axb3 is the natural recapture: it opens the a-file for the a1-rook and keeps the pawns solid.] [%plan Castle, Nc3 and Re1; Black spent several knight moves on this trade, so use the time to develop.]})
+5. O-O {[%why After 4...Be7 Black chooses a quiet setup, so White castles straight away and keeps every option for the centre.] [%plan Re1 and c3, then a4 or Nbd2.]}
+5... O-O 6. Re1 {[%why With both kings safe, Re1 supports e4 and frees f1 for the knight on its way from d2 to g3.] [%plan c3 and Nbd2-f1-g3, keeping d4 in reserve.]}
+6... d6 7. c3 {[%why Black's 6...d6 holds e5 solidly, so c3 prepares d4 and gives the bishop the b3-c2 retreat if it is ever chased by ...Na5 or ...b5.] [%plan Nbd2-f1-g3 and a4, then think about d4.]})
+(3... Be7 4. d4 {[%why Black's 3...Be7 is the passive Hungarian Defence; with no pressure on the centre, White strikes with d4 at once and gains space.] [%plan Recapture on d4 with the knight, castle and develop with Nc3.]}
+4... exd4 5. Nxd4 {[%why After 4...exd4 Black gives up the centre; Nxd4 recaptures with a piece and keeps a strong pawn on e4.] [%plan Castle and develop with Nc3; the knight on d4 is well placed.]}
+5... d6 6. O-O {[%why After 5...d6 Black opens the c8-bishop but stays cramped; White castles and keeps the space advantage.] [%plan Nc3, h3 and Re1, keeping Black's pieces off g4.]}
+6... Nf6 7. Nc3 {[%why Black's 6...Nf6 attacks e4; Nc3 defends it with a developing move.] [%plan h3 to keep Black's pieces off g4, then Re1 and Be3.]}
+7... O-O 8. h3 {[%why With Black castled, h3 takes the g4-square from the c8-bishop and the f6-knight, so White's pieces can settle on d4 and e3 undisturbed.] [%plan Re1 and Be3, then Qd2, using the extra space.]})
+(3... Nd4 4. Nxd4 {[%why Black's 3...Nd4 sets the Blackburne Shilling trap; trading on d4 is simple and good, because the knight on d4 was Black's only active piece.] [%watch Do not take on e5: after 4.Nxe5 Qg5 the queen hits the e5-knight and g2, and White gets into serious trouble.] [%alt 4.O-O and 4.c3 are also fine.]}
+4... exd4 5. O-O {[%why After 4...exd4 Black has spent two moves on a knight that is now gone and lags in development; castling gets the king safe and the rook ready for e1.] [%plan d3, then c3 or Re1 to challenge the pawn on d4.]})
+4. c3 {[%why Black's 3...Bc5 also eyes the weak f2-square; c3 prepares d4, which would hit the bishop and gain space with tempo; the queen's knight will develop via d2 instead.] [%plan Play d3 next for a solid centre, castle, then Re1 and Nbd2-f1-g3.] [%alt 4.O-O and 4.d3 are just as playable; 4.b4, the Evans Gambit, is sharper but not part of this repertoire.] [%csl Gd4]}
+4... Nf6
+(4... d6 5. d4 {[%why Black's 4...d6 is slower than 4...Nf6, so White takes the chance to play d4 at once, the idea behind 4.c3.] [%plan After ...exd4, recapture cxd4 for a big pawn centre, then Nc3 and castle.]}
+5... exd4 6. cxd4 {[%why After 5...exd4 White recaptures with the c-pawn, building the ideal centre with pawns on d4 and e4 and attacking the c5-bishop.] [%watch The bishop will retreat or give check on b4; be ready to block with Bd2.]}
+6... Bb6
+(6... Bb4+ 7. Bd2 {[%why Black's 6...Bb4+ checks the king; Bd2 blocks and offers a trade of dark-squared bishops, the simplest way to keep the centre intact.] [%alt 7.Nc3 and 7.Kf1 are sharper options not used here.]}
+7... Bxd2+ 8. Nbxd2 {[%why After 7...Bxd2+ White recaptures with the b1-knight, which develops it and keeps the d4-pawn protected by the queen and the f3-knight.] [%plan Castle and Re1, then think about d5 to gain more space.]})
+7. Nc3 {[%why Black's 6...Bb6 keeps the bishop on the a7-g1 diagonal; Nc3 develops and protects e4, completing the strong centre.] [%plan Castle and Be3, with h3 to stop ...Bg4.] [%watch Black's ...Bg4 pins the f3-knight against the queen and adds pressure on d4; keep d4 well protected, for example with Be3.]})
+5. d3 {[%why Black's 4...Nf6 attacks e4; d3 defends it calmly and keeps the centre closed, the modern Giuoco Pianissimo, instead of the forcing 5.d4.] [%plan Castle, Re1, a4 and Nbd2-f1-g3; d4 comes later once everything is ready.] [%watch With the bishop on c5 and the knight on f6, Black can strike with ...d5; meet it calmly with exd5.]}
+5... d6
+(5... a6 6. O-O {[%why Black's 5...a6 prepares ...Ba7 and ...b5; White castles first, since the move does not threaten anything yet.] [%plan a4 to stop ...b5, then Re1.]}
+6... d6 7. a4 {[%why After 6...d6 Black is ready for ...b5 to chase the c4-bishop; a4 prevents it and gains queenside space.] [%plan Re1 and Nbd2-f1-g3; the bishop can drop back to a2 when needed.]}
+7... Ba7 8. Re1 {[%why Black's 7...Ba7 keeps the bishop safe from a later d4 or b4; Re1 continues normal development and supports e4.] [%plan Nbd2-f1-g3, h3 and Be3 to challenge the a7-bishop.]})
+(5... O-O 6. O-O {[%why After 5...O-O Black's king is safe and ...d5 is in the air; White castles too and keeps the centre solid.] [%watch Black often answers with ...d5 at once; exchange on d5 and attack e5 with Re1.]}
+6... d5 7. exd5 {[%why Black's 6...d5 attacks both the c4-bishop and the e4-pawn; taking on d5 removes the attacker and opens the e-file for the rook.] [%plan Re1 next to pressure e5.]}
+7... Nxd5 8. Re1 {[%why After 7...Nxd5 Black's knight is active but the e5-pawn is exposed on the open e-file; Re1 attacks it and makes Black react.] [%plan Nbd2-e4 or a4, aiming the pieces at Black's centre.]})
+6. O-O {[%why After 5...d6 Black also keeps a solid centre, so White tucks the king away and connects the rooks before choosing a plan.] [%plan Re1 to support e4, then a4 or Nbd2-f1-g3.]}
+6... O-O 7. Re1 {[%why With both kings castled, Re1 backs up e4 and frees f1 for the knight's typical trip Nbd2-f1-g3, while preparing d4 one day.] [%plan Answer ...a6 with a4, then bring the knight to g3.]}
+7... a6 8. a4 {[%why Black's 7...a6 prepares ...Ba7 to keep the bishop away from d4 and b4 hits; a4 gains queenside space and stops ...b5, which would chase the bishop.] [%plan Nbd2-f1-g3 or Bg5, keeping the bishop on c4 as long as possible.] [%alt 8.Bb3 is also common and keeps the bishop safe from ...Na5.]}
+*

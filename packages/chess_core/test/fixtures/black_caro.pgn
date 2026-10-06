@@ -1,0 +1,11 @@
+[Event "Caro-Kann"]
+[ChapterName "Caro-Kann"]
+[Result "*"]
+
+1. e4 c6 {[%why Prepares ...d5 with the c-pawn so that a later exchange on d5 can be met by ...cxd5.]}
+2. d4 d5 {[%why After 2.d4 Black strikes at the e4-pawn at once, the point of 1...c6.]}
+3. e5 (3. Nc3 dxe4 {[%why After 3.Nc3 Black takes on e4 to free the c8-bishop's development.]} 4. Nxe4 Bf5 {[%why After 4.Nxe4 the bishop develops with tempo against the e4-knight.]})
+3... Bf5 {[%why After 3.e5 the light-squared bishop comes out before ...e6 locks it in.]}
+(3... c5 {[%why After 3.e5 Black hits the d4-pawn at once, a sharper alternative to ...Bf5.]})
+4. Nf3 e6 {[%why After 4.Nf3 Black completes the pawn chain and frees the f8-bishop.]}
+*

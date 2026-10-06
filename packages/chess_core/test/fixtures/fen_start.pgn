@@ -1,0 +1,5 @@
+[Event "FEN start"]
+[SetUp "1"]
+[FEN "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq - 0 1"]
+
+1... e5 2. Nf3 *

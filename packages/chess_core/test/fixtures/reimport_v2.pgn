@@ -1,0 +1,5 @@
+[Event "Re-import v2"]
+
+1. e4 {[%why Centre.]} e5 (1... e6 2. d4 {[%why Takes the full centre against the French.]})
+2. Nf3 {[%why Attacks e5.]} Nc6
+3. Bb5 {[%why Spanish.]} (3. Bc4 {[%why Italian.]} Bc5 4. c3 {[%why Prepares d4.]}) *

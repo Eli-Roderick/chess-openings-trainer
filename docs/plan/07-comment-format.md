@@ -13,7 +13,7 @@ A standard PGN file (UTF-8; Latin-1 accepted as a fallback when the file is not 
 - A comment explains the move **immediately before it** (standard PGN placement): `5. O-O {comment about O-O}`.
 - Only moves by the repertoire's colour (the "user moves") need comments. Comments on opponent moves are kept in the file but never shown.
 - A comment before the first move of the first game (`{...} 1. e4`) becomes the repertoire description.
-- A comment at the start of a variation, before its first move (`( {text} 3... Nf6 ...)`), is attached to that first move if it is a user move with no comment of its own (warning `W-COMMENT-BEFORE`); otherwise ignored (info).
+- A comment at the start of a variation, before its first move (`( {text} 3... Nf6 ...)`), is attached to that first move if it is a user move with no comment of its own (warning `W-COMMENT-BEFORE`); otherwise ignored (info `I-COMMENT-BEFORE-IGNORED`).
 
 ## 3. Comment body
 
@@ -54,17 +54,20 @@ input: raw comment text (all comments after a move concatenated with a space, in
    - eval, clk, emt: ignore
    - other: W-UNKNOWN-TAG
 3. leftover text = input with all matched tags removed, trimmed
-4. if no known text tags matched:
-       if input contains "[%" → W-MALFORMED; why = input with "[%why"/"[%plan"/… markers stripped, brackets removed
-       else why = leftover (I-PLAIN)
+4. if the leftover still contains "[%" (a tag that is not well formed) → W-MALFORMED;
+       why = (why + " " + leftover with "[%why"/"[%plan"/… markers stripped and brackets removed).trim()
+   elif no known text tags matched and leftover non-empty → why = leftover (I-PLAIN)
    elif leftover non-empty → W-LOOSE-TEXT; why = (why + " " + leftover).trim()
+   (leftover text used as why has `[`/`]` replaced by parentheses)
+   Corrected in P01: the original rule flagged every comment without a *text* tag that contains "[%",
+   so a comment holding only [%cal …] or [%clk …] (common in lichess exports) was "malformed".
 5. if user move and why empty → W-NO-WHY (if comment exists) or W-NO-COMMENT (if no comment)
 ```
 Output: `MoveComment {why, plan, watch, alt, shapes}`; all fields nullable; empty strings normalized to null.
 
 ## 5. Tree building rules (pgn_importer.dart)
 
-1. Parse all games with dartchess (`PgnGame.parseMultiGamePgn`). Syntax errors → `E-PARSE` with game index and the nearest move path.
+1. Read all games with the strict reader in `pgn/pgn_reader.dart` (corrected in P01: dartchess's `PgnGame.parseMultiGamePgn` silently skips invalid tokens, so it cannot report syntax errors, and its game-splitting regex can split a game at an indented comment line starting with `[%`). dartchess is still used for SAN legality, canonical SAN and FEN. Syntax errors → `E-PARSE` with game index and the nearest move path; reading resumes at the next game.
 2. Reject games whose `FEN`/`SetUp` headers specify a non-initial position, or whose `Variant` is not `Standard`/absent → `E-START`.
 3. Walk each game's mainline and variations, playing SAN with dartchess. Illegal or ambiguous SAN → `E-ILLEGAL` with path ("Game 2: 1.e4 e5 2.Nf3 Nc6 3.Bb5 a6 4.Bxc7??"). Null moves → `E-NULL`.
 4. Insert into the merged tree keyed by UCI from each parent. Same move already present:
@@ -105,6 +108,7 @@ Output: `MoveComment {why, plan, watch, alt, shapes}`; all fields nullable; empt
 | I-ENDS-OPP | info | "{n} lines end with an opponent move" (aggregated, expandable) |
 | I-NAG | info | "NAGs (!, ?, $n) are ignored" (aggregated) |
 | I-MERGED | info | "{n} games merged into one repertoire" |
+| I-COMMENT-BEFORE-IGNORED | info | "{move}: comment placed before the move was ignored" (added in P01) |
 
 `{move}` renders as the SAN path to the move ("1.e4 e5 2.Nf3 Nc6 3.Bb5"). The report has `toPlainText()` (used by "Copy report" and the CLI) and is JSON-serializable (CLI `--json`).
 

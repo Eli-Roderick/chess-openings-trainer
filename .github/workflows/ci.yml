@@ -34,9 +34,13 @@ jobs:
         run: dart format --output=none --set-exit-if-changed .
       - name: Analyze
         run: flutter analyze --fatal-infos
-      - name: Test chess_core
+      - name: Test chess_core (with coverage)
         working-directory: packages/chess_core
-        run: dart test
+        run: dart test --coverage=coverage
+      - name: chess_core coverage >= 90 %
+        run: >-
+          dart run tool/check_coverage.dart --package packages/chess_core
+          --min 90 lib lib/src/pgn lib/src/tree
       - name: Test uci_engine
         working-directory: packages/uci_engine
         run: dart test --exclude-tags engine

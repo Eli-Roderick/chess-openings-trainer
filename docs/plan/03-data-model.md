@@ -187,7 +187,7 @@ final class TreeNode {
 final class RepertoireTree { final TreeNode root; final Side userSide; final List<Line> lines; TreeNode node(int id); }
 final class Line { final String key; final List<TreeNode> path /* excluding root */; final int branchPly; final String label; }
 ```
-`RepertoireTree.fromRows(rows)` builds in O(n); `RepertoireTree.fromPgn(text, side)` (import path) returns the tree plus an `ImportReport`.
+`RepertoireTree.fromRows(rows)` builds in O(n); `importPgn(text, side)` / `importPgnBytes(bytes, side)` (import path, `pgn/pgn_importer.dart`) return the tree plus an `ImportReport`.
 
 ## 7. Migrations
 
