@@ -1,5 +1,6 @@
 /// Pure Dart chess logic for Repertoire Trainer: PGN import and export,
-/// repertoire trees and lines.
+/// repertoire trees and lines, and the training rules (grading, accuracy,
+/// pickers, weak pool, SRS, streak, stats derivation, re-import diff).
 ///
 /// Imports nothing from Flutter or the app, and no `dart:io`.
 library;
@@ -21,6 +22,19 @@ export 'src/pgn/pgn_importer.dart';
 export 'src/pgn/pgn_reader.dart';
 export 'src/pgn/report.dart';
 export 'src/pgn/synthetic_pgn.dart';
+export 'src/training/accuracy.dart';
+export 'src/training/attribution.dart';
+export 'src/training/constants.dart';
+export 'src/training/day_clock.dart';
+export 'src/training/engine_judgement.dart';
+export 'src/training/grading.dart';
+export 'src/training/line_stats_deriver.dart';
+export 'src/training/randomizer.dart';
+export 'src/training/reimport_diff.dart';
+export 'src/training/run.dart';
+export 'src/training/srs.dart';
+export 'src/training/streak.dart';
+export 'src/training/weak_pool.dart';
 export 'src/tree/branch_point.dart';
 export 'src/tree/line.dart';
 export 'src/tree/line_key.dart';
@@ -28,3 +42,5 @@ export 'src/tree/repertoire_tree.dart';
 export 'src/tree/rows.dart';
 export 'src/tree/san_path.dart';
 export 'src/tree/tree_node.dart';
+export 'src/util/clock.dart';
+export 'src/util/rng.dart';

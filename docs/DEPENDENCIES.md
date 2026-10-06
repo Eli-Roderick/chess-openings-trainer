@@ -57,6 +57,11 @@ Versions are the ones resolved in `pubspec.lock` at P00 (Flutter 3.47.6, Dart 3.
 | chess_core | crypto | 3.0.7 | SHA-256 line keys | BSD-3-Clause |
 | chess_core | meta | 1.19.0 | Annotations | BSD-3-Clause |
 | chess_core | collection | 1.19.1 | Collection utilities | BSD-3-Clause |
+| chess_core | freezed_annotation | 3.1.0 | Annotations for the run models (P02) | MIT |
+| chess_core | json_annotation | 4.12.0 | JSON annotations for the run models (P02) | BSD-3-Clause |
+| chess_core (dev) | build_runner | 2.16.1 | Runs freezed/json_serializable in the package (P02) | BSD-3-Clause |
+| chess_core (dev) | freezed | 4.0.1 | Generates the run models (P02) | MIT |
+| chess_core (dev) | json_serializable | 6.14.1 | Generates run JSON (P02) | BSD-3-Clause |
 | uci_engine | async | 2.13.1 | Stream utilities for the UCI process | BSD-3-Clause |
 | uci_engine | meta | 1.19.0 | Annotations | BSD-3-Clause |
 | uci_engine | collection | 1.19.1 | Collection utilities | BSD-3-Clause |

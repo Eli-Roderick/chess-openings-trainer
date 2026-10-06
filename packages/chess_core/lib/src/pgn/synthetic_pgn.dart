@@ -1,9 +1,8 @@
-import 'dart:math';
-
 import 'package:chess_core/src/pgn/move_comment.dart';
 import 'package:chess_core/src/pgn/pgn_exporter.dart';
 import 'package:chess_core/src/tree/line_key.dart';
 import 'package:chess_core/src/tree/tree_node.dart';
+import 'package:chess_core/src/util/rng.dart';
 import 'package:dartchess/dartchess.dart';
 
 /// Generates a legal repertoire PGN with exactly [lines] lines (fewer only if
@@ -17,7 +16,7 @@ String generateSyntheticPgn({
   required int seed,
   Side userSide = Side.white,
 }) {
-  final rng = Random(seed);
+  final rng = SeededRng(seed);
   final root = _GNode(null, Chess.initial, '', '');
   final internal = <_GNode>[];
 
@@ -80,7 +79,7 @@ String generateSyntheticPgn({
 
 /// Picks an index, preferring the first entries of a list sorted by
 /// [_plausibility], so lines look roughly like openings.
-int _pick(Random rng, int n) {
+int _pick(Rng rng, int n) {
   final x = rng.nextDouble();
   return (x * x * x * n).floor();
 }
