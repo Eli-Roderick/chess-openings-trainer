@@ -48,6 +48,9 @@ abstract final class Routes {
   /// Stats.
   static String stats(String id) => '/repertoire/$id/stats';
 
+  /// All lines with sort and filter.
+  static String lineList(String id) => '/repertoire/$id/stats/lines';
+
   /// Line detail.
   static String lineStats(String id, String lineKey) =>
       '/repertoire/$id/stats/line/$lineKey';

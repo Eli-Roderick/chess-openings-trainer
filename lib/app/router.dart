@@ -2,7 +2,6 @@ import 'package:chess_core/chess_core.dart' show RunMode;
 import 'package:flutter/widgets.dart' show ValueKey;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:repertoire_trainer/app/placeholder_screen.dart';
 import 'package:repertoire_trainer/features/board/free_move.dart';
 import 'package:repertoire_trainer/features/browse/browse_screen.dart';
 import 'package:repertoire_trainer/features/drill/drill_screen.dart';
@@ -14,9 +13,10 @@ import 'package:repertoire_trainer/features/play/play_on_screen.dart';
 import 'package:repertoire_trainer/features/repertoire/detail_screen.dart';
 import 'package:repertoire_trainer/features/settings/diagnostics_screen.dart';
 import 'package:repertoire_trainer/features/settings/settings_screen.dart';
+import 'package:repertoire_trainer/features/stats/line_detail_screen.dart';
+import 'package:repertoire_trainer/features/stats/stats_screen.dart';
 
-/// Every route of docs/plan/01-product-spec.md §2 (see `routes.dart`);
-/// screens of later phases are placeholders.
+/// Every route of docs/plan/01-product-spec.md §2 (see `routes.dart`).
 final routerProvider = Provider<GoRouter>((ref) {
   final router = GoRouter(
     routes: [
@@ -76,12 +76,19 @@ final routerProvider = Provider<GoRouter>((ref) {
               GoRoute(
                 path: 'stats',
                 builder: (context, state) =>
-                    const PlaceholderScreen(title: 'Stats'),
+                    StatsScreen(id: state.pathParameters['id']!),
                 routes: [
                   GoRoute(
-                    path: 'line/:lineKey',
+                    path: 'lines',
                     builder: (context, state) =>
-                        const PlaceholderScreen(title: 'Line'),
+                        LineListScreen(id: state.pathParameters['id']!),
+                  ),
+                  GoRoute(
+                    path: 'line/:lineKey',
+                    builder: (context, state) => LineDetailScreen(
+                      id: state.pathParameters['id']!,
+                      lineKey: state.pathParameters['lineKey']!,
+                    ),
                   ),
                 ],
               ),

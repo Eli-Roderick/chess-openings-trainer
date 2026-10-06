@@ -652,18 +652,6 @@ abstract class AppLocalizations {
   /// **'Stats'**
   String get stats;
 
-  /// No description provided for @placeholderTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Coming soon'**
-  String get placeholderTitle;
-
-  /// No description provided for @placeholderBody.
-  ///
-  /// In en, this message translates to:
-  /// **'This screen arrives in a later version.'**
-  String get placeholderBody;
-
   /// No description provided for @settingsTraining.
   ///
   /// In en, this message translates to:
@@ -1881,6 +1869,294 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Jobs'**
   String get deviationJobCount;
+
+  /// No description provided for @streakDays.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1-day streak} other{{count}-day streak}}'**
+  String streakDays(int count);
+
+  /// No description provided for @streakBest.
+  ///
+  /// In en, this message translates to:
+  /// **'Best: {count}'**
+  String streakBest(int count);
+
+  /// No description provided for @streakDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Done today'**
+  String get streakDone;
+
+  /// No description provided for @streakKeep.
+  ///
+  /// In en, this message translates to:
+  /// **'Train one line to keep your streak'**
+  String get streakKeep;
+
+  /// No description provided for @sessionStreak.
+  ///
+  /// In en, this message translates to:
+  /// **'Streak: {count, plural, =1{1 day} other{{count} days}}{done, select, true{, today done} other{}}'**
+  String sessionStreak(int count, String done);
+
+  /// No description provided for @statsOf.
+  ///
+  /// In en, this message translates to:
+  /// **'Stats · {name}'**
+  String statsOf(String name);
+
+  /// No description provided for @statsAccuracy.
+  ///
+  /// In en, this message translates to:
+  /// **'Accuracy'**
+  String get statsAccuracy;
+
+  /// No description provided for @statsCoverage.
+  ///
+  /// In en, this message translates to:
+  /// **'Coverage'**
+  String get statsCoverage;
+
+  /// No description provided for @statsWeak.
+  ///
+  /// In en, this message translates to:
+  /// **'Weak lines'**
+  String get statsWeak;
+
+  /// No description provided for @statsDue.
+  ///
+  /// In en, this message translates to:
+  /// **'Due today'**
+  String get statsDue;
+
+  /// No description provided for @statsRuns.
+  ///
+  /// In en, this message translates to:
+  /// **'Runs'**
+  String get statsRuns;
+
+  /// No description provided for @statsStreak.
+  ///
+  /// In en, this message translates to:
+  /// **'Streak'**
+  String get statsStreak;
+
+  /// No description provided for @accuracyOverTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Accuracy over time'**
+  String get accuracyOverTime;
+
+  /// No description provided for @range30.
+  ///
+  /// In en, this message translates to:
+  /// **'30 d'**
+  String get range30;
+
+  /// No description provided for @range90.
+  ///
+  /// In en, this message translates to:
+  /// **'90 d'**
+  String get range90;
+
+  /// No description provided for @rangeAll.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get rangeAll;
+
+  /// No description provided for @noRunsYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No runs yet'**
+  String get noRunsYet;
+
+  /// No description provided for @worstLines.
+  ///
+  /// In en, this message translates to:
+  /// **'Worst lines'**
+  String get worstLines;
+
+  /// No description provided for @showAll.
+  ///
+  /// In en, this message translates to:
+  /// **'Show all'**
+  String get showAll;
+
+  /// No description provided for @mostMissedMoves.
+  ///
+  /// In en, this message translates to:
+  /// **'Most missed moves'**
+  String get mostMissedMoves;
+
+  /// No description provided for @noMissedMoves.
+  ///
+  /// In en, this message translates to:
+  /// **'No move missed yet (at least 3 attempts).'**
+  String get noMissedMoves;
+
+  /// No description provided for @missedOf.
+  ///
+  /// In en, this message translates to:
+  /// **'{move} (missed {misses} of {attempts})'**
+  String missedOf(String move, int misses, int attempts);
+
+  /// No description provided for @deviationReplies.
+  ///
+  /// In en, this message translates to:
+  /// **'Deviation replies'**
+  String get deviationReplies;
+
+  /// No description provided for @deviationRepliesSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 reply} other{{count} replies}} · {percent} % good'**
+  String deviationRepliesSummary(int count, int percent);
+
+  /// No description provided for @allLines.
+  ///
+  /// In en, this message translates to:
+  /// **'All lines'**
+  String get allLines;
+
+  /// No description provided for @sortBy.
+  ///
+  /// In en, this message translates to:
+  /// **'Sort by'**
+  String get sortBy;
+
+  /// No description provided for @sortAccuracy.
+  ///
+  /// In en, this message translates to:
+  /// **'Accuracy'**
+  String get sortAccuracy;
+
+  /// No description provided for @sortLastPlayed.
+  ///
+  /// In en, this message translates to:
+  /// **'Last played'**
+  String get sortLastPlayed;
+
+  /// No description provided for @sortRuns.
+  ///
+  /// In en, this message translates to:
+  /// **'Runs'**
+  String get sortRuns;
+
+  /// No description provided for @sortOrder.
+  ///
+  /// In en, this message translates to:
+  /// **'Line order'**
+  String get sortOrder;
+
+  /// No description provided for @filterAll.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get filterAll;
+
+  /// No description provided for @filterWeak.
+  ///
+  /// In en, this message translates to:
+  /// **'Weak only'**
+  String get filterWeak;
+
+  /// No description provided for @filterUntrained.
+  ///
+  /// In en, this message translates to:
+  /// **'Untrained'**
+  String get filterUntrained;
+
+  /// No description provided for @filterArchived.
+  ///
+  /// In en, this message translates to:
+  /// **'Archived'**
+  String get filterArchived;
+
+  /// No description provided for @lineRunsCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 run} other{{count} runs}}'**
+  String lineRunsCount(int count);
+
+  /// No description provided for @lineDetail.
+  ///
+  /// In en, this message translates to:
+  /// **'Line'**
+  String get lineDetail;
+
+  /// No description provided for @notInCurrentPgn.
+  ///
+  /// In en, this message translates to:
+  /// **'Not in current PGN'**
+  String get notInCurrentPgn;
+
+  /// No description provided for @weakPool.
+  ///
+  /// In en, this message translates to:
+  /// **'Weak pool'**
+  String get weakPool;
+
+  /// No description provided for @notWeak.
+  ///
+  /// In en, this message translates to:
+  /// **'Not weak'**
+  String get notWeak;
+
+  /// No description provided for @weakCleanRuns.
+  ///
+  /// In en, this message translates to:
+  /// **'In pool · clean runs {done} of {needed}'**
+  String weakCleanRuns(int done, int needed);
+
+  /// No description provided for @srsState.
+  ///
+  /// In en, this message translates to:
+  /// **'Spaced repetition'**
+  String get srsState;
+
+  /// No description provided for @srsNew.
+  ///
+  /// In en, this message translates to:
+  /// **'New'**
+  String get srsNew;
+
+  /// No description provided for @srsStateValue.
+  ///
+  /// In en, this message translates to:
+  /// **'Due {date} · every {days} d · ease {ease}'**
+  String srsStateValue(String date, int days, String ease);
+
+  /// No description provided for @drillThisLine.
+  ///
+  /// In en, this message translates to:
+  /// **'Drill this line'**
+  String get drillThisLine;
+
+  /// No description provided for @moveErrors.
+  ///
+  /// In en, this message translates to:
+  /// **'Errors per move'**
+  String get moveErrors;
+
+  /// No description provided for @missedCount.
+  ///
+  /// In en, this message translates to:
+  /// **'missed {misses} of {attempts}'**
+  String missedCount(int misses, int attempts);
+
+  /// No description provided for @runHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'Run history'**
+  String get runHistory;
+
+  /// No description provided for @abandoned.
+  ///
+  /// In en, this message translates to:
+  /// **'abandoned'**
+  String get abandoned;
 }
 
 class _AppLocalizationsDelegate

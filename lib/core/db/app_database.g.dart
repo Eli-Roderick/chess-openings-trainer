@@ -5282,6 +5282,372 @@ class LineStatsTableCompanion extends UpdateCompanion<DbLineStats> {
   }
 }
 
+class $PlyStatsTable extends PlyStats
+    with TableInfo<$PlyStatsTable, DbPlyStats> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $PlyStatsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _repertoireIdMeta = const VerificationMeta(
+    'repertoireId',
+  );
+  @override
+  late final GeneratedColumn<String> repertoireId = GeneratedColumn<String>(
+    'repertoire_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _ucisMeta = const VerificationMeta('ucis');
+  @override
+  late final GeneratedColumn<String> ucis = GeneratedColumn<String>(
+    'ucis',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _plyMeta = const VerificationMeta('ply');
+  @override
+  late final GeneratedColumn<int> ply = GeneratedColumn<int>(
+    'ply',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _attemptsMeta = const VerificationMeta(
+    'attempts',
+  );
+  @override
+  late final GeneratedColumn<int> attempts = GeneratedColumn<int>(
+    'attempts',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _missesMeta = const VerificationMeta('misses');
+  @override
+  late final GeneratedColumn<int> misses = GeneratedColumn<int>(
+    'misses',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    repertoireId,
+    ucis,
+    ply,
+    attempts,
+    misses,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'ply_stats';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<DbPlyStats> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('repertoire_id')) {
+      context.handle(
+        _repertoireIdMeta,
+        repertoireId.isAcceptableOrUnknown(
+          data['repertoire_id']!,
+          _repertoireIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_repertoireIdMeta);
+    }
+    if (data.containsKey('ucis')) {
+      context.handle(
+        _ucisMeta,
+        ucis.isAcceptableOrUnknown(data['ucis']!, _ucisMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_ucisMeta);
+    }
+    if (data.containsKey('ply')) {
+      context.handle(
+        _plyMeta,
+        ply.isAcceptableOrUnknown(data['ply']!, _plyMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_plyMeta);
+    }
+    if (data.containsKey('attempts')) {
+      context.handle(
+        _attemptsMeta,
+        attempts.isAcceptableOrUnknown(data['attempts']!, _attemptsMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_attemptsMeta);
+    }
+    if (data.containsKey('misses')) {
+      context.handle(
+        _missesMeta,
+        misses.isAcceptableOrUnknown(data['misses']!, _missesMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_missesMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {repertoireId, ucis, ply};
+  @override
+  DbPlyStats map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return DbPlyStats(
+      repertoireId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}repertoire_id'],
+      )!,
+      ucis: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}ucis'],
+      )!,
+      ply: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}ply'],
+      )!,
+      attempts: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}attempts'],
+      )!,
+      misses: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}misses'],
+      )!,
+    );
+  }
+
+  @override
+  $PlyStatsTable createAlias(String alias) {
+    return $PlyStatsTable(attachedDatabase, alias);
+  }
+}
+
+class DbPlyStats extends DataClass implements Insertable<DbPlyStats> {
+  final String repertoireId;
+  final String ucis;
+  final int ply;
+  final int attempts;
+  final int misses;
+  const DbPlyStats({
+    required this.repertoireId,
+    required this.ucis,
+    required this.ply,
+    required this.attempts,
+    required this.misses,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['repertoire_id'] = Variable<String>(repertoireId);
+    map['ucis'] = Variable<String>(ucis);
+    map['ply'] = Variable<int>(ply);
+    map['attempts'] = Variable<int>(attempts);
+    map['misses'] = Variable<int>(misses);
+    return map;
+  }
+
+  PlyStatsCompanion toCompanion(bool nullToAbsent) {
+    return PlyStatsCompanion(
+      repertoireId: Value(repertoireId),
+      ucis: Value(ucis),
+      ply: Value(ply),
+      attempts: Value(attempts),
+      misses: Value(misses),
+    );
+  }
+
+  factory DbPlyStats.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return DbPlyStats(
+      repertoireId: serializer.fromJson<String>(json['repertoireId']),
+      ucis: serializer.fromJson<String>(json['ucis']),
+      ply: serializer.fromJson<int>(json['ply']),
+      attempts: serializer.fromJson<int>(json['attempts']),
+      misses: serializer.fromJson<int>(json['misses']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'repertoireId': serializer.toJson<String>(repertoireId),
+      'ucis': serializer.toJson<String>(ucis),
+      'ply': serializer.toJson<int>(ply),
+      'attempts': serializer.toJson<int>(attempts),
+      'misses': serializer.toJson<int>(misses),
+    };
+  }
+
+  DbPlyStats copyWith({
+    String? repertoireId,
+    String? ucis,
+    int? ply,
+    int? attempts,
+    int? misses,
+  }) => DbPlyStats(
+    repertoireId: repertoireId ?? this.repertoireId,
+    ucis: ucis ?? this.ucis,
+    ply: ply ?? this.ply,
+    attempts: attempts ?? this.attempts,
+    misses: misses ?? this.misses,
+  );
+  DbPlyStats copyWithCompanion(PlyStatsCompanion data) {
+    return DbPlyStats(
+      repertoireId: data.repertoireId.present
+          ? data.repertoireId.value
+          : this.repertoireId,
+      ucis: data.ucis.present ? data.ucis.value : this.ucis,
+      ply: data.ply.present ? data.ply.value : this.ply,
+      attempts: data.attempts.present ? data.attempts.value : this.attempts,
+      misses: data.misses.present ? data.misses.value : this.misses,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('DbPlyStats(')
+          ..write('repertoireId: $repertoireId, ')
+          ..write('ucis: $ucis, ')
+          ..write('ply: $ply, ')
+          ..write('attempts: $attempts, ')
+          ..write('misses: $misses')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(repertoireId, ucis, ply, attempts, misses);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is DbPlyStats &&
+          other.repertoireId == this.repertoireId &&
+          other.ucis == this.ucis &&
+          other.ply == this.ply &&
+          other.attempts == this.attempts &&
+          other.misses == this.misses);
+}
+
+class PlyStatsCompanion extends UpdateCompanion<DbPlyStats> {
+  final Value<String> repertoireId;
+  final Value<String> ucis;
+  final Value<int> ply;
+  final Value<int> attempts;
+  final Value<int> misses;
+  final Value<int> rowid;
+  const PlyStatsCompanion({
+    this.repertoireId = const Value.absent(),
+    this.ucis = const Value.absent(),
+    this.ply = const Value.absent(),
+    this.attempts = const Value.absent(),
+    this.misses = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  PlyStatsCompanion.insert({
+    required String repertoireId,
+    required String ucis,
+    required int ply,
+    required int attempts,
+    required int misses,
+    this.rowid = const Value.absent(),
+  }) : repertoireId = Value(repertoireId),
+       ucis = Value(ucis),
+       ply = Value(ply),
+       attempts = Value(attempts),
+       misses = Value(misses);
+  static Insertable<DbPlyStats> custom({
+    Expression<String>? repertoireId,
+    Expression<String>? ucis,
+    Expression<int>? ply,
+    Expression<int>? attempts,
+    Expression<int>? misses,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (repertoireId != null) 'repertoire_id': repertoireId,
+      if (ucis != null) 'ucis': ucis,
+      if (ply != null) 'ply': ply,
+      if (attempts != null) 'attempts': attempts,
+      if (misses != null) 'misses': misses,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  PlyStatsCompanion copyWith({
+    Value<String>? repertoireId,
+    Value<String>? ucis,
+    Value<int>? ply,
+    Value<int>? attempts,
+    Value<int>? misses,
+    Value<int>? rowid,
+  }) {
+    return PlyStatsCompanion(
+      repertoireId: repertoireId ?? this.repertoireId,
+      ucis: ucis ?? this.ucis,
+      ply: ply ?? this.ply,
+      attempts: attempts ?? this.attempts,
+      misses: misses ?? this.misses,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (repertoireId.present) {
+      map['repertoire_id'] = Variable<String>(repertoireId.value);
+    }
+    if (ucis.present) {
+      map['ucis'] = Variable<String>(ucis.value);
+    }
+    if (ply.present) {
+      map['ply'] = Variable<int>(ply.value);
+    }
+    if (attempts.present) {
+      map['attempts'] = Variable<int>(attempts.value);
+    }
+    if (misses.present) {
+      map['misses'] = Variable<int>(misses.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('PlyStatsCompanion(')
+          ..write('repertoireId: $repertoireId, ')
+          ..write('ucis: $ucis, ')
+          ..write('ply: $ply, ')
+          ..write('attempts: $attempts, ')
+          ..write('misses: $misses, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 class $SettingsTable extends Settings
     with TableInfo<$SettingsTable, DbSetting> {
   @override
@@ -5917,6 +6283,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     this,
   );
   late final $LineStatsTableTable lineStatsTable = $LineStatsTableTable(this);
+  late final $PlyStatsTable plyStats = $PlyStatsTable(this);
   late final $SettingsTable settings = $SettingsTable(this);
   late final $SyncStateTable syncState = $SyncStateTable(this);
   late final $AppMetaTable appMeta = $AppMetaTable(this);
@@ -5936,6 +6303,14 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     'runs_by_synced',
     'CREATE INDEX runs_by_synced ON runs (synced_at)',
   );
+  late final Index runsDailyStats = Index(
+    'runs_daily_stats',
+    'CREATE INDEX runs_daily_stats ON runs (repertoire_id, completed, local_day, graded_count, credit_sum)',
+  );
+  late final Index runsKeyUcis = Index(
+    'runs_key_ucis',
+    'CREATE INDEX runs_key_ucis ON runs (repertoire_id, line_key, ucis)',
+  );
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -5948,6 +6323,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     moveGrades,
     deviationEvents,
     lineStatsTable,
+    plyStats,
     settings,
     syncState,
     appMeta,
@@ -5955,6 +6331,8 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     runsByLine,
     runsByDay,
     runsBySynced,
+    runsDailyStats,
+    runsKeyUcis,
   ];
 }
 
@@ -8471,6 +8849,212 @@ typedef $$LineStatsTableTableProcessedTableManager =
       DbLineStats,
       PrefetchHooks Function()
     >;
+typedef $$PlyStatsTableCreateCompanionBuilder = PlyStatsCompanion Function({
+  required String repertoireId,
+  required String ucis,
+  required int ply,
+  required int attempts,
+  required int misses,
+  Value<int> rowid,
+});
+typedef $$PlyStatsTableUpdateCompanionBuilder = PlyStatsCompanion Function({
+  Value<String> repertoireId,
+  Value<String> ucis,
+  Value<int> ply,
+  Value<int> attempts,
+  Value<int> misses,
+  Value<int> rowid,
+});
+
+class $$PlyStatsTableFilterComposer
+    extends Composer<_$AppDatabase, $PlyStatsTable> {
+  $$PlyStatsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get repertoireId => $composableBuilder(
+    column: $table.repertoireId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get ucis => $composableBuilder(
+    column: $table.ucis,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get ply => $composableBuilder(
+    column: $table.ply,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get attempts => $composableBuilder(
+    column: $table.attempts,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get misses => $composableBuilder(
+    column: $table.misses,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$PlyStatsTableOrderingComposer
+    extends Composer<_$AppDatabase, $PlyStatsTable> {
+  $$PlyStatsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get repertoireId => $composableBuilder(
+    column: $table.repertoireId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get ucis => $composableBuilder(
+    column: $table.ucis,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get ply => $composableBuilder(
+    column: $table.ply,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get attempts => $composableBuilder(
+    column: $table.attempts,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get misses => $composableBuilder(
+    column: $table.misses,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$PlyStatsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $PlyStatsTable> {
+  $$PlyStatsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get repertoireId => $composableBuilder(
+    column: $table.repertoireId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get ucis =>
+      $composableBuilder(column: $table.ucis, builder: (column) => column);
+
+  GeneratedColumn<int> get ply =>
+      $composableBuilder(column: $table.ply, builder: (column) => column);
+
+  GeneratedColumn<int> get attempts =>
+      $composableBuilder(column: $table.attempts, builder: (column) => column);
+
+  GeneratedColumn<int> get misses =>
+      $composableBuilder(column: $table.misses, builder: (column) => column);
+}
+
+class $$PlyStatsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $PlyStatsTable,
+          DbPlyStats,
+          $$PlyStatsTableFilterComposer,
+          $$PlyStatsTableOrderingComposer,
+          $$PlyStatsTableAnnotationComposer,
+          $$PlyStatsTableCreateCompanionBuilder,
+          $$PlyStatsTableUpdateCompanionBuilder,
+          (
+            DbPlyStats,
+            BaseReferences<_$AppDatabase, $PlyStatsTable, DbPlyStats>,
+          ),
+          DbPlyStats,
+          PrefetchHooks Function()
+        > {
+  $$PlyStatsTableTableManager(_$AppDatabase db, $PlyStatsTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$PlyStatsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$PlyStatsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$PlyStatsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> repertoireId = const Value.absent(),
+                Value<String> ucis = const Value.absent(),
+                Value<int> ply = const Value.absent(),
+                Value<int> attempts = const Value.absent(),
+                Value<int> misses = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => PlyStatsCompanion(
+                repertoireId: repertoireId,
+                ucis: ucis,
+                ply: ply,
+                attempts: attempts,
+                misses: misses,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String repertoireId,
+                required String ucis,
+                required int ply,
+                required int attempts,
+                required int misses,
+                Value<int> rowid = const Value.absent(),
+              }) => PlyStatsCompanion.insert(
+                repertoireId: repertoireId,
+                ucis: ucis,
+                ply: ply,
+                attempts: attempts,
+                misses: misses,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$PlyStatsTable, DbPlyStats>(table),
+                  BaseReferences<_$AppDatabase, $PlyStatsTable, DbPlyStats>(
+                    db,
+                    table,
+                    e,
+                  ),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$PlyStatsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $PlyStatsTable,
+      DbPlyStats,
+      $$PlyStatsTableFilterComposer,
+      $$PlyStatsTableOrderingComposer,
+      $$PlyStatsTableAnnotationComposer,
+      $$PlyStatsTableCreateCompanionBuilder,
+      $$PlyStatsTableUpdateCompanionBuilder,
+      (DbPlyStats, BaseReferences<_$AppDatabase, $PlyStatsTable, DbPlyStats>),
+      DbPlyStats,
+      PrefetchHooks Function()
+    >;
 typedef $$SettingsTableCreateCompanionBuilder = SettingsCompanion Function({
   required String key,
   required String value,
@@ -8896,6 +9480,8 @@ class $AppDatabaseManager {
       $$DeviationEventsTableTableManager(_db, _db.deviationEvents);
   $$LineStatsTableTableTableManager get lineStatsTable =>
       $$LineStatsTableTableTableManager(_db, _db.lineStatsTable);
+  $$PlyStatsTableTableManager get plyStats =>
+      $$PlyStatsTableTableManager(_db, _db.plyStats);
   $$SettingsTableTableManager get settings =>
       $$SettingsTableTableManager(_db, _db.settings);
   $$SyncStateTableTableManager get syncState =>

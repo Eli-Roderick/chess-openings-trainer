@@ -339,12 +339,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get stats => 'Stats';
 
   @override
-  String get placeholderTitle => 'Coming soon';
-
-  @override
-  String get placeholderBody => 'This screen arrives in a later version.';
-
-  @override
   String get settingsTraining => 'Training';
 
   @override
@@ -1047,4 +1041,196 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get deviationJobCount => 'Jobs';
+
+  @override
+  String streakDays(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count-day streak',
+      one: '1-day streak',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String streakBest(int count) {
+    return 'Best: $count';
+  }
+
+  @override
+  String get streakDone => 'Done today';
+
+  @override
+  String get streakKeep => 'Train one line to keep your streak';
+
+  @override
+  String sessionStreak(int count, String done) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count days',
+      one: '1 day',
+    );
+    String _temp1 = intl.Intl.selectLogic(done, {
+      'true': ', today done',
+      'other': '',
+    });
+    return 'Streak: $_temp0$_temp1';
+  }
+
+  @override
+  String statsOf(String name) {
+    return 'Stats · $name';
+  }
+
+  @override
+  String get statsAccuracy => 'Accuracy';
+
+  @override
+  String get statsCoverage => 'Coverage';
+
+  @override
+  String get statsWeak => 'Weak lines';
+
+  @override
+  String get statsDue => 'Due today';
+
+  @override
+  String get statsRuns => 'Runs';
+
+  @override
+  String get statsStreak => 'Streak';
+
+  @override
+  String get accuracyOverTime => 'Accuracy over time';
+
+  @override
+  String get range30 => '30 d';
+
+  @override
+  String get range90 => '90 d';
+
+  @override
+  String get rangeAll => 'All';
+
+  @override
+  String get noRunsYet => 'No runs yet';
+
+  @override
+  String get worstLines => 'Worst lines';
+
+  @override
+  String get showAll => 'Show all';
+
+  @override
+  String get mostMissedMoves => 'Most missed moves';
+
+  @override
+  String get noMissedMoves => 'No move missed yet (at least 3 attempts).';
+
+  @override
+  String missedOf(String move, int misses, int attempts) {
+    return '$move (missed $misses of $attempts)';
+  }
+
+  @override
+  String get deviationReplies => 'Deviation replies';
+
+  @override
+  String deviationRepliesSummary(int count, int percent) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count replies',
+      one: '1 reply',
+    );
+    return '$_temp0 · $percent % good';
+  }
+
+  @override
+  String get allLines => 'All lines';
+
+  @override
+  String get sortBy => 'Sort by';
+
+  @override
+  String get sortAccuracy => 'Accuracy';
+
+  @override
+  String get sortLastPlayed => 'Last played';
+
+  @override
+  String get sortRuns => 'Runs';
+
+  @override
+  String get sortOrder => 'Line order';
+
+  @override
+  String get filterAll => 'All';
+
+  @override
+  String get filterWeak => 'Weak only';
+
+  @override
+  String get filterUntrained => 'Untrained';
+
+  @override
+  String get filterArchived => 'Archived';
+
+  @override
+  String lineRunsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count runs',
+      one: '1 run',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get lineDetail => 'Line';
+
+  @override
+  String get notInCurrentPgn => 'Not in current PGN';
+
+  @override
+  String get weakPool => 'Weak pool';
+
+  @override
+  String get notWeak => 'Not weak';
+
+  @override
+  String weakCleanRuns(int done, int needed) {
+    return 'In pool · clean runs $done of $needed';
+  }
+
+  @override
+  String get srsState => 'Spaced repetition';
+
+  @override
+  String get srsNew => 'New';
+
+  @override
+  String srsStateValue(String date, int days, String ease) {
+    return 'Due $date · every $days d · ease $ease';
+  }
+
+  @override
+  String get drillThisLine => 'Drill this line';
+
+  @override
+  String get moveErrors => 'Errors per move';
+
+  @override
+  String missedCount(int misses, int attempts) {
+    return 'missed $misses of $attempts';
+  }
+
+  @override
+  String get runHistory => 'Run history';
+
+  @override
+  String get abandoned => 'abandoned';
 }

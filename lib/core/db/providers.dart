@@ -10,6 +10,7 @@ import 'package:repertoire_trainer/core/db/repositories/run_repository.dart';
 import 'package:repertoire_trainer/core/db/repositories/settings_repository.dart';
 import 'package:repertoire_trainer/core/db/repositories/stats_repository.dart';
 import 'package:repertoire_trainer/core/db/repositories/sync_state_repository.dart';
+import 'package:repertoire_trainer/core/db/stats_queries.dart';
 import 'package:repertoire_trainer/core/db/stats_service.dart';
 import 'package:repertoire_trainer/core/settings/app_settings.dart';
 import 'package:uuid/uuid.dart';
@@ -76,6 +77,11 @@ final runRepositoryProvider = Provider<RunRepository>(
   (ref) => DriftRunRepository(ref.watch(databaseProvider)),
 );
 
+/// SQL aggregates for the stats screens.
+final statsQueriesProvider = Provider<StatsQueries>(
+  (ref) => StatsQueries(ref.watch(databaseProvider)),
+);
+
 /// Derived stats.
 final statsRepositoryProvider = Provider<StatsRepository>(
   (ref) => DriftStatsRepository(ref.watch(databaseProvider)),
@@ -140,3 +146,14 @@ final FutureProviderFamily<RepertoireTree, String> repertoireTreeProvider =
       (ref, repertoireId) =>
           ref.watch(repertoireRepositoryProvider).loadTree(repertoireId),
     );
+
+/// The daily streak (01-product-spec §12, 04-algorithms §9) over completed
+/// runs of all repertoires, updated live after every run and at the day
+/// start.
+final streakProvider = StreamProvider<Streak>((ref) {
+  final today = ref.watch(todayProvider);
+  return ref
+      .watch(runRepositoryProvider)
+      .watchTrainingDays()
+      .map((days) => computeStreak(days, today));
+});

@@ -85,6 +85,13 @@ class Lines extends Table {
 )
 @TableIndex(name: 'runs_by_day', columns: {#localDay})
 @TableIndex(name: 'runs_by_synced', columns: {#syncedAt})
+// Covering indexes for the stats screen (P10): daily aggregates and run
+// counts, and line keys with their moves.
+@TableIndex(
+  name: 'runs_daily_stats',
+  columns: {#repertoireId, #completed, #localDay, #gradedCount, #creditSum},
+)
+@TableIndex(name: 'runs_key_ucis', columns: {#repertoireId, #lineKey, #ucis})
 class Runs extends Table {
   TextColumn get id => text()();
   TextColumn get repertoireId => text()();
@@ -169,6 +176,20 @@ class LineStatsTable extends Table {
 
   @override
   Set<Column<Object>> get primaryKey => {repertoireId, lineKey};
+}
+
+/// Derived first-attempt results per move sequence and ply over completed
+/// runs (cache, P10): the most-missed moves without scanning every grade.
+@DataClassName('DbPlyStats')
+class PlyStats extends Table {
+  TextColumn get repertoireId => text()();
+  TextColumn get ucis => text()();
+  IntColumn get ply => integer()();
+  IntColumn get attempts => integer()();
+  IntColumn get misses => integer()();
+
+  @override
+  Set<Column<Object>> get primaryKey => {repertoireId, ucis, ply};
 }
 
 /// Device-local settings: key → JSON value.

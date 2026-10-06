@@ -4297,6 +4297,316 @@ class LineStatsCompanion extends UpdateCompanion<LineStatsData> {
   }
 }
 
+class PlyStats extends Table with TableInfo<PlyStats, PlyStatsData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  PlyStats(this.attachedDatabase, [this._alias]);
+  late final GeneratedColumn<String> repertoireId = GeneratedColumn<String>(
+    'repertoire_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  late final GeneratedColumn<String> ucis = GeneratedColumn<String>(
+    'ucis',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  late final GeneratedColumn<int> ply = GeneratedColumn<int>(
+    'ply',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  late final GeneratedColumn<int> attempts = GeneratedColumn<int>(
+    'attempts',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  late final GeneratedColumn<int> misses = GeneratedColumn<int>(
+    'misses',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    repertoireId,
+    ucis,
+    ply,
+    attempts,
+    misses,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'ply_stats';
+  @override
+  Set<GeneratedColumn> get $primaryKey => {repertoireId, ucis, ply};
+  @override
+  PlyStatsData map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return PlyStatsData(
+      repertoireId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}repertoire_id'],
+      )!,
+      ucis: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}ucis'],
+      )!,
+      ply: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}ply'],
+      )!,
+      attempts: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}attempts'],
+      )!,
+      misses: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}misses'],
+      )!,
+    );
+  }
+
+  @override
+  PlyStats createAlias(String alias) {
+    return PlyStats(attachedDatabase, alias);
+  }
+
+  @override
+  List<String> get customConstraints => const [
+    'PRIMARY KEY(repertoire_id, ucis, ply)',
+  ];
+  @override
+  bool get dontWriteConstraints => true;
+}
+
+class PlyStatsData extends DataClass implements Insertable<PlyStatsData> {
+  final String repertoireId;
+  final String ucis;
+  final int ply;
+  final int attempts;
+  final int misses;
+  const PlyStatsData({
+    required this.repertoireId,
+    required this.ucis,
+    required this.ply,
+    required this.attempts,
+    required this.misses,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['repertoire_id'] = Variable<String>(repertoireId);
+    map['ucis'] = Variable<String>(ucis);
+    map['ply'] = Variable<int>(ply);
+    map['attempts'] = Variable<int>(attempts);
+    map['misses'] = Variable<int>(misses);
+    return map;
+  }
+
+  PlyStatsCompanion toCompanion(bool nullToAbsent) {
+    return PlyStatsCompanion(
+      repertoireId: Value(repertoireId),
+      ucis: Value(ucis),
+      ply: Value(ply),
+      attempts: Value(attempts),
+      misses: Value(misses),
+    );
+  }
+
+  factory PlyStatsData.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return PlyStatsData(
+      repertoireId: serializer.fromJson<String>(json['repertoireId']),
+      ucis: serializer.fromJson<String>(json['ucis']),
+      ply: serializer.fromJson<int>(json['ply']),
+      attempts: serializer.fromJson<int>(json['attempts']),
+      misses: serializer.fromJson<int>(json['misses']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'repertoireId': serializer.toJson<String>(repertoireId),
+      'ucis': serializer.toJson<String>(ucis),
+      'ply': serializer.toJson<int>(ply),
+      'attempts': serializer.toJson<int>(attempts),
+      'misses': serializer.toJson<int>(misses),
+    };
+  }
+
+  PlyStatsData copyWith({
+    String? repertoireId,
+    String? ucis,
+    int? ply,
+    int? attempts,
+    int? misses,
+  }) => PlyStatsData(
+    repertoireId: repertoireId ?? this.repertoireId,
+    ucis: ucis ?? this.ucis,
+    ply: ply ?? this.ply,
+    attempts: attempts ?? this.attempts,
+    misses: misses ?? this.misses,
+  );
+  PlyStatsData copyWithCompanion(PlyStatsCompanion data) {
+    return PlyStatsData(
+      repertoireId: data.repertoireId.present
+          ? data.repertoireId.value
+          : this.repertoireId,
+      ucis: data.ucis.present ? data.ucis.value : this.ucis,
+      ply: data.ply.present ? data.ply.value : this.ply,
+      attempts: data.attempts.present ? data.attempts.value : this.attempts,
+      misses: data.misses.present ? data.misses.value : this.misses,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('PlyStatsData(')
+          ..write('repertoireId: $repertoireId, ')
+          ..write('ucis: $ucis, ')
+          ..write('ply: $ply, ')
+          ..write('attempts: $attempts, ')
+          ..write('misses: $misses')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(repertoireId, ucis, ply, attempts, misses);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is PlyStatsData &&
+          other.repertoireId == this.repertoireId &&
+          other.ucis == this.ucis &&
+          other.ply == this.ply &&
+          other.attempts == this.attempts &&
+          other.misses == this.misses);
+}
+
+class PlyStatsCompanion extends UpdateCompanion<PlyStatsData> {
+  final Value<String> repertoireId;
+  final Value<String> ucis;
+  final Value<int> ply;
+  final Value<int> attempts;
+  final Value<int> misses;
+  final Value<int> rowid;
+  const PlyStatsCompanion({
+    this.repertoireId = const Value.absent(),
+    this.ucis = const Value.absent(),
+    this.ply = const Value.absent(),
+    this.attempts = const Value.absent(),
+    this.misses = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  PlyStatsCompanion.insert({
+    required String repertoireId,
+    required String ucis,
+    required int ply,
+    required int attempts,
+    required int misses,
+    this.rowid = const Value.absent(),
+  }) : repertoireId = Value(repertoireId),
+       ucis = Value(ucis),
+       ply = Value(ply),
+       attempts = Value(attempts),
+       misses = Value(misses);
+  static Insertable<PlyStatsData> custom({
+    Expression<String>? repertoireId,
+    Expression<String>? ucis,
+    Expression<int>? ply,
+    Expression<int>? attempts,
+    Expression<int>? misses,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (repertoireId != null) 'repertoire_id': repertoireId,
+      if (ucis != null) 'ucis': ucis,
+      if (ply != null) 'ply': ply,
+      if (attempts != null) 'attempts': attempts,
+      if (misses != null) 'misses': misses,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  PlyStatsCompanion copyWith({
+    Value<String>? repertoireId,
+    Value<String>? ucis,
+    Value<int>? ply,
+    Value<int>? attempts,
+    Value<int>? misses,
+    Value<int>? rowid,
+  }) {
+    return PlyStatsCompanion(
+      repertoireId: repertoireId ?? this.repertoireId,
+      ucis: ucis ?? this.ucis,
+      ply: ply ?? this.ply,
+      attempts: attempts ?? this.attempts,
+      misses: misses ?? this.misses,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (repertoireId.present) {
+      map['repertoire_id'] = Variable<String>(repertoireId.value);
+    }
+    if (ucis.present) {
+      map['ucis'] = Variable<String>(ucis.value);
+    }
+    if (ply.present) {
+      map['ply'] = Variable<int>(ply.value);
+    }
+    if (attempts.present) {
+      map['attempts'] = Variable<int>(attempts.value);
+    }
+    if (misses.present) {
+      map['misses'] = Variable<int>(misses.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('PlyStatsCompanion(')
+          ..write('repertoireId: $repertoireId, ')
+          ..write('ucis: $ucis, ')
+          ..write('ply: $ply, ')
+          ..write('attempts: $attempts, ')
+          ..write('misses: $misses, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 class Settings extends Table with TableInfo<Settings, SettingsData> {
   @override
   final GeneratedDatabase attachedDatabase;
@@ -4849,8 +5159,8 @@ class AppMetaCompanion extends UpdateCompanion<AppMetaData> {
   }
 }
 
-class DatabaseAtV1 extends GeneratedDatabase {
-  DatabaseAtV1(QueryExecutor e) : super(e);
+class DatabaseAtV2 extends GeneratedDatabase {
+  DatabaseAtV2(QueryExecutor e) : super(e);
   late final Repertoires repertoires = Repertoires(this);
   late final Nodes nodes = Nodes(this);
   late final Lines lines = Lines(this);
@@ -4858,6 +5168,7 @@ class DatabaseAtV1 extends GeneratedDatabase {
   late final MoveGrades moveGrades = MoveGrades(this);
   late final DeviationEvents deviationEvents = DeviationEvents(this);
   late final LineStats lineStats = LineStats(this);
+  late final PlyStats plyStats = PlyStats(this);
   late final Settings settings = Settings(this);
   late final SyncState syncState = SyncState(this);
   late final AppMeta appMeta = AppMeta(this);
@@ -4877,6 +5188,14 @@ class DatabaseAtV1 extends GeneratedDatabase {
     'runs_by_synced',
     'CREATE INDEX runs_by_synced ON runs (synced_at)',
   );
+  late final Index runsDailyStats = Index(
+    'runs_daily_stats',
+    'CREATE INDEX runs_daily_stats ON runs (repertoire_id, completed, local_day, graded_count, credit_sum)',
+  );
+  late final Index runsKeyUcis = Index(
+    'runs_key_ucis',
+    'CREATE INDEX runs_key_ucis ON runs (repertoire_id, line_key, ucis)',
+  );
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -4889,6 +5208,7 @@ class DatabaseAtV1 extends GeneratedDatabase {
     moveGrades,
     deviationEvents,
     lineStats,
+    plyStats,
     settings,
     syncState,
     appMeta,
@@ -4896,7 +5216,9 @@ class DatabaseAtV1 extends GeneratedDatabase {
     runsByLine,
     runsByDay,
     runsBySynced,
+    runsDailyStats,
+    runsKeyUcis,
   ];
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
 }

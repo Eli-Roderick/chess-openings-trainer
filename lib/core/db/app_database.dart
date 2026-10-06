@@ -2,6 +2,7 @@ import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
 import 'package:drift_flutter/drift_flutter.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:repertoire_trainer/core/db/app_database.steps.dart';
 import 'package:repertoire_trainer/core/db/tables.dart';
 
 part 'app_database.g.dart';
@@ -16,6 +17,7 @@ part 'app_database.g.dart';
     MoveGrades,
     DeviationEvents,
     LineStatsTable,
+    PlyStats,
     Settings,
     SyncState,
     AppMeta,
@@ -43,9 +45,31 @@ class AppDatabase extends _$AppDatabase {
   factory memory() => AppDatabase(NativeDatabase.memory());
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
 
   @override
-  MigrationStrategy get migration =>
-      MigrationStrategy(onCreate: (m) => m.createAll());
+  MigrationStrategy get migration => MigrationStrategy(
+    onCreate: (m) => m.createAll(),
+    onUpgrade: stepByStep(
+      from1To2: (m, schema) async {
+        // P10: the ply_stats cache and the stats indexes.
+        await m.createTable(schema.plyStats);
+        await m.createIndex(schema.runsDailyStats);
+        await m.createIndex(schema.runsKeyUcis);
+        await customStatement(plyStatsFillSql());
+      },
+    ),
+  );
+
+  /// Fills `ply_stats` from the stored grades: every repertoire, or only
+  /// the one bound to `?1` when [oneRepertoire].
+  static String plyStatsFillSql({bool oneRepertoire = false}) {
+    final only = oneRepertoire ? 'AND r.repertoire_id = ?1 ' : '';
+    return 'INSERT INTO ply_stats (repertoire_id, ucis, ply, attempts, misses) '
+        'SELECT r.repertoire_id, r.ucis, g.ply, COUNT(*), '
+        "SUM(CASE WHEN g.result IN ('wrong', 'hint') THEN 1 ELSE 0 END) "
+        'FROM move_grades g JOIN runs r ON r.id = g.run_id '
+        'WHERE r.completed = 1 $only'
+        'GROUP BY r.repertoire_id, r.ucis, g.ply';
+  }
 }

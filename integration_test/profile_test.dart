@@ -2,6 +2,8 @@
 // - P04: Home shows data < 1 s after main() with 10 repertoires.
 // - P05/P06: dragging pieces in Browse for 30 s, with engine analysis
 //   running, has no frame over budget.
+// - P07: drill latency p95 <= 300 ms.
+// - P10: the stats screen opens in < 300 ms with 20k runs.
 // CI runs this file with
 // `xvfb-run flutter drive --profile -d linux
 //   --driver=test_driver/integration_test.dart
@@ -23,10 +25,16 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:path/path.dart' as p;
 import 'package:repertoire_trainer/app/bootstrap.dart';
+import 'package:repertoire_trainer/app/router.dart';
+import 'package:repertoire_trainer/app/routes.dart';
 import 'package:repertoire_trainer/core/db/app_database.dart';
 import 'package:repertoire_trainer/core/db/providers.dart';
 import 'package:repertoire_trainer/core/db/repositories/repertoire_repository.dart';
+import 'package:repertoire_trainer/core/db/repositories/run_repository.dart';
+import 'package:repertoire_trainer/core/db/repositories/settings_repository.dart';
+import 'package:repertoire_trainer/core/db/repositories/stats_repository.dart';
 import 'package:repertoire_trainer/core/db/repositories/sync_state_repository.dart';
+import 'package:repertoire_trainer/core/db/stats_service.dart';
 import 'package:repertoire_trainer/core/diagnostics/drill_latency.dart';
 import 'package:repertoire_trainer/core/diagnostics/frame_stats.dart';
 import 'package:repertoire_trainer/core/diagnostics/startup_timings.dart';
@@ -276,6 +284,115 @@ void main() {
     expect(latency.count, greaterThan(10));
     if (!kDebugMode) {
       expect(latency.p95, lessThanOrEqualTo(const Duration(milliseconds: 300)));
+    }
+  });
+  testWidgets('stats screen opens in < 300 ms with 20k runs', (tester) async {
+    final dir = await Directory.systemTemp.createTemp('rt_stats_');
+    final dbFile = File(p.join(dir.path, 'repertoire.sqlite'));
+    final seed = AppDatabase(NativeDatabase(dbFile));
+    var next = 0;
+    final sync = DriftSyncStateRepository(seed, newId: () => 'dev');
+    final repo = DriftRepertoireRepository(
+      seed,
+      clock: const SystemClock(),
+      newId: () => 'id-${next++}',
+      deviceId: sync.deviceId,
+    );
+    final pgn = generateSyntheticPgn(lines: 12, depth: 12, seed: 2);
+    final id = await repo.create(
+      name: 'Big',
+      color: Side.white,
+      pgn: pgn,
+      result: importPgn(pgn, Side.white),
+    );
+    final lines = await repo.lineRefs(id);
+    final runs = DriftRunRepository(seed);
+    const total = 20000;
+    final start = DateTime.utc(2026);
+    final batch = <RunRecord>[];
+    for (var i = 0; i < total; i++) {
+      final line = lines[i % lines.length];
+      final ucis = line.ucis.split(' ');
+      final at = start.add(Duration(minutes: 20 * i));
+      final grades = [
+        for (var ply = 1; ply <= ucis.length && ply <= 11; ply += 2)
+          MoveGrade(
+            ply: ply,
+            expected: ucis[ply - 1],
+            accepted: ucis[ply - 1],
+            firstAttempt: (i + ply) % 7 == 0 ? 'a2a3' : ucis[ply - 1],
+            result: (i + ply) % 7 == 0
+                ? GradeResult.wrong
+                : GradeResult.correct,
+            credit: (i + ply) % 7 == 0 ? 0 : 1,
+            attempts: 1,
+            hintLevel: 0,
+          ),
+      ];
+      batch.add(
+        RunRecord(
+          id: 'run-$i',
+          repertoireId: id,
+          lineKey: line.key,
+          ucis: line.ucis,
+          mode: RunMode.random,
+          startPly: 0,
+          wrongMoveMode: WrongMoveMode.retry,
+          startedAt: at.millisecondsSinceEpoch - 60000,
+          finishedAt: at.millisecondsSinceEpoch,
+          localDay: localDay(at, 4),
+          completed: true,
+          deviated: false,
+          gradedCount: grades.length,
+          creditSum: grades.fold(0, (a, g) => a + g.credit),
+          hintCount: 0,
+          deviceId: 'dev',
+          grades: grades,
+        ),
+      );
+    }
+    await runs.insertIfAbsent(batch);
+    await StatsService(
+      repertoires: repo,
+      runs: runs,
+      stats: DriftStatsRepository(seed),
+      settings: DriftSettingsRepository(seed).load,
+    ).rebuildRepertoire(id);
+    await seed.close();
+
+    await bootstrap(
+      overrides: [
+        databaseProvider.overrideWith((ref) {
+          final db = AppDatabase(NativeDatabase.createInBackground(dbFile));
+          ref.onDispose(db.close);
+          return db;
+        }),
+      ],
+    );
+    final home = find.text('Big');
+    final watch = Stopwatch()..start();
+    while (home.evaluate().isEmpty && watch.elapsed.inSeconds < 30) {
+      await tester.pump(const Duration(milliseconds: 20));
+    }
+    final container = ProviderScope.containerOf(tester.element(home));
+    // Opening: navigation until the tiles show the run count.
+    final loaded = find.text('$total');
+    final open = Stopwatch()..start();
+    container.read(routerProvider).go(Routes.stats(id));
+    while (loaded.evaluate().isEmpty && open.elapsed.inSeconds < 30) {
+      await tester.pump(const Duration(milliseconds: 5));
+    }
+    open.stop();
+    expect(loaded, findsOneWidget);
+    expect(find.byKey(const Key('accuracy-chart')), findsOneWidget);
+    // The timing log for the acceptance criterion.
+    // ignore: avoid_print
+    print(
+      'Stats screen (${kDebugMode ? 'debug' : 'AOT'}): '
+      '${open.elapsedMilliseconds} ms with $total runs',
+    );
+    if (!kDebugMode) {
+      expect(open.elapsed, lessThan(const Duration(milliseconds: 300)));
     }
   });
 }
