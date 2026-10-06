@@ -8,8 +8,7 @@ import 'package:repertoire_trainer/core/settings/app_settings.dart';
 import 'package:repertoire_trainer/l10n/gen/app_localizations.dart';
 
 /// Settings → Training (01-product-spec §10), the drill parts; also shown
-/// as a sheet from the drill. Deviation, weak-pool, SRS and day-start
-/// settings arrive with their phases.
+/// as a sheet from the drill.
 class TrainingSettingsList extends ConsumerWidget {
   /// Creates the list.
   const new({super.key});
@@ -102,6 +101,55 @@ class TrainingSettingsList extends ConsumerWidget {
           value: s.showLineSummary,
           onChanged: (v) => update((s) => s.copyWith(showLineSummary: v)),
         ),
+        const Divider(),
+        // Opponent deviations (01 §8.1).
+        SwitchListTile(
+          key: const Key('deviations-enabled'),
+          title: Text(l10n.opponentDeviations),
+          value: s.deviationsEnabled,
+          onChanged: (v) => update((s) => s.copyWith(deviationsEnabled: v)),
+        ),
+        ListTile(
+          enabled: s.deviationsEnabled,
+          title: Text(l10n.deviationChance),
+          trailing: Text(l10n.percentValue(s.deviationChancePercent)),
+        ),
+        Slider(
+          key: const Key('deviation-chance'),
+          value: s.deviationChancePercent.toDouble(),
+          max: 100,
+          divisions: 20,
+          label: l10n.percentValue(s.deviationChancePercent),
+          onChanged: s.deviationsEnabled
+              ? (v) =>
+                    update((s) => s.copyWith(deviationChancePercent: v.round()))
+              : null,
+        ),
+        ListTile(
+          enabled: s.deviationsEnabled,
+          title: Text(l10n.deviationTiming),
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: SegmentedButton<DeviationTiming>(
+            key: const Key('deviation-timing'),
+            segments: [
+              ButtonSegment(
+                value: DeviationTiming.endOfLine,
+                label: Text(l10n.timingEndOfLine),
+              ),
+              ButtonSegment(
+                value: DeviationTiming.anywhere,
+                label: Text(l10n.timingAnywhere),
+              ),
+            ],
+            selected: {s.deviationTiming},
+            onSelectionChanged: s.deviationsEnabled
+                ? (v) => update((s) => s.copyWith(deviationTiming: v.single))
+                : null,
+          ),
+        ),
+        const SizedBox(height: 8),
         const Divider(),
         ListTile(
           title: Text(l10n.weakEnterBelow),

@@ -910,9 +910,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get opponentDeviations => 'Opponent deviations';
 
   @override
-  String get arrivesLater => 'Arrives in a later version';
-
-  @override
   String get start => 'Start';
 
   @override
@@ -945,4 +942,109 @@ class AppLocalizationsEn extends AppLocalizations {
   String percentValue(int value) {
     return '$value %';
   }
+
+  @override
+  String get deviationsThisSession => 'This session only';
+
+  @override
+  String get deviationChance => 'Deviation chance per line';
+
+  @override
+  String get deviationTiming => 'Deviation timing';
+
+  @override
+  String get timingEndOfLine => 'End of line';
+
+  @override
+  String get timingAnywhere => 'Anywhere in the line';
+
+  @override
+  String get checkingReply => 'Checking your reply…';
+
+  @override
+  String get goodReply => 'Good reply';
+
+  @override
+  String get inaccurate => 'Inaccurate';
+
+  @override
+  String inaccurateBestWas(String san) {
+    return 'Inaccurate. Best was $san';
+  }
+
+  @override
+  String get deviationMidLine =>
+      'Opponent left your repertoire. Find a good reply.';
+
+  @override
+  String get deviationEndPlaysOn =>
+      'Your repertoire ends here. The opponent plays on: find a good reply.';
+
+  @override
+  String get deviationEndFindMove =>
+      'Your repertoire ends here. Find a good move.';
+
+  @override
+  String get hintFailsReply => 'Hint used: this reply counts as missed.';
+
+  @override
+  String get playOn => 'Play on';
+
+  @override
+  String playOnTitle(String strength) {
+    return 'Play on · $strength';
+  }
+
+  @override
+  String get strengthClub => 'Club 1500';
+
+  @override
+  String get strengthStrong => 'Strong 2000';
+
+  @override
+  String get strengthExpert => 'Expert 2500';
+
+  @override
+  String get backToTraining => 'Back to training';
+
+  @override
+  String get takeBack => 'Take back';
+
+  @override
+  String get analyse => 'Analyse';
+
+  @override
+  String get engineThinking => 'Engine thinking…';
+
+  @override
+  String get resultUserMates => 'Checkmate. You win.';
+
+  @override
+  String get resultEngineMates => 'Checkmate. The engine wins.';
+
+  @override
+  String get resultStalemate => 'Stalemate. Draw.';
+
+  @override
+  String get resultThreefold => 'Threefold repetition. Draw.';
+
+  @override
+  String get resultFiftyMoves => '50-move rule. Draw.';
+
+  @override
+  String get resultInsufficient => 'Insufficient material. Draw.';
+
+  @override
+  String get deviationJobs => 'Deviation candidates';
+
+  @override
+  String get deviationReadyRate => 'Ready when needed';
+
+  @override
+  String deviationReadyValue(int percent, int count) {
+    return '$percent % of $count';
+  }
+
+  @override
+  String get deviationJobCount => 'Jobs';
 }

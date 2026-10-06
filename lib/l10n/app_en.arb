@@ -618,7 +618,6 @@
     }
   },
   "opponentDeviations": "Opponent deviations",
-  "arrivesLater": "Arrives in a later version",
   "start": "Start",
   "continueTraining": "Continue: {name} · {mode}",
   "@continueTraining": {
@@ -645,5 +644,61 @@
         "type": "int"
       }
     }
-  }
+  },
+  "deviationsThisSession": "This session only",
+  "deviationChance": "Deviation chance per line",
+  "deviationTiming": "Deviation timing",
+  "timingEndOfLine": "End of line",
+  "timingAnywhere": "Anywhere in the line",
+  "checkingReply": "Checking your reply…",
+  "goodReply": "Good reply",
+  "inaccurate": "Inaccurate",
+  "inaccurateBestWas": "Inaccurate. Best was {san}",
+  "@inaccurateBestWas": {
+    "placeholders": {
+      "san": {
+        "type": "String"
+      }
+    }
+  },
+  "deviationMidLine": "Opponent left your repertoire. Find a good reply.",
+  "deviationEndPlaysOn": "Your repertoire ends here. The opponent plays on: find a good reply.",
+  "deviationEndFindMove": "Your repertoire ends here. Find a good move.",
+  "hintFailsReply": "Hint used: this reply counts as missed.",
+  "playOn": "Play on",
+  "playOnTitle": "Play on · {strength}",
+  "@playOnTitle": {
+    "placeholders": {
+      "strength": {
+        "type": "String"
+      }
+    }
+  },
+  "strengthClub": "Club 1500",
+  "strengthStrong": "Strong 2000",
+  "strengthExpert": "Expert 2500",
+  "backToTraining": "Back to training",
+  "takeBack": "Take back",
+  "analyse": "Analyse",
+  "engineThinking": "Engine thinking…",
+  "resultUserMates": "Checkmate. You win.",
+  "resultEngineMates": "Checkmate. The engine wins.",
+  "resultStalemate": "Stalemate. Draw.",
+  "resultThreefold": "Threefold repetition. Draw.",
+  "resultFiftyMoves": "50-move rule. Draw.",
+  "resultInsufficient": "Insufficient material. Draw.",
+  "deviationJobs": "Deviation candidates",
+  "deviationReadyRate": "Ready when needed",
+  "deviationReadyValue": "{percent} % of {count}",
+  "@deviationReadyValue": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "deviationJobCount": "Jobs"
 }

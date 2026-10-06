@@ -5,7 +5,7 @@ import 'dart:io';
 
 import 'package:chess_core/chess_core.dart';
 import 'package:chessground/chessground.dart' show PlayerSide;
-import 'package:dartchess/dartchess.dart' show Side;
+import 'package:dartchess/dartchess.dart' show NormalMove, Side;
 import 'package:drift/native.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -17,9 +17,11 @@ import 'package:repertoire_trainer/app/router.dart';
 import 'package:repertoire_trainer/app/routes.dart';
 import 'package:repertoire_trainer/core/db/app_database.dart';
 import 'package:repertoire_trainer/core/db/providers.dart';
+import 'package:repertoire_trainer/core/diagnostics/deviation_timings.dart';
 import 'package:repertoire_trainer/core/settings/app_settings.dart';
 import 'package:repertoire_trainer/features/board/board_position.dart';
 import 'package:repertoire_trainer/features/board/repertoire_board.dart';
+import 'package:repertoire_trainer/features/play/play_on_screen.dart';
 
 var _n = 0;
 
@@ -404,5 +406,72 @@ void main() {
     await tester.tap(find.byKey(const Key('next-line')));
     await _finishLine(c, tester, tree);
     expect((await srs()).dueDay, '2026-10-08');
+  });
+  testWidgets('14. deviation (real engine, 100 %): the line plays from the '
+      'book, then the opponent goes off-book; the reply is judged; Play on '
+      'opens; the run is a normal run', (tester) async {
+    const pgn = '1. e4 e5 2. Nf3 *';
+    final (c, id, tree) = await _openDrill(
+      tester,
+      pgn: pgn,
+      openTrain: false,
+      settings: (s) =>
+          s.copyWith(deviationsEnabled: true, deviationChancePercent: 100),
+    );
+    final timings = DeviationTimings.instance..reset();
+    await _train(c, tester, id, mode: 'random');
+    // The candidates are prefetched at line start (05 §6); a user thinks
+    // longer than this test plays, so let the first search finish.
+    await _until(
+      tester,
+      find.byWidgetPredicate((_) => timings.jobCount > 0),
+      timeout: const Duration(seconds: 30),
+    );
+    final line = tree.lines.single;
+    await _userTurn(tester);
+    await _play(c, tester, 'e2e4');
+    await _userTurn(tester);
+    expect(_board(tester).fen, line.path[1].fen);
+    await _play(c, tester, 'g1f3');
+    await _until(tester, find.textContaining('The opponent plays on'));
+    expect(timings.readyRate, 1.0);
+    // Off-book: the position is not in the repertoire.
+    final fen = _board(tester).fen;
+    expect(tree.nodes.where((n) => n.fen == fen), isEmpty);
+    await _userTurn(tester);
+    final pos = positionFromFen(fen);
+    final reply = [
+      for (final e in pos.legalMoves.entries)
+        for (final to in e.value.squares) NormalMove(from: e.key, to: to).uci,
+    ]..sort();
+    await _play(c, tester, reply.first);
+    await _until(
+      tester,
+      find.byWidgetPredicate(
+        (w) =>
+            w is Text &&
+            w.key == const Key('challenge-text') &&
+            (w.data == 'Good reply' || (w.data ?? '').startsWith('Inaccurate')),
+      ),
+    );
+    await _until(tester, find.byKey(const Key('play-on')));
+    await tester.pump(const Duration(seconds: 1));
+    final run = (await c.read(runRepositoryProvider).runsForRepertoire(id))
+        .single;
+    expect(
+      (run.completed, run.deviated, run.gradedCount, run.creditSum),
+      (true, false, 2, 2.0),
+    );
+    expect(run.deviation!.ply, 4);
+    expect(run.deviation!.replyUci, reply.first);
+    final stats = (await c.read(statsRepositoryProvider).lineStats(id)).single;
+    expect(stats.accuracy, 1.0);
+    // Play on from the position after the reply; back to training goes on.
+    await tester.tap(find.byKey(const Key('play-on')));
+    await _until(tester, find.byType(PlayOnScreen));
+    await _until(tester, find.text('Your move'));
+    await tester.tap(find.byKey(const Key('back-to-training')));
+    await _untilGone(tester, find.byType(PlayOnScreen));
+    await _until(tester, find.byType(RepertoireBoard));
   });
 }

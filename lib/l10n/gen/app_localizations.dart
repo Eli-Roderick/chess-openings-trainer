@@ -1630,12 +1630,6 @@ abstract class AppLocalizations {
   /// **'Opponent deviations'**
   String get opponentDeviations;
 
-  /// No description provided for @arrivesLater.
-  ///
-  /// In en, this message translates to:
-  /// **'Arrives in a later version'**
-  String get arrivesLater;
-
   /// No description provided for @start.
   ///
   /// In en, this message translates to:
@@ -1695,6 +1689,198 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{value} %'**
   String percentValue(int value);
+
+  /// No description provided for @deviationsThisSession.
+  ///
+  /// In en, this message translates to:
+  /// **'This session only'**
+  String get deviationsThisSession;
+
+  /// No description provided for @deviationChance.
+  ///
+  /// In en, this message translates to:
+  /// **'Deviation chance per line'**
+  String get deviationChance;
+
+  /// No description provided for @deviationTiming.
+  ///
+  /// In en, this message translates to:
+  /// **'Deviation timing'**
+  String get deviationTiming;
+
+  /// No description provided for @timingEndOfLine.
+  ///
+  /// In en, this message translates to:
+  /// **'End of line'**
+  String get timingEndOfLine;
+
+  /// No description provided for @timingAnywhere.
+  ///
+  /// In en, this message translates to:
+  /// **'Anywhere in the line'**
+  String get timingAnywhere;
+
+  /// No description provided for @checkingReply.
+  ///
+  /// In en, this message translates to:
+  /// **'Checking your reply…'**
+  String get checkingReply;
+
+  /// No description provided for @goodReply.
+  ///
+  /// In en, this message translates to:
+  /// **'Good reply'**
+  String get goodReply;
+
+  /// No description provided for @inaccurate.
+  ///
+  /// In en, this message translates to:
+  /// **'Inaccurate'**
+  String get inaccurate;
+
+  /// No description provided for @inaccurateBestWas.
+  ///
+  /// In en, this message translates to:
+  /// **'Inaccurate. Best was {san}'**
+  String inaccurateBestWas(String san);
+
+  /// No description provided for @deviationMidLine.
+  ///
+  /// In en, this message translates to:
+  /// **'Opponent left your repertoire. Find a good reply.'**
+  String get deviationMidLine;
+
+  /// No description provided for @deviationEndPlaysOn.
+  ///
+  /// In en, this message translates to:
+  /// **'Your repertoire ends here. The opponent plays on: find a good reply.'**
+  String get deviationEndPlaysOn;
+
+  /// No description provided for @deviationEndFindMove.
+  ///
+  /// In en, this message translates to:
+  /// **'Your repertoire ends here. Find a good move.'**
+  String get deviationEndFindMove;
+
+  /// No description provided for @hintFailsReply.
+  ///
+  /// In en, this message translates to:
+  /// **'Hint used: this reply counts as missed.'**
+  String get hintFailsReply;
+
+  /// No description provided for @playOn.
+  ///
+  /// In en, this message translates to:
+  /// **'Play on'**
+  String get playOn;
+
+  /// No description provided for @playOnTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Play on · {strength}'**
+  String playOnTitle(String strength);
+
+  /// No description provided for @strengthClub.
+  ///
+  /// In en, this message translates to:
+  /// **'Club 1500'**
+  String get strengthClub;
+
+  /// No description provided for @strengthStrong.
+  ///
+  /// In en, this message translates to:
+  /// **'Strong 2000'**
+  String get strengthStrong;
+
+  /// No description provided for @strengthExpert.
+  ///
+  /// In en, this message translates to:
+  /// **'Expert 2500'**
+  String get strengthExpert;
+
+  /// No description provided for @backToTraining.
+  ///
+  /// In en, this message translates to:
+  /// **'Back to training'**
+  String get backToTraining;
+
+  /// No description provided for @takeBack.
+  ///
+  /// In en, this message translates to:
+  /// **'Take back'**
+  String get takeBack;
+
+  /// No description provided for @analyse.
+  ///
+  /// In en, this message translates to:
+  /// **'Analyse'**
+  String get analyse;
+
+  /// No description provided for @engineThinking.
+  ///
+  /// In en, this message translates to:
+  /// **'Engine thinking…'**
+  String get engineThinking;
+
+  /// No description provided for @resultUserMates.
+  ///
+  /// In en, this message translates to:
+  /// **'Checkmate. You win.'**
+  String get resultUserMates;
+
+  /// No description provided for @resultEngineMates.
+  ///
+  /// In en, this message translates to:
+  /// **'Checkmate. The engine wins.'**
+  String get resultEngineMates;
+
+  /// No description provided for @resultStalemate.
+  ///
+  /// In en, this message translates to:
+  /// **'Stalemate. Draw.'**
+  String get resultStalemate;
+
+  /// No description provided for @resultThreefold.
+  ///
+  /// In en, this message translates to:
+  /// **'Threefold repetition. Draw.'**
+  String get resultThreefold;
+
+  /// No description provided for @resultFiftyMoves.
+  ///
+  /// In en, this message translates to:
+  /// **'50-move rule. Draw.'**
+  String get resultFiftyMoves;
+
+  /// No description provided for @resultInsufficient.
+  ///
+  /// In en, this message translates to:
+  /// **'Insufficient material. Draw.'**
+  String get resultInsufficient;
+
+  /// No description provided for @deviationJobs.
+  ///
+  /// In en, this message translates to:
+  /// **'Deviation candidates'**
+  String get deviationJobs;
+
+  /// No description provided for @deviationReadyRate.
+  ///
+  /// In en, this message translates to:
+  /// **'Ready when needed'**
+  String get deviationReadyRate;
+
+  /// No description provided for @deviationReadyValue.
+  ///
+  /// In en, this message translates to:
+  /// **'{percent} % of {count}'**
+  String deviationReadyValue(int percent, int count);
+
+  /// No description provided for @deviationJobCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Jobs'**
+  String get deviationJobCount;
 }
 
 class _AppLocalizationsDelegate

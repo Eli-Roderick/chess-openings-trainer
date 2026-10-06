@@ -69,9 +69,10 @@ final class EngineJudge {
     }
   }
 
-  /// Judges the user's reply [replyUci] after a deviation (04 §7.3); null
-  /// when the engine is unavailable.
-  Future<ReplyJudgement?> judgeReply({
+  /// Judges the user's reply [replyUci] after a deviation (04 §7.3), with
+  /// the best move it was measured against; null when the engine is
+  /// unavailable.
+  Future<({ReplyJudgement judgement, String bestUci})?> judgeReply({
     required String fen,
     required String replyUci,
   }) async {
@@ -80,21 +81,36 @@ final class EngineJudge {
       if (best == null) return null;
       final bestCp = cpOf(best.score);
       if (best.move == replyUci) {
-        return core.judgeReply(
+        return (
+          judgement: core.judgeReply(
+            bestUci: best.move,
+            bestCp: bestCp,
+            replyUci: replyUci,
+          ),
           bestUci: best.move,
-          bestCp: bestCp,
-          replyUci: replyUci,
         );
       }
       final r = await _service.scoreMoves(fen, [replyUci], minTime: _minTime);
       final reply = r.scores[replyUci];
       if (reply == null) return null;
-      return core.judgeReply(
+      return (
+        judgement: core.judgeReply(
+          bestUci: best.move,
+          bestCp: bestCp,
+          replyUci: replyUci,
+          replyCp: cpOf(reply),
+        ),
         bestUci: best.move,
-        bestCp: bestCp,
-        replyUci: replyUci,
-        replyCp: cpOf(reply),
       );
+    } on EngineUnavailable {
+      return null;
+    }
+  }
+
+  /// The engine's best move in [fen]; null when unavailable.
+  Future<String?> bestMove(String fen) async {
+    try {
+      return (await _service.bestLine(fen, minTime: _minTime))?.move;
     } on EngineUnavailable {
       return null;
     }

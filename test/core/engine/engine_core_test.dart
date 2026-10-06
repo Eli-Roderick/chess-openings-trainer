@@ -272,11 +272,13 @@ void main() {
       () async {
         engine.scores = {'b8c6': 20, 'g8f6': 0, 'f7f6': -40};
         final best = await judge().judgeReply(fen: _fen, replyUci: 'b8c6');
-        expect((best!.passed, best.lossCp), (true, 0));
+        expect((best!.judgement.passed, best.judgement.lossCp), (true, 0));
+        expect(best.bestUci, 'b8c6');
         final ok = await judge().judgeReply(fen: _fen, replyUci: 'g8f6');
-        expect((ok!.passed, ok.lossCp), (true, 20));
+        expect((ok!.judgement.passed, ok.judgement.lossCp), (true, 20));
         final bad = await judge().judgeReply(fen: _fen, replyUci: 'f7f6');
-        expect((bad!.passed, bad.lossCp), (false, 60));
+        expect((bad!.judgement.passed, bad.judgement.lossCp), (false, 60));
+        expect(bad.bestUci, 'b8c6');
       },
     );
   });

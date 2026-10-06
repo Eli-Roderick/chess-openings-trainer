@@ -39,6 +39,10 @@ class ModeSheet extends ConsumerStatefulWidget {
 
 class _ModeSheetState extends ConsumerState<ModeSheet> {
   late RunMode _mode = _initialMode();
+  // Mirrors the global setting; this session only (01 §7.1).
+  late bool _deviations =
+      (ref.read(settingsProvider).value ?? const AppSettings())
+          .deviationsEnabled;
   // The repertoire's own choice once trained, else the Training default.
   late bool _fromBranch = widget.summary.lastMode == null
       ? (ref.read(settingsProvider).value ?? const AppSettings())
@@ -62,7 +66,14 @@ class _ModeSheetState extends ConsumerState<ModeSheet> {
     unawaited(repo.setTrainingPrefs(id, startFromBranch: _fromBranch));
     Navigator.of(context).pop();
     unawaited(
-      context.push(Routes.train(id, mode: _mode.name, fromBranch: _fromBranch)),
+      context.push(
+        Routes.train(
+          id,
+          mode: _mode.name,
+          fromBranch: _fromBranch,
+          deviations: _deviations,
+        ),
+      ),
     );
   }
 
@@ -129,13 +140,12 @@ class _ModeSheetState extends ConsumerState<ModeSheet> {
                       setState(() => _fromBranch = v.single),
                 ),
               ),
-              // Opponent deviations arrive in P09.
               SwitchListTile(
                 key: const Key('sheet-deviations'),
-                value: false,
-                onChanged: null,
+                value: _deviations,
+                onChanged: (v) => setState(() => _deviations = v),
                 title: Text(l10n.opponentDeviations),
-                subtitle: Text(l10n.arrivesLater),
+                subtitle: Text(l10n.deviationsThisSession),
               ),
               const SizedBox(height: 8),
               Padding(
