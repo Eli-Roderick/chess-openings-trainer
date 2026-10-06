@@ -7,7 +7,7 @@ project(runner LANGUAGES CXX)
 set(BINARY_NAME "repertoire_trainer")
 # The unique GTK application identifier for this application. See:
 # https://wiki.gnome.org/HowDoI/ChooseApplicationID
-set(APPLICATION_ID "dev.eliroderick.repertoire_trainer")
+set(APPLICATION_ID "dev.eliroderick.repertoiretrainer")
 
 # Explicitly opt in to modern CMake behaviors to avoid warnings with recent
 # versions of CMake.
@@ -126,3 +126,17 @@ if(NOT CMAKE_BUILD_TYPE MATCHES "Debug")
   install(FILES "${AOT_LIBRARY}" DESTINATION "${INSTALL_BUNDLE_LIB_DIR}"
     COMPONENT Runtime)
 endif()
+
+# Stockfish (docs/plan/05-engine.md §2): copy engine/linux/stockfish, placed by
+# tool/fetch_engines.dart, into <bundle>/engine/ as an executable. The source
+# directory is created at configure time and matched at install time, so the
+# bundle always has an engine/ directory, builds without a fetched engine still
+# work, and an engine fetched after configuring is picked up on the next build.
+set(ENGINE_SOURCE_DIR "${PROJECT_SOURCE_DIR}/../engine/linux")
+file(MAKE_DIRECTORY "${ENGINE_SOURCE_DIR}")
+install(DIRECTORY "${ENGINE_SOURCE_DIR}/"
+  DESTINATION "${CMAKE_INSTALL_PREFIX}/engine"
+  COMPONENT Runtime
+  FILES_MATCHING PATTERN "stockfish"
+  PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE
+    GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)

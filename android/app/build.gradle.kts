@@ -1,11 +1,26 @@
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id("dev.flutter.flutter-gradle-plugin")
 }
 
+// Release signing (docs/plan/phases/P00-bootstrap.md task 10). The keystore and
+// its passwords live in android/key.properties (gitignored; see
+// key.properties.example). Without it, release builds fall back to debug
+// signing so local and secret-less CI builds still work.
+val keyPropertiesFile = rootProject.file("key.properties")
+val keyProperties =
+    Properties().apply {
+        if (keyPropertiesFile.exists()) {
+            keyPropertiesFile.inputStream().use { load(it) }
+        }
+    }
+val hasReleaseKey = keyPropertiesFile.exists()
+
 android {
-    namespace = "dev.eliroderick.repertoire_trainer"
+    namespace = "dev.eliroderick.repertoiretrainer"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
@@ -15,25 +30,41 @@ android {
     }
 
     defaultConfig {
-        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId = "dev.eliroderick.repertoire_trainer"
-        // You can update the following values to match your application needs.
-        // For more information, see: https://flutter.dev/to/review-gradle-config.
-        minSdk = flutter.minSdkVersion
+        applicationId = "dev.eliroderick.repertoiretrainer"
+        minSdk = 24
         targetSdk = flutter.targetSdkVersion
-        // Uses the version code from pubspec.yaml. When using split APKs, 1000 * ABI_VERSION
-        // is added automatically by Flutter. (https://developer.android.com/studio/build/configure-apk-splits#configure-APK-versions)
-        // You can force using the value of versionCode by specifying the `-P force-version-code-ignoring-abi=true`
-        // flag during build.
+        // From pubspec.yaml. With --split-per-abi Flutter adds 1000 * ABI_VERSION.
         versionCode = flutter.versionCode
         versionName = flutter.versionName
     }
 
+    signingConfigs {
+        if (hasReleaseKey) {
+            create("release") {
+                storeFile = rootProject.file(keyProperties.getProperty("storeFile"))
+                storePassword = keyProperties.getProperty("storePassword")
+                keyAlias = keyProperties.getProperty("keyAlias")
+                keyPassword = keyProperties.getProperty("keyPassword")
+            }
+        }
+    }
+
     buildTypes {
         release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig = signingConfigs.getByName("debug")
+            signingConfig =
+                if (hasReleaseKey) {
+                    signingConfigs.getByName("release")
+                } else {
+                    signingConfigs.getByName("debug")
+                }
+        }
+    }
+
+    // Stockfish ships as jniLibs/<abi>/libstockfish.so and is executed from
+    // nativeLibraryDir, so it must be extracted on install (docs/plan/05-engine.md §2).
+    packaging {
+        jniLibs {
+            useLegacyPackaging = true
         }
     }
 }

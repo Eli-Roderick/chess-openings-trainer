@@ -2,7 +2,7 @@
 
 ## 1. Choice
 
-- **Stockfish, latest official stable release at bootstrap** (17.1 at the time of writing), with its default embedded NNUE networks. Pinned by URL and SHA-256 in `engine/checksums.json`.
+- **Stockfish, latest official stable release at bootstrap** (17.1 at the time of writing; P00 pinned sf_18, see corrections/P00.md), with its default embedded NNUE networks. Pinned by URL and SHA-256 in `engine/checksums.json`.
 - Driven over **UCI through `dart:io` `Process`** on every platform. One implementation, testable on Linux in CI.
 - Binaries are **not committed**. `tool/fetch_engines.dart --platform <android|windows|linux>` downloads the official release assets, verifies SHA-256, unpacks, and places them. CI caches them.
 

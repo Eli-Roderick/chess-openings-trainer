@@ -1,0 +1,6 @@
+# Copy to android/key.properties (gitignored) to sign release builds with the
+# project's release key. storeFile is relative to the android/ directory.
+storeFile=release.jks
+storePassword=CHANGE_ME
+keyAlias=repertoire
+keyPassword=CHANGE_ME

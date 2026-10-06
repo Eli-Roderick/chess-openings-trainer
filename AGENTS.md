@@ -1,0 +1,11 @@
+# Rules for AI build agents
+
+- Read `docs/plan/README.md` and your phase file before writing code. The plan is the spec; if the plan is ambiguous, pick the reasonable default, write it in `docs/DECISIONS.md`, and continue.
+- Commands: `flutter pub get`; `dart run build_runner build -d`; `dart format .`; `flutter analyze`; `dart test` (inside packages; in `packages/uci_engine` use `dart test --exclude-tags engine` unless the Stockfish binary is fetched, and `dart test --tags engine` after fetching it); `flutter test`; `xvfb-run flutter test integration_test -d linux`; `dart run tool/fetch_engines.dart --platform <linux|android|windows>`.
+- Definition of done for any PR: analyzer clean (no infos), formatted, all tests green, new logic has tests, `docs/PROGRESS.md` updated, generated files committed, no TODOs without an issue reference.
+- Never: put chess/scoring/scheduling logic in widgets; use `print` (use `logging`); add a package not in `docs/DEPENDENCIES.md` without a DECISIONS entry; make network calls outside `features/sync`; block the UI isolate with parsing or DB work; use real time or unseeded randomness in logic (inject `Clock`/`Rng`); edit generated files by hand.
+- Database changes: bump `schemaVersion`, write a migration, add a migration test (drift `SchemaVerifier`, schemas exported to `drift_schemas/`).
+- UI strings go in `app_en.arb`.
+- Keep PRs to one phase (or one sub-phase); title `P<nn>: <name>`.
+- Constructors use the Dart 3.13 primary-name syntax, because very_good_analysis enables `unnecessary_type_name_in_constructor` and CI runs `flutter analyze --fatal-infos`: write `const new({super.key});`, `new(this.x);`, `new named() : ...;` and `factory fromJson(Map<String, dynamic> json) => ...;`, never `const MyWidget({super.key});`, `MyModel.named()` or `factory MyModel.fromJson(...)`. `dart fix --apply` converts old-style constructors.
+- Flutter is pinned in `.flutter-version` (CI reads it). Upgrading Flutter is a DECISIONS entry, not a side effect.
