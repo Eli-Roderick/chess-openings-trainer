@@ -811,7 +811,7 @@ abstract class AppLocalizations {
   /// No description provided for @framesJanky.
   ///
   /// In en, this message translates to:
-  /// **'Janky frames (over 16.7 ms)'**
+  /// **'Frames over budget'**
   String get framesJanky;
 
   /// No description provided for @framesAverageBuild.
@@ -2457,6 +2457,192 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'List Drive files'**
   String get listDriveFiles;
+
+  /// No description provided for @openFileTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Open {name}'**
+  String openFileTitle(String name);
+
+  /// No description provided for @reimportInto.
+  ///
+  /// In en, this message translates to:
+  /// **'Re-import into {name}'**
+  String reimportInto(String name);
+
+  /// No description provided for @shortcutList.
+  ///
+  /// In en, this message translates to:
+  /// **'Keyboard shortcuts'**
+  String get shortcutList;
+
+  /// No description provided for @shortcutsAnywhere.
+  ///
+  /// In en, this message translates to:
+  /// **'Anywhere'**
+  String get shortcutsAnywhere;
+
+  /// No description provided for @shortcutsDrill.
+  ///
+  /// In en, this message translates to:
+  /// **'Drill'**
+  String get shortcutsDrill;
+
+  /// No description provided for @shortcutsBrowse.
+  ///
+  /// In en, this message translates to:
+  /// **'Browse'**
+  String get shortcutsBrowse;
+
+  /// No description provided for @shortcutLeave.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave the screen'**
+  String get shortcutLeave;
+
+  /// No description provided for @shortcutHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Hint, then show the move'**
+  String get shortcutHint;
+
+  /// No description provided for @shortcutBackForward.
+  ///
+  /// In en, this message translates to:
+  /// **'Back / forward one move'**
+  String get shortcutBackForward;
+
+  /// No description provided for @shortcutForward.
+  ///
+  /// In en, this message translates to:
+  /// **'Forward (or the chooser at a fork)'**
+  String get shortcutForward;
+
+  /// No description provided for @shortcutStartEnd.
+  ///
+  /// In en, this message translates to:
+  /// **'Start / end of the line'**
+  String get shortcutStartEnd;
+
+  /// No description provided for @shortcutSiblings.
+  ///
+  /// In en, this message translates to:
+  /// **'Previous / next sibling move'**
+  String get shortcutSiblings;
+
+  /// No description provided for @logsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Logs'**
+  String get logsTitle;
+
+  /// No description provided for @exportLogs.
+  ///
+  /// In en, this message translates to:
+  /// **'Export logs'**
+  String get exportLogs;
+
+  /// No description provided for @logsExported.
+  ///
+  /// In en, this message translates to:
+  /// **'Logs saved'**
+  String get logsExported;
+
+  /// No description provided for @logsUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'No log files on this device'**
+  String get logsUnavailable;
+
+  /// No description provided for @logsExportFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not save the logs: {error}'**
+  String logsExportFailed(String error);
+
+  /// No description provided for @showVariations.
+  ///
+  /// In en, this message translates to:
+  /// **'Show variations'**
+  String get showVariations;
+
+  /// No description provided for @hideVariations.
+  ///
+  /// In en, this message translates to:
+  /// **'Hide variations'**
+  String get hideVariations;
+
+  /// No description provided for @framesBudget.
+  ///
+  /// In en, this message translates to:
+  /// **'Budget (display refresh rate)'**
+  String get framesBudget;
+
+  /// No description provided for @framesOverBudget.
+  ///
+  /// In en, this message translates to:
+  /// **'Over budget'**
+  String get framesOverBudget;
+
+  /// No description provided for @percentDecimal.
+  ///
+  /// In en, this message translates to:
+  /// **'{value} %'**
+  String percentDecimal(String value);
+
+  /// No description provided for @framesWorstRaster.
+  ///
+  /// In en, this message translates to:
+  /// **'Worst raster'**
+  String get framesWorstRaster;
+
+  /// No description provided for @databaseTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Database'**
+  String get databaseTitle;
+
+  /// No description provided for @databaseFileSize.
+  ///
+  /// In en, this message translates to:
+  /// **'File size'**
+  String get databaseFileSize;
+
+  /// No description provided for @databaseLastDerivation.
+  ///
+  /// In en, this message translates to:
+  /// **'Last derivation'**
+  String get databaseLastDerivation;
+
+  /// No description provided for @refresh.
+  ///
+  /// In en, this message translates to:
+  /// **'Refresh'**
+  String get refresh;
+
+  /// No description provided for @importBenchmark.
+  ///
+  /// In en, this message translates to:
+  /// **'Import benchmark'**
+  String get importBenchmark;
+
+  /// No description provided for @importBenchmarkHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Imports a 1,000-line synthetic PGN into a temporary repertoire, then deletes it'**
+  String get importBenchmarkHint;
+
+  /// No description provided for @importBenchmarkRunning.
+  ///
+  /// In en, this message translates to:
+  /// **'Running…'**
+  String get importBenchmarkRunning;
+
+  /// No description provided for @importBenchmarkResult.
+  ///
+  /// In en, this message translates to:
+  /// **'{lines} lines: {total} ms (import {import} ms, store {store} ms)'**
+  String importBenchmarkResult(int lines, int total, int import, int store);
 }
 
 class _AppLocalizationsDelegate

@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 import 'package:repertoire_trainer/app/layout/adaptive_layout.dart';
 import 'package:repertoire_trainer/app/routes.dart';
 import 'package:repertoire_trainer/core/db/providers.dart';
+import 'package:repertoire_trainer/core/errors/describe_error.dart';
 import 'package:repertoire_trainer/core/settings/app_settings.dart';
 import 'package:repertoire_trainer/features/board/repertoire_actions.dart';
 import 'package:repertoire_trainer/features/repertoire/mode_sheet.dart';
@@ -80,9 +81,13 @@ class RepertoireDetailScreen extends ConsumerWidget {
       return Scaffold(
         appBar: AppBar(),
         body: Center(
-          child: summaries.isLoading
-              ? const CircularProgressIndicator()
-              : Text(l10n.loadError('not found')),
+          child: switch (summaries) {
+            AsyncValue(:final error?) => Text(
+              l10n.loadError(describeError(error)),
+            ),
+            AsyncValue(isLoading: true) => const CircularProgressIndicator(),
+            _ => Text(l10n.loadError('not found')),
+          },
         ),
       );
     }
@@ -235,7 +240,14 @@ class _Row extends StatelessWidget {
     child: Row(
       children: [
         Expanded(child: Text(label)),
-        Text(value, style: Theme.of(context).textTheme.titleSmall),
+        const SizedBox(width: 8),
+        Flexible(
+          child: Text(
+            value,
+            textAlign: TextAlign.end,
+            style: Theme.of(context).textTheme.titleSmall,
+          ),
+        ),
       ],
     ),
   );

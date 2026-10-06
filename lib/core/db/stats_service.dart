@@ -6,6 +6,7 @@ import 'package:logging/logging.dart';
 import 'package:repertoire_trainer/core/db/repositories/repertoire_repository.dart';
 import 'package:repertoire_trainer/core/db/repositories/run_repository.dart';
 import 'package:repertoire_trainer/core/db/repositories/stats_repository.dart';
+import 'package:repertoire_trainer/core/diagnostics/derivation_timings.dart';
 import 'package:repertoire_trainer/core/settings/app_settings.dart';
 
 final _log = Logger('stats');
@@ -36,6 +37,7 @@ final class StatsService {
   Future<void> recordRun(RunRecord run) async {
     await _runs.insertRun(run);
     await _stats.addPlyResults(run);
+    final watch = Stopwatch()..start();
     final lines = await _repertoires.lineRefs(run.repertoireId);
     final keys = switch (LineIndex(lines)
         .attribute(ucis: run.ucis, lineKey: run.lineKey)) {
@@ -51,11 +53,13 @@ final class StatsService {
           deriveLines(keys: keys, lines: lines, runs: runs, settings: settings),
     );
     await _stats.upsertDerived(run.repertoireId, derived);
+    DerivationTimings.instance.record('run', watch.elapsed);
   }
 
   /// Re-derives every line of [repertoireId] (after import, re-import or a
   /// sync merge).
   Future<void> rebuildRepertoire(String repertoireId) async {
+    final watch = Stopwatch()..start();
     final lines = await _repertoires.lineRefs(repertoireId);
     final runs = await _runs.runsForDerivation(repertoireId);
     final settings = (await _settings()).deriveSettings;
@@ -65,6 +69,7 @@ final class StatsService {
     );
     await _stats.replaceDerived(repertoireId, derived);
     await _stats.rebuildPlyStats(repertoireId);
+    DerivationTimings.instance.record('repertoire', watch.elapsed);
   }
 
   /// Re-derives every repertoire.

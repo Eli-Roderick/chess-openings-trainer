@@ -6,6 +6,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:logging/logging.dart';
 import 'package:repertoire_trainer/core/db/providers.dart';
+import 'package:repertoire_trainer/core/errors/describe_error.dart';
 import 'package:repertoire_trainer/core/sync/drive_auth.dart';
 import 'package:repertoire_trainer/core/sync/drive_transport.dart';
 import 'package:repertoire_trainer/core/sync/sync_service.dart';
@@ -321,10 +322,13 @@ final class SyncController extends Notifier<SyncStatus> {
           message: e.message,
         );
       }
-    } on Object catch (e) {
-      _log.warning('Sync failed', e);
+    } on Object catch (e, st) {
+      _log.warning('Sync failed', e, st);
       if (ref.mounted) {
-        state = state.copyWith(phase: SyncPhase.error, message: '$e');
+        state = state.copyWith(
+          phase: SyncPhase.error,
+          message: describeError(e),
+        );
       }
     }
   }

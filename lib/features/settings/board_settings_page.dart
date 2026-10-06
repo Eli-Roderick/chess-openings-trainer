@@ -53,8 +53,10 @@ class BoardSettingsPage extends ConsumerWidget {
         ),
         ListTile(
           title: Text(l10n.boardTheme),
-          trailing: DropdownButton<String>(
+          // Below the title: long names at large text scales (P13).
+          subtitle: DropdownButton<String>(
             key: const Key('board-theme'),
+            isExpanded: true,
             value: boardColorSchemes.containsKey(s.boardTheme)
                 ? s.boardTheme
                 : 'brown',
@@ -69,8 +71,10 @@ class BoardSettingsPage extends ConsumerWidget {
         ),
         ListTile(
           title: Text(l10n.pieceSet),
-          trailing: DropdownButton<String>(
+          // Below the title: long names at large text scales (P13).
+          subtitle: DropdownButton<String>(
             key: const Key('piece-set'),
+            isExpanded: true,
             value: pieceSetNamed(s.pieceSet).name,
             onChanged: (v) {
               if (v != null) update((s) => s.copyWith(pieceSet: v));

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:repertoire_trainer/app/app_shortcuts.dart';
 import 'package:repertoire_trainer/app/router.dart';
 import 'package:repertoire_trainer/app/theme/app_theme.dart';
 import 'package:repertoire_trainer/core/db/providers.dart';
@@ -7,6 +8,7 @@ import 'package:repertoire_trainer/core/engine/engine_lifecycle.dart';
 import 'package:repertoire_trainer/core/settings/app_settings.dart';
 import 'package:repertoire_trainer/core/sync/sync_lifecycle.dart';
 import 'package:repertoire_trainer/features/board/board_appearance.dart';
+import 'package:repertoire_trainer/features/import/incoming_file_handler.dart';
 import 'package:repertoire_trainer/l10n/gen/app_localizations.dart';
 
 /// SnackBars shown outside a screen (sync results).
@@ -36,10 +38,14 @@ class RepertoireTrainerApp extends ConsumerWidget {
       },
       routerConfig: ref.watch(routerProvider),
       scaffoldMessengerKey: appMessengerKey,
-      builder: (context, child) => EngineLifecycle(
-        child: SyncLifecycle(
-          messenger: appMessengerKey,
-          child: PieceSetPrecacher(child: child ?? const SizedBox.shrink()),
+      builder: (context, child) => AppShortcuts(
+        child: EngineLifecycle(
+          child: SyncLifecycle(
+            messenger: appMessengerKey,
+            child: IncomingFileHandler(
+              child: PieceSetPrecacher(child: child ?? const SizedBox.shrink()),
+            ),
+          ),
         ),
       ),
       localizationsDelegates: AppLocalizations.localizationsDelegates,

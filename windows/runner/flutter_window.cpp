@@ -3,6 +3,7 @@
 #include <optional>
 
 #include "flutter/generated_plugin_registrant.h"
+#include "window_placement.h"
 
 FlutterWindow::FlutterWindow(const flutter::DartProject& project)
     : project_(project) {}
@@ -13,6 +14,9 @@ bool FlutterWindow::OnCreate() {
   if (!Win32Window::OnCreate()) {
     return false;
   }
+
+  // The size and position of the last session (P13).
+  RestoreWindowPlacement(GetHandle(), &maximized_);
 
   RECT frame = GetClientArea();
 
@@ -29,6 +33,9 @@ bool FlutterWindow::OnCreate() {
 
   flutter_controller_->engine()->SetNextFrameCallback([&]() {
     this->Show();
+    if (maximized_) {
+      ::ShowWindow(GetHandle(), SW_MAXIMIZE);
+    }
   });
 
   // Flutter can complete the first frame before the "show window" callback is
@@ -40,6 +47,7 @@ bool FlutterWindow::OnCreate() {
 }
 
 void FlutterWindow::OnDestroy() {
+  SaveWindowPlacement(GetHandle());
   if (flutter_controller_) {
     flutter_controller_ = nullptr;
   }
@@ -65,6 +73,14 @@ FlutterWindow::MessageHandler(HWND hwnd, UINT const message,
     case WM_FONTCHANGE:
       flutter_controller_->engine()->ReloadSystemFonts();
       break;
+    case WM_GETMINMAXINFO: {
+      // Smallest useful window, scaled for the monitor (P13).
+      const UINT dpi = ::GetDpiForWindow(hwnd);
+      auto* info = reinterpret_cast<MINMAXINFO*>(lparam);
+      info->ptMinTrackSize.x = ::MulDiv(kMinWindowWidth, dpi, 96);
+      info->ptMinTrackSize.y = ::MulDiv(kMinWindowHeight, dpi, 96);
+      return 0;
+    }
   }
 
   return Win32Window::MessageHandler(hwnd, message, wparam, lparam);

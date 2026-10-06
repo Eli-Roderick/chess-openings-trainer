@@ -3,6 +3,7 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:repertoire_trainer/core/errors/describe_error.dart';
 import 'package:repertoire_trainer/core/files/file_service.dart';
 import 'package:repertoire_trainer/core/files/providers.dart';
 import 'package:repertoire_trainer/l10n/gen/app_localizations.dart';
@@ -83,9 +84,15 @@ class PgnSourcePicker extends ConsumerWidget {
                   try {
                     final f = await ref.read(fileServiceProvider).pickPgn();
                     if (f != null) controller.file = f;
-                  } on Object catch (e) {
+                  } on Object catch (e, st) {
                     messenger.showSnackBar(
-                      SnackBar(content: Text(l10n.fileReadError('$e'))),
+                      SnackBar(
+                        content: Text(
+                          l10n.fileReadError(
+                            reportError('File read failed', e, st),
+                          ),
+                        ),
+                      ),
                     );
                   }
                 },

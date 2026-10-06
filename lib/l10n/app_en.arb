@@ -289,7 +289,7 @@
   "notAvailable": "n/a",
   "framesTitle": "Frames",
   "framesCount": "Frames",
-  "framesJanky": "Janky frames (over 16.7 ms)",
+  "framesJanky": "Frames over budget",
   "framesAverageBuild": "Average build",
   "framesAverageRaster": "Average raster",
   "framesWorst": "Worst frame",
@@ -979,5 +979,80 @@
   "deviceIdLabel": "Device id",
   "syncPhaseLabel": "State",
   "syncMessageLabel": "Message",
-  "listDriveFiles": "List Drive files"
+  "listDriveFiles": "List Drive files",
+  "openFileTitle": "Open {name}",
+  "@openFileTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "reimportInto": "Re-import into {name}",
+  "@reimportInto": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "shortcutList": "Keyboard shortcuts",
+  "shortcutsAnywhere": "Anywhere",
+  "shortcutsDrill": "Drill",
+  "shortcutsBrowse": "Browse",
+  "shortcutLeave": "Leave the screen",
+  "shortcutHint": "Hint, then show the move",
+  "shortcutBackForward": "Back / forward one move",
+  "shortcutForward": "Forward (or the chooser at a fork)",
+  "shortcutStartEnd": "Start / end of the line",
+  "shortcutSiblings": "Previous / next sibling move",
+  "logsTitle": "Logs",
+  "exportLogs": "Export logs",
+  "logsExported": "Logs saved",
+  "logsUnavailable": "No log files on this device",
+  "logsExportFailed": "Could not save the logs: {error}",
+  "@logsExportFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "showVariations": "Show variations",
+  "hideVariations": "Hide variations",
+  "framesBudget": "Budget (display refresh rate)",
+  "framesOverBudget": "Over budget",
+  "percentDecimal": "{value} %",
+  "@percentDecimal": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "framesWorstRaster": "Worst raster",
+  "databaseTitle": "Database",
+  "databaseFileSize": "File size",
+  "databaseLastDerivation": "Last derivation",
+  "refresh": "Refresh",
+  "importBenchmark": "Import benchmark",
+  "importBenchmarkHint": "Imports a 1,000-line synthetic PGN into a temporary repertoire, then deletes it",
+  "importBenchmarkRunning": "Running…",
+  "importBenchmarkResult": "{lines} lines: {total} ms (import {import} ms, store {store} ms)",
+  "@importBenchmarkResult": {
+    "placeholders": {
+      "lines": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      },
+      "import": {
+        "type": "int"
+      },
+      "store": {
+        "type": "int"
+      }
+    }
+  }
 }

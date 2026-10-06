@@ -14,6 +14,7 @@ import 'package:repertoire_trainer/core/db/providers.dart';
 import 'package:repertoire_trainer/core/db/repositories/repertoire_repository.dart';
 import 'package:repertoire_trainer/core/diagnostics/startup_timings.dart';
 import 'package:repertoire_trainer/core/engine/engine_providers.dart';
+import 'package:repertoire_trainer/core/errors/describe_error.dart';
 import 'package:repertoire_trainer/core/sync/sync_controller.dart';
 import 'package:repertoire_trainer/features/board/repertoire_actions.dart';
 import 'package:repertoire_trainer/features/home/demo_installer.dart';
@@ -59,8 +60,14 @@ class _HomeState extends ConsumerState<HomeScreen> {
     try {
       final id = await installDemo(ref, name: l10n.demoName);
       if (mounted) unawaited(context.push(Routes.repertoire(id)));
-    } on Object catch (e) {
-      messenger.showSnackBar(SnackBar(content: Text(l10n.importFailed('$e'))));
+    } on Object catch (e, st) {
+      messenger.showSnackBar(
+        SnackBar(
+          content: Text(
+            l10n.importFailed(reportError('Demo import failed', e, st)),
+          ),
+        ),
+      );
     } finally {
       if (mounted) setState(() => _installingDemo = false);
     }
@@ -99,7 +106,7 @@ class _HomeState extends ConsumerState<HomeScreen> {
           : null,
       body: switch (summaries) {
         AsyncValue(:final error?) => Center(
-          child: Text(l10n.loadError('$error')),
+          child: Text(l10n.loadError(describeError(error))),
         ),
         AsyncValue(value: final items?) when items.isEmpty => _EmptyHome(
           installing: _installingDemo,
@@ -312,7 +319,9 @@ class RepertoireCard extends ConsumerWidget {
                         if (summary.weakCount > 0)
                           Text(
                             l10n.weakCount(summary.weakCount),
-                            style: const TextStyle(color: AppColors.warning),
+                            style: TextStyle(
+                              color: AppColors.text(context).warning,
+                            ),
                           ),
                       ],
                     ),
@@ -442,7 +451,7 @@ class StreakCard extends StatelessWidget {
               Icons.local_fire_department,
               size: 32,
               color: streak.current > 0
-                  ? AppColors.warning
+                  ? AppColors.text(context).warning
                   : theme.colorScheme.outline,
             ),
             const SizedBox(width: 12),

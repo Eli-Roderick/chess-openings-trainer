@@ -1,5 +1,6 @@
 import 'package:chess_core/chess_core.dart';
 import 'package:flutter/material.dart';
+import 'package:repertoire_trainer/l10n/gen/app_localizations.dart';
 
 /// One item of a [MoveRow].
 sealed class MoveRowItem {
@@ -303,6 +304,9 @@ class _MoveTreeViewState extends State<MoveTreeView> {
                   key: ValueKey('fork-${item.fork.id}'),
                   visualDensity: VisualDensity.compact,
                   iconSize: 18,
+                  tooltip: item.collapsed
+                      ? AppLocalizations.of(context).showVariations
+                      : AppLocalizations.of(context).hideVariations,
                   onPressed: () => _toggle(item.fork),
                   icon: item.collapsed
                       ? Text('+${item.variations}', style: base)

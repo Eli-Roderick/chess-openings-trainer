@@ -11,6 +11,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:repertoire_trainer/app/app.dart';
 import 'package:repertoire_trainer/core/audio/sound_service.dart';
 import 'package:repertoire_trainer/core/db/app_database.dart';
+import 'package:repertoire_trainer/core/db/database_info.dart';
 import 'package:repertoire_trainer/core/db/providers.dart';
 import 'package:repertoire_trainer/core/engine/binary_locator.dart';
 import 'package:repertoire_trainer/core/engine/engine_providers.dart';
@@ -36,6 +37,7 @@ final class FakeFileService implements FileService {
   Future<String?> saveText({
     required String fileName,
     required String text,
+    String extension = 'pgn',
   }) async {
     saved[fileName] = text;
     return '/fake/$fileName';
@@ -131,6 +133,8 @@ final class AppHarness {
         ),
         if (engine != null)
           transportStarterProvider.overrideWithValue(engine.launch),
+        // In-memory database: no file to size.
+        databasePathProvider.overrideWith((ref) async => null),
         demoPgnProvider.overrideWith(
           (ref) async => fixture('demo_italian_white.pgn'),
         ),

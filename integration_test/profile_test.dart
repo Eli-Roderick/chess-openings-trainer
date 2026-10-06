@@ -3,6 +3,7 @@
 // - P05/P06: dragging pieces in Browse for 30 s, with engine analysis
 //   running, has no frame over budget.
 // - P07: drill latency p95 <= 300 ms.
+// - P13: across 20 drilled lines, < 1 % of frames over the build budget.
 // - P10: the stats screen opens in < 300 ms with 20k runs.
 // - P11: a backup of 20k runs exports in < 3 s and imports in < 5 s.
 // CI runs this file with
@@ -160,7 +161,7 @@ void main() {
     void mark(String what) => marks.add((Timeline.now, what));
     final slow = <FrameTiming>[];
     SchedulerBinding.instance.addTimingsCallback((ts) {
-      slow.addAll(ts.where((t) => t.buildDuration > FrameStats.jankBudget));
+      slow.addAll(ts.where((t) => t.buildDuration > stats.budget));
     });
     final watch = Stopwatch()..start();
     var drags = 0;
@@ -187,7 +188,7 @@ void main() {
     print(
       'Drag script (${kDebugMode ? 'debug' : 'AOT'}): $drags drags, '
       '${stats.count} frames; over '
-      '${FrameStats.jankBudget.inMicroseconds / 1000} ms: ${stats.slowBuilds} '
+      '${stats.budget.inMicroseconds / 1000} ms: ${stats.slowBuilds} '
       'builds, ${stats.slowRasters} rasters; worst build '
       '${stats.worstBuild.inMicroseconds / 1000} ms, mean build '
       '${stats.averageBuild.inMicroseconds / 1000} ms, mean raster '
@@ -216,9 +217,8 @@ void main() {
     if (!kDebugMode) expect(stats.slowBuilds, lessThanOrEqualTo(1));
   });
 
-  testWidgets('drill latency p95 <= 300 ms (user move -> opponent move)', (
-    tester,
-  ) async {
+  testWidgets('drill: latency p95 <= 300 ms (user move -> opponent move); '
+      '< 1 % of frames over budget across 20 lines', (tester) async {
     final dir = await Directory.systemTemp.createTemp('rt_latency_');
     final dbFile = File(p.join(dir.path, 'repertoire.sqlite'));
     await bootstrap(
@@ -260,13 +260,16 @@ void main() {
     await tester.tap(find.byKey(const Key('sheet-start')));
     await waitFor(find.byType(RepertoireBoard));
     DrillLatency.instance.reset();
+    final frames = FrameStats.instance..reset();
     BoardViewState board() =>
         tester.widget<RepertoireBoard>(find.byType(RepertoireBoard)).state;
     var userMoves = 0;
+    var lines = 0;
     final watch = Stopwatch()..start();
-    while (userMoves < 30 && watch.elapsed.inSeconds < 90) {
+    while (lines < 20 && watch.elapsed.inSeconds < 240) {
       await tester.pump(const Duration(milliseconds: 10));
       if (find.byKey(const Key('end-bar')).evaluate().isNotEmpty) {
+        lines++;
         await tester.tap(find.byKey(const Key('next-line')));
         continue;
       }
@@ -285,9 +288,24 @@ void main() {
       '${latency.count} replies, p50 ${latency.p50?.inMilliseconds} ms, '
       'p95 ${latency.p95?.inMilliseconds} ms (opponent delay 250 ms)',
     );
+    // The frame log for the acceptance criterion.
+    // ignore: avoid_print
+    print(
+      'Drill frames: $lines lines, $userMoves user moves, ${frames.count} '
+      'frames; over ${frames.budget.inMicroseconds / 1000} ms: '
+      '${frames.slowBuilds} builds, ${frames.slowRasters} rasters; worst '
+      'build ${frames.worstBuild.inMicroseconds / 1000} ms, mean build '
+      '${frames.averageBuild.inMicroseconds / 1000} ms, mean raster '
+      '${frames.averageRaster.inMicroseconds / 1000} ms',
+    );
+    expect(lines, 20);
     expect(latency.count, greaterThan(10));
+    expect(frames.count, greaterThan(100));
     if (!kDebugMode) {
       expect(latency.p95, lessThanOrEqualTo(const Duration(milliseconds: 300)));
+      // Builds only: the CI runner rasterizes in software (D-71); raster
+      // times are logged and checked on devices.
+      expect(frames.slowBuilds / frames.count, lessThan(0.01));
     }
   });
   testWidgets('stats screen opens in < 300 ms with 20k runs', (tester) async {

@@ -7,6 +7,7 @@ import 'package:intl/intl.dart';
 import 'package:repertoire_trainer/app/layout/adaptive_layout.dart';
 import 'package:repertoire_trainer/core/db/backup_queries.dart';
 import 'package:repertoire_trainer/core/db/providers.dart';
+import 'package:repertoire_trainer/core/errors/describe_error.dart';
 import 'package:repertoire_trainer/core/files/providers.dart';
 import 'package:repertoire_trainer/core/sync/sync_controller.dart';
 import 'package:repertoire_trainer/features/backup/backup_service.dart';
@@ -52,8 +53,15 @@ class _SyncBackupState extends ConsumerState<SyncBackupScreen> {
       if (where != null) {
         _show(messenger, SnackBar(content: Text(l10n.backupSaved(where))));
       }
-    } on Object catch (e) {
-      _show(messenger, SnackBar(content: Text(l10n.backupFailed('$e'))));
+    } on Object catch (e, st) {
+      _show(
+        messenger,
+        SnackBar(
+          content: Text(
+            l10n.backupFailed(reportError('Backup export failed', e, st)),
+          ),
+        ),
+      );
     } finally {
       if (mounted) setState(() => _busy = null);
     }
@@ -139,8 +147,15 @@ class _SyncBackupState extends ConsumerState<SyncBackupScreen> {
           ),
         ),
       );
-    } on Object catch (e) {
-      _show(messenger, SnackBar(content: Text(l10n.backupFailed('$e'))));
+    } on Object catch (e, st) {
+      _show(
+        messenger,
+        SnackBar(
+          content: Text(
+            l10n.backupFailed(reportError('Backup import failed', e, st)),
+          ),
+        ),
+      );
     } finally {
       if (mounted) setState(() => _busy = null);
     }
@@ -292,10 +307,16 @@ class _SyncSection extends ConsumerWidget {
     final messenger = ScaffoldMessenger.of(context);
     try {
       await action();
-    } on Object catch (e) {
+    } on Object catch (e, st) {
       messenger
         ..hideCurrentSnackBar()
-        ..showSnackBar(SnackBar(content: Text(l10n.syncFailed('$e'))));
+        ..showSnackBar(
+          SnackBar(
+            content: Text(
+              l10n.syncFailed(reportError('Sync action failed', e, st)),
+            ),
+          ),
+        );
     }
   }
 
@@ -324,8 +345,14 @@ class _SyncSection extends ConsumerWidget {
     try {
       final n = await c.deleteCloudData();
       messenger.showSnackBar(SnackBar(content: Text(l10n.cloudDeleted(n))));
-    } on Object catch (e) {
-      messenger.showSnackBar(SnackBar(content: Text(l10n.syncFailed('$e'))));
+    } on Object catch (e, st) {
+      messenger.showSnackBar(
+        SnackBar(
+          content: Text(
+            l10n.syncFailed(reportError('Sync action failed', e, st)),
+          ),
+        ),
+      );
     }
   }
 

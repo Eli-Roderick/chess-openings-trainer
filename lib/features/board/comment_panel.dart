@@ -100,7 +100,7 @@ class _Content extends StatelessWidget {
               _Section(
                 label: l10n.commentWatch,
                 text: watch,
-                accent: AppColors.warning,
+                accent: AppColors.text(context).warning,
               ),
             if (comment.alt case final alt? when alt.isNotEmpty)
               _Alternatives(text: alt),
