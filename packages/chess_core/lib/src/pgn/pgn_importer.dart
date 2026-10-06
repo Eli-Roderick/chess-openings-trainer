@@ -28,11 +28,32 @@ final class ImportResult {
   final Duration elapsed;
 }
 
+/// Stages of an import, reported to [importPgn]'s `onStage` callback (the
+/// import screen shows them; docs/plan/01-product-spec.md §5).
+enum ImportStage {
+  /// Decoding the file.
+  reading,
+
+  /// Reading the PGN syntax.
+  parsing,
+
+  /// Merging games and building lines.
+  buildingLines,
+
+  /// Parsing comments and building the report.
+  checkingComments,
+}
+
 /// More lines than this get W-LARGE.
 const largeLineCount = 5000;
 
 /// Imports PGN file bytes (see [decodePgnBytes] for encodings).
-ImportResult importPgnBytes(List<int> bytes, Side userSide) {
+ImportResult importPgnBytes(
+  List<int> bytes,
+  Side userSide, {
+  void Function(ImportStage stage)? onStage,
+}) {
+  onStage?.call(ImportStage.reading);
   if (bytes.length > maxPgnBytes) {
     return ImportResult(
       tree: null,
@@ -40,15 +61,19 @@ ImportResult importPgnBytes(List<int> bytes, Side userSide) {
       elapsed: Duration.zero,
     );
   }
-  return importPgn(decodePgnBytes(bytes), userSide);
+  return importPgn(decodePgnBytes(bytes), userSide, onStage: onStage);
 }
 
 /// Imports a PGN text as a repertoire for [userSide]
 /// (docs/plan/07-comment-format.md §5).
 ///
 /// All games are merged into one tree. The tree is null when the report has
-/// errors.
-ImportResult importPgn(String text, Side userSide) {
+/// errors. [onStage] is called as the import moves through its stages.
+ImportResult importPgn(
+  String text,
+  Side userSide, {
+  void Function(ImportStage stage)? onStage,
+}) {
   final sw = Stopwatch()..start();
   if (exceedsPgnSize(text)) {
     return ImportResult(
@@ -57,7 +82,10 @@ ImportResult importPgn(String text, Side userSide) {
       elapsed: sw.elapsed,
     );
   }
-  final (tree, report) = _Importer(userSide).run(normalizePgnText(text));
+  final (tree, report) = _Importer(
+    userSide,
+    onStage ?? (_) {},
+  ).run(normalizePgnText(text));
   return ImportResult(tree: tree, report: report, elapsed: sw.elapsed);
 }
 
@@ -87,15 +115,17 @@ final class _BNode {
 }
 
 final class _Importer {
-  new(this.userSide);
+  new(this.userSide, this.onStage);
 
   final Side userSide;
+  final void Function(ImportStage) onStage;
   final List<ReportItem> items = [];
   final Set<(_BNode, int)> _conflictsSeen = {};
 
   bool _isUser(int ply) => ply > 0 && ply.isOdd == (userSide == Side.white);
 
   (RepertoireTree?, ImportReport) run(String text) {
+    onStage(ImportStage.parsing);
     final read = readPgn(text);
     for (final e in read.errors) {
       items.add(
@@ -112,6 +142,7 @@ final class _Importer {
       );
     }
 
+    onStage(ImportStage.buildingLines);
     final root = _BNode(null, Chess.initial, ply: 0);
     final headersByGame = <int, Map<String, String>>{};
     var merged = 0;
@@ -142,6 +173,7 @@ final class _Importer {
       items.add(ReportItem(ReportCode.empty));
     }
 
+    onStage(ImportStage.checkingComments);
     final tree = _finish(root, headersByGame, description);
     if (merged > 1) {
       items.add(ReportItem(ReportCode.merged, params: {'n': merged}));

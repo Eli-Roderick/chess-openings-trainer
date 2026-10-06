@@ -150,3 +150,27 @@ Details of the plan corrections are in `docs/plan/corrections/P03.md`.
 **D-59 Repository interfaces.** Each repository is an `abstract interface class` with a drift implementation; Riverpod providers in `core/db/providers.dart` wire them to one `AppDatabase`. Tests use `AppDatabase.memory()` (`NativeDatabase.memory()`), a `FakeClock` and sequential ids. Transaction rollback is tested with a `@visibleForTesting` hook that throws mid-transaction.
 
 **D-60 Schema evolution.** `build.yaml` configures `drift_dev` (schema dir `drift_schemas/`, test dir `test/drift/`). Every schema change: bump `schemaVersion`, add the `onUpgrade` step, run `dart run drift_dev make-migrations` and `dart run drift_dev schema generate drift_schemas/app_database/ test/drift/app_database/generated/`, add an upgrade test.
+
+## P04 (app shell, Home, import)
+
+Details of the plan corrections are in `docs/plan/corrections/P04.md`.
+
+**D-61 Cold start is measured AOT in profile mode.** `integration_test/cold_start_test.dart` seeds 10 repertoires into a database file, boots the app through `bootstrap(overrides: ...)` and checks main → Home data < 1 s. CI runs it with `flutter drive --profile -d linux` because Flutter Driver cannot run desktop release builds; under `flutter test` (debug) it checks < 5 s. The timing log line is `Cold start (AOT): main -> runApp …, first frame +…, Home data +…, total … ms`.
+
+**D-62 One app launch per integration test file.** On Linux desktop a second file in one `flutter test integration_test` invocation fails to attach, so CI names each file. New integration files need their own CI step (or their tests go into `app_test.dart`).
+
+**D-63 Import runner.** `ImportRunner` (`lib/core/import/import_runner.dart`) streams `ImportStageReached` and one `ImportFinished(result, text)`. The app uses an `Isolate.spawn` worker (stages over a port, result via `Isolate.exit`, `kill` on cancel); widget tests use the in-process runner. File bytes go to the isolate and are decoded there; the decoded text comes back so the repository stores exactly what was validated.
+
+**D-64 Startup path.** `main()` is `bootstrap()`: bindings, console logging (the file sink attaches in the background), licence entries, one `ProviderContainer`, `runApp`. After the first frame: frame statistics start, Android's process start time is read over `rt/native.processStartElapsedMs`, the device id is read (opening the database) and the stats service starts. `StartupTimings.markMainStart` clears earlier milestones. Home data is marked when the summaries stream first delivers.
+
+**D-65 Repertoire names.** Trimmed, 1-60 characters. A name already used (case-insensitive) shows a warning under the field but is allowed (01 §5 does not forbid duplicates). Rename uses the same limits.
+
+**D-66 Detail counts.** "Trained" counts current lines with at least one eligible run. "New available today" is `min(srsNewPerDay - lines first seen today, fresh trainable lines)` for this repertoire, never below 0; lines without user moves are not counted.
+
+**D-67 Re-import shows the diff before writing.** The new PGN is imported in the worker, the diff is computed from the stored line refs and the new tree (including comment changes), and only Import writes (`RepertoireRepository.reimport` then `StatsService.rebuildRepertoire`). Colour is fixed on re-import.
+
+**D-68 Delete and undo.** Delete asks for confirmation, soft-deletes, returns to Home and shows a 6 s SnackBar with Undo (`undoDelete`). Purging soft-deleted rows is left to the sync phases.
+
+**D-69 Inter.** Inter 4.1 static TTFs (Regular, Medium, SemiBold, Bold) are bundled in `assets/fonts/` with the OFL text; move text uses tabular figures (`FontFeature.tabularFigures()`). The licence page lists Stockfish (GPL-3.0, source link) and Inter.
+
+**D-70 Layout breakpoint.** `AdaptiveLayout` treats width >= 600 dp or landscape as wide; content is capped at 840 dp and centred, with 16 dp gutters. On wide layouts repertoire cards show a menu button instead of relying on long press.

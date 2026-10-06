@@ -1,5 +1,7 @@
 import 'package:chess_core/chess_core.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/misc.dart'
+    show FutureProviderFamily, StreamProviderFamily;
 import 'package:repertoire_trainer/core/db/app_database.dart';
 import 'package:repertoire_trainer/core/db/repositories/repertoire_repository.dart';
 import 'package:repertoire_trainer/core/db/repositories/run_repository.dart';
@@ -89,3 +91,30 @@ final statsServiceProvider = Provider<StatsService>((ref) {
   ref.onDispose(service.dispose);
   return service;
 });
+
+/// Today's training day (day-start setting applied).
+final todayProvider = Provider<String>((ref) {
+  final settings = ref.watch(settingsProvider).value ?? const AppSettings();
+  return localDay(ref.watch(clockProvider).now(), settings.dayStartHour);
+});
+
+/// Home cards, updated live.
+final repertoireSummariesProvider = StreamProvider<List<RepertoireSummary>>(
+  (ref) => ref
+      .watch(repertoireRepositoryProvider)
+      .watchSummaries(today: ref.watch(todayProvider)),
+);
+
+/// Stats of one repertoire's lines, updated live.
+final StreamProviderFamily<List<LineStats>, String> lineStatsProvider =
+    StreamProvider.family<List<LineStats>, String>(
+      (ref, repertoireId) =>
+          ref.watch(statsRepositoryProvider).watchLineStats(repertoireId),
+    );
+
+/// The current lines of one repertoire.
+final FutureProviderFamily<List<LineRef>, String> lineRefsProvider =
+    FutureProvider.family<List<LineRef>, String>(
+      (ref, repertoireId) =>
+          ref.watch(repertoireRepositoryProvider).lineRefs(repertoireId),
+    );
