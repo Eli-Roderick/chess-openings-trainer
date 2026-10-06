@@ -36,12 +36,25 @@ Android release builds are signed with the key in `android/key.properties` (giti
 dart run build_runner build -d                 # generated code (committed)
 dart format .
 flutter analyze --fatal-infos
-(cd packages/chess_core && dart test)
+(cd packages/chess_core && dart test --coverage=coverage)
+dart run tool/check_coverage.dart --package packages/chess_core --min 90 lib
 (cd packages/uci_engine && dart test --exclude-tags engine)
 (cd packages/uci_engine && dart test --tags engine)   # needs engine/linux/stockfish
 flutter test
 xvfb-run -a flutter test integration_test -d linux
 ```
+
+## Repertoire PGNs
+
+Repertoires are PGN files whose moves by your colour carry structured comments (`[%why …] [%plan …] [%watch …] [%alt …] [%cal …] [%csl …]`, see [`docs/plan/07-comment-format.md`](docs/plan/07-comment-format.md)); [`docs/plan/08-annotation-prompt.md`](docs/plan/08-annotation-prompt.md) has prompts for an AI to write them. Check a file before importing:
+
+```sh
+dart run tool/validate_pgn.dart --colour white [--json] my_repertoire.pgn   # exit 0 ok, 1 errors, 2 usage
+dart run tool/gen_synthetic_pgn.dart --lines 1000 --depth 16 --seed 1 --out big.pgn
+dart run tool/bench_import.dart --lines 1000 --depth 16
+```
+
+`assets/demo/italian_white.pgn` is a fully commented example (12 lines, Italian Game for White).
 
 CI (`.github/workflows/ci.yml`) runs all of the above plus Android and Windows release builds on every push and pull request. Pushing a `v*` tag runs `.github/workflows/release.yml`, which publishes the signed APKs and a Windows zip as a GitHub release.
 

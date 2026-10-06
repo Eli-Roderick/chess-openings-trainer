@@ -1,0 +1,5 @@
+[Event "Castling both ways"]
+
+1. e4 {[%why Centre.]}
+(1. d4 {[%why Queen's pawn.]} d5 2. Nc3 {[%why Develops.]} Nc6 3. Bf4 {[%why Develops.]} Bf5 4. Qd2 {[%why Clears the back rank.]} Qd7 5. O-O-O {[%why Long castling.]} O-O-O)
+1... e5 2. Nf3 {[%why Develops.]} Nf6 3. Bc4 {[%why Develops.]} Bc5 4. O-O {[%why Short castling.]} O-O *

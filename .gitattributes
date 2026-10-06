@@ -1,0 +1,2 @@
+# Encoding fixtures must keep their exact bytes (BOM, CRLF, Latin-1).
+packages/chess_core/test/fixtures/encoding_* -text

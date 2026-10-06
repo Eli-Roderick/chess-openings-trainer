@@ -1,0 +1,11 @@
+[Event "Good game 1"]
+
+1. e4 {[%why Centre.]} e5 *
+
+[Event "Broken game"]
+
+1. e4 e5 2. Nf3 & Nc6 *
+
+[Event "Good game 3"]
+
+1. d4 {[%why Centre.]} d5 *

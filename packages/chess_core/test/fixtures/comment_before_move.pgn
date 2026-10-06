@@ -1,0 +1,9 @@
+[Event "Comments before moves"]
+
+1. e4 {[%why Takes the centre with a pawn and frees the f1-bishop and the queen.]} e5
+2. Nf3 {[%why Develops the knight and attacks the e5-pawn.]}
+({[%why The bishop goes first, keeping the f-pawn free.]} 2. Bc4 Nf6 3. d3 {[%why Defends e4 calmly.]})
+({This comment is ignored because Nc3 has its own.} 2. Nc3 {[%why Defends e4 and develops.]} Nf6 3. f4 {[%why Vienna-style attack on e5.]})
+2... Nc6
+({Another defence of e5.} 2... d6 3. d4 {[%why Challenges the centre at once.]})
+3. Bb5 {[%why After 2...Nc6 the bishop attacks the knight that defends e5.]} *

@@ -88,3 +88,23 @@ Details of the plan corrections are in `docs/plan/corrections/P00.md`.
 **D-34 Android application id has no underscore.** `applicationId` and `namespace` are `dev.eliroderick.repertoiretrainer` (D-22); `MainActivity.kt` moved to that package. The Linux GTK application id was changed to match. Dart package name stays `repertoire_trainer`.
 
 **D-35 CI shape.** A composite action (`.github/actions/setup-flutter`) reads `.flutter-version`, installs that Flutter with `subosito/flutter-action` (SDK and pub cache cached) and runs `flutter pub get`; every job uses it. Gradle is cached by `actions/setup-java`, `engine/.cache` per platform keyed on `engine/checksums.json`. The integration job has one smoke test (`integration_test/app_test.dart`, app boots to Home) so it runs real code from day one. Releases attach both ABI APKs (arm64-v8a for Eli's phone, armeabi-v7a for old 32-bit phones) and the Windows zip.
+
+## P01 (PGN import, comments, validation, lines)
+
+Details of the plan corrections are in `docs/plan/corrections/P01.md`.
+
+**D-36 Own strict PGN reader.** `chess_core/lib/src/pgn/pgn_reader.dart` tokenizes PGN itself (tag pairs with escapes, `{}` and `;` comments, `%` escape lines, RAV, move numbers incl. `1...`/`1…`, NAGs and `!?` glyphs, zero castling, `--`/`Z0` null moves, results) and reports unknown tokens, unterminated comments and unbalanced parentheses as E-PARSE with the game index and the path to the last move, then resumes at the next game. Why: dartchess's parser skips invalid input silently and its game-splitting regex breaks games at indented `[%` comment lines. dartchess is still used for SAN legality (ambiguous SAN is rejected), canonical SAN (check marks added, glyphs dropped) and FEN.
+
+**D-37 Malformed comment rule.** A comment is W-MALFORMED when `[%` remains after removing every well-formed tag; its text is stripped of tag markers and brackets and appended to Why. Plain and loose text used as Why has `[`/`]` replaced by parentheses, so exported comments re-import identically. A comment holding only `[%clk]`, `[%eval]`, `[%cal]` or `[%csl]` is not malformed (W-NO-WHY on a user move).
+
+**D-38 I-COMMENT-BEFORE-IGNORED.** New info code for a variation-start comment that cannot be attached (the move is an opponent move or has its own comment).
+
+**D-39 Merging comments.** The first non-empty comment of a move wins. A later game's comment that parses to a different `MoveComment` is W-CONFLICT (once per move and game); differences only in ignored tags or whitespace are not. An empty first comment (`{}` or only `[%clk]`) is replaced by a later non-empty one. Duplicate siblings in one game keep the first comment without a conflict warning. NAGs are merged without duplicates.
+
+**D-40 Opponent comments and aggregated items.** Opponent moves' comments are parsed and stored like user moves' (the UI shows only user moves'); per-comment warnings are reported for user moves only, opponent comments count towards I-OPP-COMMENT. Lines without any user move get W-NO-USER-MOVE and are not also counted in I-ENDS-OPP. E-EMPTY is reported only when there is no other error (an unreadable or rejected game already explains the empty tree). Report items are in node preorder within each group of checks.
+
+**D-41 Import API.** `importPgn(String, Side)` and `importPgnBytes(List<int>, Side)` return `ImportResult {tree, report, elapsed}`; the tree is null when the report has errors. Bytes: UTF-8 (BOM stripped) with Latin-1 fallback; line endings normalized to `\n`; E-SIZE above 10 MiB (10 × 1024 × 1024 bytes). Accepted starts: no `FEN` header or one whose first four fields equal the initial position; `Variant` absent, `Standard` or `chess` (case-insensitive). The repertoire description is the whitespace-collapsed comment before the first move of game 1.
+
+**D-42 Tree immutability.** `TreeNode` is built parent-first through an `@internal` constructor and `addChild`; `children` is an unmodifiable view, so app code cannot change a tree. `RepertoireTree.fromRows` validates that rows are a preorder tree (ids, parents, child indices) and throws `FormatException` otherwise. `NodeRow`/`LineRow` mirror the `nodes`/`lines` tables (03 §2) including the `shapes` JSON and `nags` text columns.
+
+**D-43 Synthetic PGNs and coverage gate.** `generateSyntheticPgn` lives in `chess_core` (used by the package's benchmark test and by `tool/gen_synthetic_pgn.dart` / `tool/bench_import.dart`); it is seeded and biased towards central and developing moves. The 1,000 × 16 benchmark test measures a cold (first) import and asserts < 1.0 s. CI runs `chess_core` tests with `--coverage` and `tool/check_coverage.dart` (reads VM coverage JSON, no new dependency) requires ≥ 90 % for `lib`, `lib/src/pgn` and `lib/src/tree`.

@@ -1,0 +1,9 @@
+[Event "One line"]
+[Result "*"]
+
+1. e4 {[%why Takes the centre with a pawn and frees the f1-bishop and the queen.]}
+1... e5
+2. Nf3 {[%why Develops the knight and attacks the e5-pawn, so Black must defend it.]}
+2... Nc6
+3. Bb5 {[%why After 2...Nc6 the bishop pins nothing yet but attacks the knight that defends e5.]}
+*

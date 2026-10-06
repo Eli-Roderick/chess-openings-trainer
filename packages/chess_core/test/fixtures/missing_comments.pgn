@@ -1,0 +1,5 @@
+[Event "Missing comments"]
+
+1. e4 e5
+2. Nf3 {[%plan Only a plan, no why.]} Nc6
+3. Bc4 {} *

@@ -1,0 +1,7 @@
+[Event "Underpromotion"]
+
+1. e4 {[%why Centre.]} d5
+2. exd5 {[%why Takes the pawn.]} c6
+3. dxc6 {[%why Accepts the gambit pawn.]} Qb6
+4. cxb7 {[%why Attacks the rook on a8.]} Bd7
+5. bxa8=N {[%why A knight promotion; the knight on a8 also attacks the queen on b6.]} *

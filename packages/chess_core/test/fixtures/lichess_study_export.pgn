@@ -1,0 +1,24 @@
+[Event "Italian study: Italian"]
+[Site "https://lichess.org/study/AbCdEfGh/IjKlMnOp"]
+[Result "*"]
+[Variant "Standard"]
+[ECO "C50"]
+[Opening "Italian Game"]
+[Annotator "https://lichess.org/@/example"]
+[ChapterName "Italian"]
+[UTCDate "2026.10.01"]
+
+1. e4 { [%clk 0:05:00] [%why Takes the centre with a pawn and frees the f1-bishop and the queen.] } 1... e5 { [%clk 0:05:00] [%eval 0.25] } 2. Nf3! { [%why Develops with tempo on the e5-pawn.] [%cal Gf3e5] } 2... Nc6 3. Bc4 $1 { [%why Eyes f7, the square only the king defends.] [%csl Rf7] [%cal Gc4f7] } *
+
+
+[Event "Italian study: Scotch"]
+[Site "https://lichess.org/study/AbCdEfGh/QrStUvWx"]
+[Result "*"]
+[Variant "Standard"]
+[ECO "C45"]
+[Opening "Scotch Game"]
+[Annotator "https://lichess.org/@/example"]
+[ChapterName "Scotch"]
+[UTCDate "2026.10.01"]
+
+1. e4 { [%why Takes the centre with a pawn and frees the f1-bishop and the queen.] } 1... e5 2. Nf3 { [%why Develops with tempo on the e5-pawn.] [%cal Gf3e5] } 2... Nc6 3. d4 { [%why Opens the centre while Black's pieces are undeveloped.] } 3... exd4 ?! 4. Nxd4 { [%why Recaptures and centralises the knight.] [%eval 0.4,22] } *
