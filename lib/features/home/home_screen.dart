@@ -14,6 +14,7 @@ import 'package:repertoire_trainer/core/db/providers.dart';
 import 'package:repertoire_trainer/core/db/repositories/repertoire_repository.dart';
 import 'package:repertoire_trainer/core/diagnostics/startup_timings.dart';
 import 'package:repertoire_trainer/core/engine/engine_providers.dart';
+import 'package:repertoire_trainer/core/sync/sync_controller.dart';
 import 'package:repertoire_trainer/features/board/repertoire_actions.dart';
 import 'package:repertoire_trainer/features/home/demo_installer.dart';
 import 'package:repertoire_trainer/l10n/gen/app_localizations.dart';
@@ -79,6 +80,7 @@ class _HomeState extends ConsumerState<HomeScreen> {
       appBar: AppBar(
         title: Text(l10n.appTitle),
         actions: [
+          const _SyncIcon(),
           IconButton(
             key: const Key('open-settings'),
             tooltip: l10n.settings,
@@ -467,6 +469,41 @@ class StreakCard extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+/// Sync status in the app bar, only with sync on (01 §4): done, running,
+/// or a badge on errors; a tap syncs now (or opens the settings when the
+/// user must sign in again).
+class _SyncIcon extends ConsumerWidget {
+  const new();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final status = ref.watch(syncControllerProvider);
+    if (!status.enabled) return const SizedBox.shrink();
+    final l10n = AppLocalizations.of(context);
+    final problem = switch (status.phase) {
+      SyncPhase.offline || SyncPhase.error || SyncPhase.signInNeeded => true,
+      _ => false,
+    };
+    return IconButton(
+      key: const Key('home-sync'),
+      tooltip: l10n.syncNow,
+      onPressed: status.phase == SyncPhase.signInNeeded
+          ? () => context.push(Routes.settingsSection('sync'))
+          : () =>
+                unawaited(ref.read(syncControllerProvider.notifier).syncNow()),
+      icon: status.phase == SyncPhase.syncing
+          ? const SizedBox.square(
+              dimension: 20,
+              child: CircularProgressIndicator(strokeWidth: 2),
+            )
+          : Badge(
+              isLabelVisible: problem,
+              child: Icon(problem ? Icons.sync_problem : Icons.cloud_done),
+            ),
     );
   }
 }

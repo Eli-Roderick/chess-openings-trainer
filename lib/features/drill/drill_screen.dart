@@ -12,12 +12,14 @@ import 'package:repertoire_trainer/app/shortcuts.dart';
 import 'package:repertoire_trainer/app/theme/colors.dart';
 import 'package:repertoire_trainer/core/audio/sound_service.dart';
 import 'package:repertoire_trainer/core/db/providers.dart';
+import 'package:repertoire_trainer/core/db/repositories/repertoire_repository.dart';
 import 'package:repertoire_trainer/core/diagnostics/deviation_timings.dart';
 import 'package:repertoire_trainer/core/diagnostics/drill_latency.dart';
 import 'package:repertoire_trainer/core/engine/engine_judge.dart';
 import 'package:repertoire_trainer/core/engine/engine_providers.dart';
 import 'package:repertoire_trainer/core/haptics/haptics_service.dart';
 import 'package:repertoire_trainer/core/settings/app_settings.dart';
+import 'package:repertoire_trainer/core/sync/sync_controller.dart';
 import 'package:repertoire_trainer/features/board/comment_panel.dart';
 import 'package:repertoire_trainer/features/board/free_move.dart';
 import 'package:repertoire_trainer/features/board/repertoire_board.dart';
@@ -122,6 +124,8 @@ class _DrillScreenState extends ConsumerState<DrillScreen> {
   DrillController? _controller;
   String? _error;
   bool _leaving = false;
+  SyncGate? _gate;
+  StreamSubscription<SyncChange>? _syncChanges;
 
   @override
   void initState() {
@@ -192,6 +196,15 @@ class _DrillScreenState extends ConsumerState<DrillScreen> {
         ),
       );
       setState(() => _controller = controller);
+      // Sync waits while a line is played (06 §6) and hands over changes
+      // to this repertoire (P12 task 4).
+      final gate = container.read(syncGateProvider);
+      _gate = gate;
+      controller.addListener(() => gate.busy = controller.inLine);
+      _syncChanges = container
+          .read(syncControllerProvider.notifier)
+          .changes
+          .listen((change) => unawaited(_onSync(change, repo)));
       // Pre-warm the engine for comparable checks (05 §4).
       WidgetsBinding.instance.addPostFrameCallback(
         (_) => unawaited(container.read(engineServiceProvider).warmUp()),
@@ -202,8 +215,24 @@ class _DrillScreenState extends ConsumerState<DrillScreen> {
     }
   }
 
+  Future<void> _onSync(SyncChange change, RepertoireRepository repo) async {
+    if (!mounted) return;
+    if (change.deletedIds.contains(widget.id)) {
+      final l10n = AppLocalizations.of(context);
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(l10n.deletedOnOtherDevice)));
+      context.go(Routes.home);
+      return;
+    }
+    if (change.changedIds.contains(widget.id)) {
+      _controller?.replaceTree(await repo.loadTree(widget.id));
+    }
+  }
+
   @override
   void dispose() {
+    unawaited(_syncChanges?.cancel());
+    if (_gate case final gate?) gate.busy = false;
     // A run in progress is stored as abandoned (01 §7.10).
     _controller?.dispose();
     super.dispose();

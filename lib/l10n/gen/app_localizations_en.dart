@@ -1235,10 +1235,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get syncTitle => 'Google Drive sync';
 
   @override
-  String get syncLater =>
-      'Sync between your devices arrives in a later version. Use backups to move data meanwhile.';
-
-  @override
   String get backupTitle => 'Backup';
 
   @override
@@ -1351,4 +1347,116 @@ class AppLocalizationsEn extends AppLocalizations {
     );
     return 'Backup imported: $_temp0 updated, $_temp1 added.';
   }
+
+  @override
+  String updatedFromOtherDevice(String name) {
+    return '$name was updated from another device.';
+  }
+
+  @override
+  String get deletedOnOtherDevice =>
+      'This repertoire was deleted on another device.';
+
+  @override
+  String get syncNotConfigured => 'Sync is not configured in this build.';
+
+  @override
+  String get syncToggle => 'Sync with Google Drive';
+
+  @override
+  String get syncOffHint =>
+      'Keeps repertoires and training history the same on your phone and computer.';
+
+  @override
+  String get syncSignedIn => 'Signed in';
+
+  @override
+  String syncSignedInAs(String account) {
+    return 'Signed in as $account';
+  }
+
+  @override
+  String get syncNever => 'never';
+
+  @override
+  String syncLast(String when) {
+    return 'Last sync: $when';
+  }
+
+  @override
+  String get syncRunning => 'Syncing…';
+
+  @override
+  String get syncOffline => 'Offline, will retry';
+
+  @override
+  String get syncSignInAgain => 'Sign in again to keep syncing.';
+
+  @override
+  String syncError(String message) {
+    return 'Sync failed: $message';
+  }
+
+  @override
+  String syncFailed(String error) {
+    return 'Sync failed: $error';
+  }
+
+  @override
+  String get syncNewerDevice =>
+      'Another device uses a newer app version. Update this device.';
+
+  @override
+  String get syncCorruptFile =>
+      'A file from another device could not be read; it was skipped.';
+
+  @override
+  String get signInAgain => 'Sign in again';
+
+  @override
+  String get syncNow => 'Sync now';
+
+  @override
+  String get signOut => 'Sign out';
+
+  @override
+  String get deleteCloudData => 'Delete cloud data';
+
+  @override
+  String get deleteCloudTitle => 'Delete cloud data?';
+
+  @override
+  String get deleteCloudBody =>
+      'Deletes the sync files of all your devices from Google Drive. Data on this device stays.';
+
+  @override
+  String cloudDeleted(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count files deleted',
+      one: '1 file deleted',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get syncHelp =>
+      'Sync uses a hidden app folder in your Google Drive. A device with a wrong clock can win or lose a rename or re-import; training history is never lost.';
+
+  @override
+  String get replaceSyncWarning =>
+      'Sync is on: the next sync brings back data from your other devices unless you also delete the cloud data.';
+
+  @override
+  String get deviceIdLabel => 'Device id';
+
+  @override
+  String get syncPhaseLabel => 'State';
+
+  @override
+  String get syncMessageLabel => 'Message';
+
+  @override
+  String get listDriveFiles => 'List Drive files';
 }

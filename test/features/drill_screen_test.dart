@@ -5,6 +5,7 @@ import 'package:repertoire_trainer/app/router.dart';
 import 'package:repertoire_trainer/app/routes.dart';
 import 'package:repertoire_trainer/core/db/providers.dart';
 import 'package:repertoire_trainer/core/settings/app_settings.dart';
+import 'package:repertoire_trainer/core/sync/sync_controller.dart';
 import 'package:repertoire_trainer/features/board/repertoire_board.dart';
 
 import '../app_harness.dart';
@@ -213,5 +214,29 @@ void main() {
     expect(s!.wrongMoveMode.name, 'restart');
     expect(s.startFromBranchPoint, isTrue);
     expect(s.showComments, isFalse);
+  });
+
+  testWidgets('sync waits while a line is played; a repertoire deleted on '
+      'another device sends the drill home', (tester) async {
+    final h = await AppHarness.pump(tester);
+    final id = await openDrill(h);
+    final gate = h.container.read(syncGateProvider);
+    expect(gate.busy, isTrue);
+    h.container
+        .read(syncControllerProvider.notifier)
+        .debugAnnounce(
+          SyncChange(
+            changedIds: {id},
+            deletedIds: {id},
+            updatedNames: const [],
+          ),
+        );
+    await h.settle();
+    expect(
+      find.text('This repertoire was deleted on another device.'),
+      findsOneWidget,
+    );
+    expect(find.byType(RepertoireBoard), findsNothing);
+    expect(gate.busy, isFalse);
   });
 }

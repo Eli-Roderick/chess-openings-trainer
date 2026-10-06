@@ -24,6 +24,19 @@ String backupFileName(DateTime local) {
       '.$backupExtension';
 }
 
+// Isolate entry points take only their data (a closure in a method would
+// capture everything in scope).
+Future<Uint8List> _encode(BackupFile header, String runsJson) =>
+    Isolate.run(() => syncCodec.encodeBackupWithRuns(header, runsJson));
+
+Future<String> _unpack(Uint8List bytes) => Isolate.run(() {
+  try {
+    return utf8.decode(syncCodec.gzip.decode(bytes));
+  } on Object catch (e) {
+    throw CorruptFile('not gzip/UTF-8: $e');
+  }
+});
+
 /// Settings that describe this machine, never restored from a backup.
 const _machineSettings = {'engineVariant'};
 
@@ -77,9 +90,7 @@ final class BackupService {
       settings: (await settings.load()).toJson(),
     );
     final runsJson = await runs.exportRunsJson();
-    final bytes = await Isolate.run(
-      () => syncCodec.encodeBackupWithRuns(header, runsJson),
-    );
+    final bytes = await _encode(header, runsJson);
     return (fileName: backupFileName(now.toLocal()), bytes: bytes);
   }
 
@@ -87,13 +98,7 @@ final class BackupService {
   /// [CodecError] when they are not a readable backup. Runs stay JSON
   /// until the import.
   Future<RawBackup> read(Uint8List bytes) async {
-    final text = await Isolate.run(() {
-      try {
-        return utf8.decode(syncCodec.gzip.decode(bytes));
-      } on Object catch (e) {
-        throw CorruptFile('not gzip/UTF-8: $e');
-      }
-    });
+    final text = await _unpack(bytes);
     return await queries.inspect(text);
   }
 

@@ -60,7 +60,9 @@ class BrowseScreen extends ConsumerWidget {
         .firstOrNull
         ?.name;
     return switch (tree) {
+      // A tree replaced by sync starts a fresh view (its node ids differ).
       AsyncData(:final value) => BrowseView(
+        key: ObjectKey(value),
         tree: value,
         title: name ?? l10n.browseTitle,
         initialNode: initialNode,

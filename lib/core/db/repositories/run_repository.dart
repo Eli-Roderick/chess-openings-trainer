@@ -37,6 +37,13 @@ abstract interface class RunRepository {
   /// Number of stored runs.
   Future<int> count();
 
+  /// UTC months (`YYYY-MM`) of [deviceId]'s runs not uploaded yet.
+  Future<List<String>> unsyncedMonths(String deviceId);
+
+  /// [deviceId]'s runs that finished in UTC [month] (`YYYY-MM`), with
+  /// grades, oldest first (a monthly run log, 06 §3).
+  Future<List<RunRecord>> deviceRunsInMonth(String deviceId, String month);
+
   /// Line keys of the [n] most recently started runs of [repertoireId],
   /// newest first (input for the recent-line exclusion).
   Future<List<String>> recentStartedLineKeys(String repertoireId, int n);
@@ -326,6 +333,47 @@ final class DriftRunRepository implements RunRepository {
         await _db.customStatement('DELETE FROM import_runs');
         return {for (final r in rows) r.read<String>('rep'): r.read<int>('n')};
       });
+
+  static const _month = "strftime('%Y-%m', r.finished_at / 1000, 'unixepoch')";
+
+  @override
+  Future<List<String>> unsyncedMonths(String deviceId) async => [
+    for (final row
+        in await _db
+            .customSelect(
+              'SELECT DISTINCT $_month AS m FROM runs r '
+              'WHERE r.device_id = ?1 AND r.synced_at IS NULL ORDER BY m',
+              variables: [Variable.withString(deviceId)],
+              readsFrom: {_db.runs},
+            )
+            .get())
+      row.read<String>('m'),
+  ];
+
+  @override
+  Future<List<RunRecord>> deviceRunsInMonth(
+    String deviceId,
+    String month,
+  ) async {
+    const filter = 'r.device_id = ?1 AND $_month = ?2';
+    final variables = [
+      Variable.withString(deviceId),
+      Variable.withString(month),
+    ];
+    final rows = await _db
+        .customSelect(
+          'SELECT r.* FROM runs r WHERE $filter '
+          'ORDER BY r.finished_at, r.id',
+          variables: variables,
+          readsFrom: {_db.runs},
+        )
+        .get();
+    return await _withChildrenOf(
+      [for (final row in rows) _db.runs.map(row.data)],
+      filter,
+      variables,
+    );
+  }
 
   @override
   Future<int> count() async {

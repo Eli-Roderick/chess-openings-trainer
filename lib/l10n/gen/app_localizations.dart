@@ -2158,12 +2158,6 @@ abstract class AppLocalizations {
   /// **'Google Drive sync'**
   String get syncTitle;
 
-  /// No description provided for @syncLater.
-  ///
-  /// In en, this message translates to:
-  /// **'Sync between your devices arrives in a later version. Use backups to move data meanwhile.'**
-  String get syncLater;
-
   /// No description provided for @backupTitle.
   ///
   /// In en, this message translates to:
@@ -2289,6 +2283,180 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Backup imported: {repertoires, plural, =1{1 repertoire} other{{repertoires} repertoires}} updated, {runs, plural, =1{1 run} other{{runs} runs}} added.'**
   String backupImported(int repertoires, int runs);
+
+  /// No description provided for @updatedFromOtherDevice.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} was updated from another device.'**
+  String updatedFromOtherDevice(String name);
+
+  /// No description provided for @deletedOnOtherDevice.
+  ///
+  /// In en, this message translates to:
+  /// **'This repertoire was deleted on another device.'**
+  String get deletedOnOtherDevice;
+
+  /// No description provided for @syncNotConfigured.
+  ///
+  /// In en, this message translates to:
+  /// **'Sync is not configured in this build.'**
+  String get syncNotConfigured;
+
+  /// No description provided for @syncToggle.
+  ///
+  /// In en, this message translates to:
+  /// **'Sync with Google Drive'**
+  String get syncToggle;
+
+  /// No description provided for @syncOffHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Keeps repertoires and training history the same on your phone and computer.'**
+  String get syncOffHint;
+
+  /// No description provided for @syncSignedIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Signed in'**
+  String get syncSignedIn;
+
+  /// No description provided for @syncSignedInAs.
+  ///
+  /// In en, this message translates to:
+  /// **'Signed in as {account}'**
+  String syncSignedInAs(String account);
+
+  /// No description provided for @syncNever.
+  ///
+  /// In en, this message translates to:
+  /// **'never'**
+  String get syncNever;
+
+  /// No description provided for @syncLast.
+  ///
+  /// In en, this message translates to:
+  /// **'Last sync: {when}'**
+  String syncLast(String when);
+
+  /// No description provided for @syncRunning.
+  ///
+  /// In en, this message translates to:
+  /// **'Syncing…'**
+  String get syncRunning;
+
+  /// No description provided for @syncOffline.
+  ///
+  /// In en, this message translates to:
+  /// **'Offline, will retry'**
+  String get syncOffline;
+
+  /// No description provided for @syncSignInAgain.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in again to keep syncing.'**
+  String get syncSignInAgain;
+
+  /// No description provided for @syncError.
+  ///
+  /// In en, this message translates to:
+  /// **'Sync failed: {message}'**
+  String syncError(String message);
+
+  /// No description provided for @syncFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Sync failed: {error}'**
+  String syncFailed(String error);
+
+  /// No description provided for @syncNewerDevice.
+  ///
+  /// In en, this message translates to:
+  /// **'Another device uses a newer app version. Update this device.'**
+  String get syncNewerDevice;
+
+  /// No description provided for @syncCorruptFile.
+  ///
+  /// In en, this message translates to:
+  /// **'A file from another device could not be read; it was skipped.'**
+  String get syncCorruptFile;
+
+  /// No description provided for @signInAgain.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in again'**
+  String get signInAgain;
+
+  /// No description provided for @syncNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Sync now'**
+  String get syncNow;
+
+  /// No description provided for @signOut.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign out'**
+  String get signOut;
+
+  /// No description provided for @deleteCloudData.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete cloud data'**
+  String get deleteCloudData;
+
+  /// No description provided for @deleteCloudTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete cloud data?'**
+  String get deleteCloudTitle;
+
+  /// No description provided for @deleteCloudBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Deletes the sync files of all your devices from Google Drive. Data on this device stays.'**
+  String get deleteCloudBody;
+
+  /// No description provided for @cloudDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 file deleted} other{{count} files deleted}}'**
+  String cloudDeleted(int count);
+
+  /// No description provided for @syncHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Sync uses a hidden app folder in your Google Drive. A device with a wrong clock can win or lose a rename or re-import; training history is never lost.'**
+  String get syncHelp;
+
+  /// No description provided for @replaceSyncWarning.
+  ///
+  /// In en, this message translates to:
+  /// **'Sync is on: the next sync brings back data from your other devices unless you also delete the cloud data.'**
+  String get replaceSyncWarning;
+
+  /// No description provided for @deviceIdLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Device id'**
+  String get deviceIdLabel;
+
+  /// No description provided for @syncPhaseLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'State'**
+  String get syncPhaseLabel;
+
+  /// No description provided for @syncMessageLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Message'**
+  String get syncMessageLabel;
+
+  /// No description provided for @listDriveFiles.
+  ///
+  /// In en, this message translates to:
+  /// **'List Drive files'**
+  String get listDriveFiles;
 }
 
 class _AppLocalizationsDelegate

@@ -8,6 +8,8 @@ import 'package:repertoire_trainer/core/diagnostics/frame_stats.dart';
 import 'package:repertoire_trainer/core/diagnostics/startup_timings.dart';
 import 'package:repertoire_trainer/core/engine/engine_providers.dart';
 import 'package:repertoire_trainer/core/settings/app_settings.dart';
+import 'package:repertoire_trainer/core/sync/drive_transport.dart';
+import 'package:repertoire_trainer/core/sync/sync_controller.dart';
 import 'package:repertoire_trainer/l10n/gen/app_localizations.dart';
 import 'package:uci_engine/uci_engine.dart';
 
@@ -121,6 +123,8 @@ class DiagnosticsScreen extends StatelessWidget {
             ),
             _Header(l10n.engineTitle),
             const _EngineSection(),
+            _Header(l10n.syncTitle),
+            const _SyncSection(),
           ],
         ),
       ),
@@ -202,6 +206,51 @@ class _EngineSection extends ConsumerWidget {
               ? na
               : [for (final j in jobs.reversed) _job(j)].join('\n'),
         ),
+      ],
+    );
+  }
+}
+
+/// Sync: device id, last result, the Drive files (P12 task 7).
+class _SyncSection extends ConsumerStatefulWidget {
+  const new();
+
+  @override
+  ConsumerState<_SyncSection> createState() => _SyncSectionState();
+}
+
+class _SyncSectionState extends ConsumerState<_SyncSection> {
+  List<DriveFile>? _files;
+  String? _error;
+
+  Future<void> _list() async {
+    try {
+      final drive = await ref.read(driveConnectorProvider)();
+      final files = await drive.list();
+      if (mounted) setState(() => _files = files);
+    } on Object catch (e) {
+      if (mounted) setState(() => _error = '$e');
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final status = ref.watch(syncControllerProvider);
+    final device = ref.watch(deviceIdProvider).value ?? '';
+    final files = _files;
+    return Column(
+      key: const Key('diagnostics-sync'),
+      children: [
+        _Value(l10n.deviceIdLabel, device),
+        _Value(l10n.syncPhaseLabel, status.phase.name),
+        if (status.message case final m?) _Value(l10n.syncMessageLabel, m),
+        if (status.enabled)
+          TextButton(onPressed: _list, child: Text(l10n.listDriveFiles)),
+        if (_error case final e?) _Value(l10n.syncMessageLabel, e),
+        if (files != null)
+          for (final f in files)
+            _Value(f.name, '${((f.size ?? 0) / 1024).toStringAsFixed(1)} KB'),
       ],
     );
   }
