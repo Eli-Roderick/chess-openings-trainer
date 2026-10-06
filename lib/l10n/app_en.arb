@@ -1,11 +1,308 @@
 {
   "@@locale": "en",
   "appTitle": "Repertoire Trainer",
-  "@appTitle": {
-    "description": "Application title shown in the task switcher and app bar."
+  "settings": "Settings",
+  "cancel": "Cancel",
+  "save": "Save",
+  "undo": "Undo",
+  "close": "Close",
+  "ok": "OK",
+  "loadError": "Something went wrong: {error}",
+  "@loadError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
   },
-  "homePlaceholder": "Your repertoires will appear here.",
-  "@homePlaceholder": {
-    "description": "Placeholder text on the Home screen until repertoires exist (replaced in P04)."
+  "homeEmptyTitle": "No repertoires yet",
+  "homeEmptyBody": "Import an annotated PGN to start training, or try the demo.",
+  "createRepertoire": "Create repertoire",
+  "tryDemo": "Try the demo",
+  "newRepertoire": "New repertoire",
+  "demoName": "Demo: Italian (White)",
+  "demoInstalling": "Installing the demo…",
+  "lineCount": "{count, plural, =1{1 line} other{{count} lines}}",
+  "@lineCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "notTrained": "Not trained",
+  "accuracyValue": "{percent} %",
+  "@accuracyValue": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "dueCount": "{count} due",
+  "@dueCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "weakCount": "{count} weak",
+  "@weakCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "colorWhite": "White",
+  "colorBlack": "Black",
+  "repertoireActions": "Actions",
+  "rename": "Rename",
+  "reimport": "Re-import PGN",
+  "exportPgn": "Export PGN",
+  "delete": "Delete",
+  "validateStored": "Validate stored PGN",
+  "renameTitle": "Rename repertoire",
+  "nameLabel": "Name",
+  "deleteTitle": "Delete {name}?",
+  "@deleteTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "deleteBody": "Its stats and training history are deleted too.",
+  "deletedSnack": "Deleted {name}",
+  "@deletedSnack": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "exportedSnack": "Saved {file}",
+  "@exportedSnack": {
+    "placeholders": {
+      "file": {
+        "type": "String"
+      }
+    }
+  },
+  "exportFailed": "Could not save the file: {error}",
+  "@exportFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "createTitle": "New repertoire",
+  "colourLabel": "Colour",
+  "sourceLabel": "PGN",
+  "chooseFile": "Choose file",
+  "pasteText": "Paste text",
+  "pasteHint": "Paste the PGN here",
+  "validateAndImport": "Validate and import",
+  "validateOnly": "Validate only",
+  "copyPrompt": "Copy annotation prompt",
+  "promptCopied": "Annotation prompt copied",
+  "chooseColourFirst": "Choose a colour first",
+  "errorNameRequired": "Enter a name",
+  "errorNameTooLong": "At most 60 characters",
+  "warningNameExists": "A repertoire with this name already exists",
+  "errorColourRequired": "Choose White or Black",
+  "errorSourceRequired": "Choose a file or paste a PGN",
+  "fileReadError": "Could not read the file: {error}",
+  "@fileReadError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "stageReading": "Reading file",
+  "stageParsing": "Parsing",
+  "stageBuildingLines": "Building lines",
+  "stageCheckingComments": "Checking comments",
+  "importFailed": "Import failed: {error}",
+  "@importFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "importReportTitle": "Import report",
+  "reportGames": "Games merged",
+  "reportLines": "Lines",
+  "reportUserMoves": "Your moves",
+  "reportOpponentMoves": "Opponent moves",
+  "reportCommented": "Your moves with comments",
+  "reportCommentedValue": "{count} ({percent} %)",
+  "@reportCommentedValue": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "reportDepth": "Deepest line",
+  "reportDepthValue": "{plies} plies",
+  "@reportDepthValue": {
+    "placeholders": {
+      "plies": {
+        "type": "int"
+      }
+    }
+  },
+  "reportErrors": "Errors ({count})",
+  "@reportErrors": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "reportWarnings": "Warnings ({count})",
+  "@reportWarnings": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "reportInfo": "Info ({count})",
+  "@reportInfo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "importAction": "Import",
+  "copyReport": "Copy report",
+  "reportCopied": "Report copied",
+  "processedIn": "Processed in {ms} ms",
+  "@processedIn": {
+    "placeholders": {
+      "ms": {
+        "type": "int"
+      }
+    }
+  },
+  "importBlocked": "Fix the errors, then validate again.",
+  "positionPreview": "Position",
+  "diffTitle": "Changes",
+  "diffUnchanged": "Unchanged lines (stats kept)",
+  "diffExtended": "Extended lines (history carried over)",
+  "diffNew": "New lines",
+  "diffRemoved": "Removed lines (stats archived, restored if the line comes back)",
+  "diffCommentChanges": "Your moves with changed comments",
+  "reimportTitle": "Re-import {name}",
+  "@reimportTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "reimportColour": "Colour: {colour} (cannot change)",
+  "@reimportColour": {
+    "placeholders": {
+      "colour": {
+        "type": "String"
+      }
+    }
+  },
+  "reimported": "Re-imported {name}",
+  "@reimported": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "detailAccuracy": "Accuracy",
+  "detailCoverage": "Coverage",
+  "detailCoverageValue": "{trained} of {total} lines trained",
+  "@detailCoverageValue": {
+    "placeholders": {
+      "trained": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "detailWeak": "Weak lines",
+  "detailDue": "Due today",
+  "detailNewToday": "New available today",
+  "train": "Train",
+  "browse": "Browse",
+  "stats": "Stats",
+  "placeholderTitle": "Coming soon",
+  "placeholderBody": "This screen arrives in a later version.",
+  "settingsTraining": "Training",
+  "settingsBoard": "Board and sound",
+  "settingsEngine": "Engine",
+  "settingsAppearance": "Appearance",
+  "settingsSync": "Sync and backup",
+  "settingsAbout": "About",
+  "settingsLater": "These settings arrive in a later version.",
+  "themeLabel": "Theme",
+  "themeDark": "Dark",
+  "themeLight": "Light",
+  "themeSystem": "System",
+  "aboutVersion": "Version {version} ({build})",
+  "@aboutVersion": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      },
+      "build": {
+        "type": "String"
+      }
+    }
+  },
+  "aboutLicense": "Repertoire Trainer is free software licensed under the GNU General Public License, version 3 or later.",
+  "aboutStockfish": "Includes Stockfish {tag} (GPL-3.0).",
+  "@aboutStockfish": {
+    "placeholders": {
+      "tag": {
+        "type": "String"
+      }
+    }
+  },
+  "aboutLicenses": "Licenses",
+  "aboutSource": "Source code",
+  "aboutStockfishSource": "Stockfish source code",
+  "diagnosticsTitle": "Diagnostics",
+  "startupTimings": "Startup timings",
+  "processToMain": "Process start → main",
+  "mainToRunApp": "main → runApp",
+  "runAppToFirstFrame": "runApp → first frame",
+  "firstFrameToHome": "First frame → Home data",
+  "mainToHome": "main → Home data",
+  "notAvailable": "n/a",
+  "framesTitle": "Frames",
+  "framesCount": "Frames",
+  "framesJanky": "Janky frames (over 16 ms)",
+  "framesAverageBuild": "Average build",
+  "framesAverageRaster": "Average raster",
+  "framesWorst": "Worst frame",
+  "reset": "Reset",
+  "msValue": "{ms} ms",
+  "@msValue": {
+    "placeholders": {
+      "ms": {
+        "type": "String"
+      }
+    }
   }
 }

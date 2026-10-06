@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:repertoire_trainer/app/app.dart';
+
+import 'app_harness.dart';
 
 void main() {
-  testWidgets('opens to the placeholder Home in dark theme', (tester) async {
-    await tester.pumpWidget(const ProviderScope(child: RepertoireTrainerApp()));
-    await tester.pumpAndSettle();
-
+  testWidgets('opens to the empty Home in dark theme', (tester) async {
+    await AppHarness.pump(tester);
     expect(find.text('Repertoire Trainer'), findsOneWidget);
-    expect(find.text('Your repertoires will appear here.'), findsOneWidget);
-    final context = tester.element(find.byType(Scaffold));
+    expect(find.text('No repertoires yet'), findsOneWidget);
+    expect(find.byKey(const Key('create-repertoire')), findsOneWidget);
+    expect(find.byKey(const Key('try-demo')), findsOneWidget);
+    final context = tester.element(find.byType(Scaffold).first);
     expect(Theme.of(context).brightness, Brightness.dark);
+    expect(Theme.of(context).colorScheme.surface, const Color(0xFF121212));
   });
 }

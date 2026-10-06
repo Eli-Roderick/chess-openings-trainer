@@ -360,6 +360,16 @@ void main() {
     });
   });
 
+  test('stages are reported in order', () {
+    final stages = <ImportStage>[];
+    importPgnBytes(
+      fixtureBytes('one_line.pgn'),
+      Side.white,
+      onStage: stages.add,
+    );
+    expect(stages, ImportStage.values);
+  });
+
   test('elapsed is measured', () {
     expect(importFixture('one_line.pgn').elapsed, greaterThan(Duration.zero));
   });

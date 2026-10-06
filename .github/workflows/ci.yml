@@ -72,8 +72,15 @@ jobs:
       - name: Engine-tagged tests
         working-directory: packages/uci_engine
         run: dart test --tags engine
-      - name: Integration tests (Linux desktop)
-        run: xvfb-run -a flutter test integration_test -d linux
+      # One app launch per file: on Linux desktop a second file in the same
+      # `flutter test` invocation fails to attach (D-62).
+      - name: Integration tests (Linux desktop, debug)
+        run: xvfb-run -a flutter test integration_test/app_test.dart -d linux
+      - name: Cold start budget (Linux desktop, profile/AOT)
+        run: >-
+          xvfb-run -a flutter drive --profile -d linux
+          --driver=test_driver/integration_test.dart
+          --target=integration_test/cold_start_test.dart
 
   build-android:
     runs-on: ubuntu-latest
