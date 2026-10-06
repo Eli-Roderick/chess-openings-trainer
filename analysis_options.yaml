@@ -1,0 +1,17 @@
+include: package:very_good_analysis/analysis_options.yaml
+
+analyzer:
+  exclude:
+    - "**/*.g.dart"
+    - "**/*.freezed.dart"
+    - lib/l10n/gen/**
+    - build/**
+    - drift_schemas/**
+    - android/**
+    - windows/**
+    - linux/**
+
+linter:
+  rules:
+    # App code is not a public API; packages keep this rule on.
+    public_member_api_docs: false

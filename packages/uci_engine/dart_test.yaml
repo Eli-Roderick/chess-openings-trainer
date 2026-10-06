@@ -1,0 +1,6 @@
+tags:
+  engine:
+    # Needs the real Stockfish binary: run
+    # `dart run tool/fetch_engines.dart --platform linux` from the repo root,
+    # then `dart test --tags engine`. Excluded from plain `dart test` runs.
+    timeout: 30s

@@ -1,0 +1,50 @@
+{
+  "stockfish": {
+    "tag": "sf_18",
+    "version": "18",
+    "source": "https://github.com/official-stockfish/Stockfish/tree/sf_18",
+    "license": "GPL-3.0"
+  },
+  "binaries": [
+    {
+      "platform": "android",
+      "url": "https://github.com/official-stockfish/Stockfish/releases/download/sf_18/stockfish-android-armv8.tar",
+      "sha256": "e2eca54b0e3189ec7de338133c2b34fa8f5cdec3d2473519b414a5cb6815e768",
+      "member": "stockfish/stockfish-android-armv8",
+      "binarySha256": "cc3b3b74466b6d85cdc0f8cfdad4111c6a44bd0698f4eab96fea7b359a54d3d4",
+      "installPath": "android/app/src/main/jniLibs/arm64-v8a/libstockfish.so"
+    },
+    {
+      "platform": "android",
+      "url": "https://github.com/official-stockfish/Stockfish/releases/download/sf_18/stockfish-android-armv7-neon.tar",
+      "sha256": "07a6d8af49502d09494f80d2d544f4537400cce715fd9d6f05cf6db9f9c7bcf3",
+      "member": "stockfish/stockfish-android-armv7-neon",
+      "binarySha256": "672fbd7533d15fc70dae82df52c1185236975d059a585aa65eda960f1a3266ea",
+      "installPath": "android/app/src/main/jniLibs/armeabi-v7a/libstockfish.so"
+    },
+    {
+      "platform": "windows",
+      "url": "https://github.com/official-stockfish/Stockfish/releases/download/sf_18/stockfish-windows-x86-64-avx2.zip",
+      "sha256": "6f6c272ebd6ea594377715235c8a7326f75940ef4f4f856f45106028fe6ae900",
+      "member": "stockfish/stockfish-windows-x86-64-avx2.exe",
+      "binarySha256": "c86215fa1977d53b82ed854540a4c7b025be4cd042276c85ba3de53fb9118911",
+      "installPath": "engine/windows/stockfish-avx2.exe"
+    },
+    {
+      "platform": "windows",
+      "url": "https://github.com/official-stockfish/Stockfish/releases/download/sf_18/stockfish-windows-x86-64-sse41-popcnt.zip",
+      "sha256": "f25830a4567e2bac843d029d3113e6e34ba0cd2f95b9c0bb49afc871fe722a10",
+      "member": "stockfish/stockfish-windows-x86-64-sse41-popcnt.exe",
+      "binarySha256": "5004608cb62b40c83b18ddd1c58aba4c0226feddd70cd3b135a6733e73530ae7",
+      "installPath": "engine/windows/stockfish-sse41.exe"
+    },
+    {
+      "platform": "linux",
+      "url": "https://github.com/official-stockfish/Stockfish/releases/download/sf_18/stockfish-ubuntu-x86-64-avx2.tar",
+      "sha256": "536c0c2c0cf06450df0bfb5e876ef0d3119950703a8f143627f990c7b5417964",
+      "member": "stockfish/stockfish-ubuntu-x86-64-avx2",
+      "binarySha256": "6b087694916228c905a5e14db74cca8c7e5643602226af1fa5d42353c455b9f9",
+      "installPath": "engine/linux/stockfish"
+    }
+  ]
+}

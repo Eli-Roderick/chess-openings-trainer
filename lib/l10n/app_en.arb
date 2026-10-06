@@ -1,0 +1,11 @@
+{
+  "@@locale": "en",
+  "appTitle": "Repertoire Trainer",
+  "@appTitle": {
+    "description": "Application title shown in the task switcher and app bar."
+  },
+  "homePlaceholder": "Your repertoires will appear here.",
+  "@homePlaceholder": {
+    "description": "Placeholder text on the Home screen until repertoires exist (replaced in P04)."
+  }
+}
