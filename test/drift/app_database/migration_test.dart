@@ -21,9 +21,16 @@ void main() {
     await db.close();
   });
 
+  test('1 → 2 adds ply_stats and the stats indexes', () async {
+    final schema = await verifier.schemaAt(1);
+    final db = AppDatabase(schema.newConnection());
+    await verifier.migrateAndValidate(db, 2);
+    await db.close();
+  });
+
   test('a fresh database validates against the latest schema', () async {
     final db = AppDatabase.memory();
-    expect(db.schemaVersion, 1);
+    expect(db.schemaVersion, 2);
     final schema = await verifier.schemaAt(db.schemaVersion);
     final migrated = AppDatabase(schema.newConnection());
     await verifier.migrateAndValidate(migrated, db.schemaVersion);

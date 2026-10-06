@@ -254,3 +254,15 @@ Details of the plan corrections are in `docs/plan/corrections/P09.md`.
 **D-99 Play on.** `/play-engine` with `PlayOnArgs` (last repertoire node, off-book moves, sides) as route extra; opened from the end bar (tonal button after a challenge, text button otherwise) and the summary. The engine moves first when it is its turn; replies use `EngineService.playMove` at the Play-on strength, shown no sooner than 300 ms after the user's move. Take back removes the user's last move and the engine's reply (or the pending reply). Game end: checkmate, stalemate, insufficient material, threefold (placement, side, castling, en passant), 50 moves; a dialog with Close / Back to training. Back to training pops and the drill goes on with the next line. Nothing is stored.
 
 **D-100 Deviation diagnostics.** `DeviationTimings` (`lib/core/diagnostics/`): duration of candidates jobs (p50, p95, count) and the share of challenges whose move was ready when needed, over the last 200 of each; shown in Diagnostics.
+
+## P10 (stats, streak)
+
+Details of the plan corrections are in `docs/plan/corrections/P10.md`.
+
+**D-101 Stats data.** `StatsQueries` (`lib/core/db/`): daily aggregates (completed runs per local day; credit and graded moves over runs with graded moves), the `ply_stats` cache, deviation replies (count, good, last 10), completed run count, and each line key's moves. Line histories: `RunRepository.runsAlong` (runs whose moves are the line's or a strict prefix of them) or `runsForKey` (archived key), filtered by chess_core's `LineIndex` attribution. Everything else comes from `line_stats`. The screen data reloads when the repertoire's line stats change.
+
+**D-102 Stats screen.** Tiles: accuracy (mean of line accuracies), coverage (trained / trainable lines), weak, due today, completed runs, current streak. Chart: daily accuracy dots with gaps, a thick 7-day moving average line, runs-per-day bars; ranges 30 d / 90 d / All (default 30 d). Worst lines: 10 lowest accuracies; Show all opens the line list (sort: accuracy, last played, runs, line order; filters: all, weak, untrained, archived). Most missed: top 10 user moves by miss rate (ties: more misses, then tree order) with at least 3 attempts, mapped to tree nodes (an e4 shared by several lines adds up); tap opens Browse there. Deviation replies only when there are any.
+
+**D-103 Line detail.** Full SAN, accuracy, runs, weak pool state ("clean runs 2 of 3"), SRS (due, interval, ease, or New), Drill this line, Browse this line, errors per move, run history newest first (date, mode, abandoned, marks ✓ ½ ✗ ?, accuracy). Archived lines: "Not in current PGN", no Drill or Browse.
+
+**D-104 Streak.** `streakProvider` watches the distinct local days of completed runs (all repertoires) and today (which recomputes at the day start), and applies chess_core's `computeStreak`. The Home card (above Continue) shows from the first completed run: flame, "N-day streak", today done or "Train one line to keep your streak", best. The session summary adds "Streak: N days, today done".

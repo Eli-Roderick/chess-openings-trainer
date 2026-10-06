@@ -1,6 +1,7 @@
 import 'dart:async';
 
-import 'package:chess_core/chess_core.dart' show RunMode, accuracyPercent;
+import 'package:chess_core/chess_core.dart'
+    show RunMode, Streak, accuracyPercent;
 import 'package:dartchess/dartchess.dart' show Side;
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
@@ -17,8 +18,7 @@ import 'package:repertoire_trainer/features/board/repertoire_actions.dart';
 import 'package:repertoire_trainer/features/home/demo_installer.dart';
 import 'package:repertoire_trainer/l10n/gen/app_localizations.dart';
 
-/// Home (docs/plan/01-product-spec.md §4). The streak card arrives with
-/// P10.
+/// Home (docs/plan/01-product-spec.md §4).
 class HomeScreen extends ConsumerStatefulWidget {
   /// Creates Home.
   const new({super.key});
@@ -110,7 +110,14 @@ class _HomeState extends ConsumerState<HomeScreen> {
               final last = items
                   .where((r) => r.lastTrainedAt != null)
                   .firstOrNull;
-              final offset = last == null ? 0 : 1;
+              // Streak card once a line was ever completed (01 §4).
+              final streak = ref.watch(streakProvider).value;
+              final header = [
+                if (streak != null && streak.best > 0)
+                  StreakCard(streak: streak),
+                if (last != null) _ContinueButton(summary: last),
+              ];
+              final offset = header.length;
               return ListView.builder(
                 key: const Key('repertoire-list'),
                 padding: const EdgeInsets.fromLTRB(
@@ -121,7 +128,7 @@ class _HomeState extends ConsumerState<HomeScreen> {
                 ),
                 itemCount: items.length + offset,
                 itemBuilder: (context, i) => i < offset
-                    ? _ContinueButton(summary: last!)
+                    ? header[i]
                     : RepertoireCard(summary: items[i - offset]),
               );
             },
@@ -406,6 +413,59 @@ class _ContinueButton extends StatelessWidget {
         ),
         onPressed: () =>
             unawaited(context.push(Routes.train(summary.id, mode: mode.name))),
+      ),
+    );
+  }
+}
+
+/// The daily streak (01-product-spec §4, §12).
+class StreakCard extends StatelessWidget {
+  /// Shows [streak].
+  const new({required this.streak, super.key});
+
+  /// The streak.
+  final Streak streak;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final theme = Theme.of(context);
+    return Card(
+      key: const Key('streak-card'),
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
+        child: Row(
+          children: [
+            Icon(
+              Icons.local_fire_department,
+              size: 32,
+              color: streak.current > 0
+                  ? AppColors.warning
+                  : theme.colorScheme.outline,
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    l10n.streakDays(streak.current),
+                    key: const Key('streak-current'),
+                    style: theme.textTheme.titleMedium,
+                  ),
+                  Text(
+                    streak.todayDone ? l10n.streakDone : l10n.streakKeep,
+                    key: const Key('streak-today'),
+                  ),
+                ],
+              ),
+            ),
+            if (streak.todayDone)
+              const Icon(Icons.check_circle, color: AppColors.success),
+            const SizedBox(width: 8),
+            Text(l10n.streakBest(streak.best), key: const Key('streak-best')),
+          ],
+        ),
       ),
     );
   }

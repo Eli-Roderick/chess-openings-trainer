@@ -21,17 +21,16 @@ Future<void> go(AppHarness h, String location) async {
 
 void main() {
   group('Repertoire detail', () {
-    testWidgets('shows counts and opens placeholders', (tester) async {
+    testWidgets('shows counts and opens the stats', (tester) async {
       final h = await AppHarness.pump(tester);
       final id = await h.create('Demo', fixture('demo_italian_white.pgn'));
       await go(h, Routes.repertoire(id));
       expect(find.text('0 of 12 lines trained'), findsOneWidget);
       expect(find.text('Not trained'), findsOneWidget);
       expect(find.text('New available today'), findsOneWidget);
-      // Stats is still a placeholder (P10).
       await tester.tap(find.byKey(const Key('stats')));
       await h.settle();
-      expect(find.text('Coming soon'), findsOneWidget);
+      expect(find.byKey(const Key('stats-list')), findsOneWidget);
     });
 
     testWidgets('rename and delete from the menu', (tester) async {

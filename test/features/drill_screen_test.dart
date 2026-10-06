@@ -177,6 +177,7 @@ void main() {
     expect(find.byKey(const Key('session-summary')), findsOneWidget);
     expect(find.text('1 line completed'), findsOneWidget);
     expect(find.text('Accuracy 100 %'), findsOneWidget);
+    expect(find.text('Streak: 1 day, today done'), findsOneWidget);
     await tester.tap(find.byKey(const Key('session-done')));
     await h.settle();
     expect(find.byKey(const Key('detail-menu')), findsOneWidget);

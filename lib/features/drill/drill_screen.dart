@@ -873,15 +873,16 @@ class _MoveLog extends StatelessWidget {
   }
 }
 
-class _SessionSummary extends StatelessWidget {
+class _SessionSummary extends ConsumerWidget {
   const new({required this.session});
 
   final SessionStats session;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
     final accuracy = session.accuracy;
+    final streak = ref.watch(streakProvider).value;
     return SafeArea(
       child: Padding(
         key: const Key('session-summary'),
@@ -898,6 +899,11 @@ class _SessionSummary extends StatelessWidget {
             Text(l10n.linesCompleted(session.linesCompleted)),
             if (accuracy != null)
               Text(l10n.sessionAccuracy((accuracy * 100).round())),
+            if (streak != null && streak.current > 0)
+              Text(
+                l10n.sessionStreak(streak.current, '${streak.todayDone}'),
+                key: const Key('session-streak'),
+              ),
             const SizedBox(height: 16),
             FilledButton(
               key: const Key('session-done'),

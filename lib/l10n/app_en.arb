@@ -246,8 +246,6 @@
   "train": "Train",
   "browse": "Browse",
   "stats": "Stats",
-  "placeholderTitle": "Coming soon",
-  "placeholderBody": "This screen arrives in a later version.",
   "settingsTraining": "Training",
   "settingsBoard": "Board and sound",
   "settingsEngine": "Engine",
@@ -700,5 +698,147 @@
       }
     }
   },
-  "deviationJobCount": "Jobs"
+  "deviationJobCount": "Jobs",
+  "streakDays": "{count, plural, =1{1-day streak} other{{count}-day streak}}",
+  "@streakDays": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "streakBest": "Best: {count}",
+  "@streakBest": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "streakDone": "Done today",
+  "streakKeep": "Train one line to keep your streak",
+  "sessionStreak": "Streak: {count, plural, =1{1 day} other{{count} days}}{done, select, true{, today done} other{}}",
+  "@sessionStreak": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "done": {
+        "type": "String"
+      }
+    }
+  },
+  "statsOf": "Stats · {name}",
+  "@statsOf": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "statsAccuracy": "Accuracy",
+  "statsCoverage": "Coverage",
+  "statsWeak": "Weak lines",
+  "statsDue": "Due today",
+  "statsRuns": "Runs",
+  "statsStreak": "Streak",
+  "accuracyOverTime": "Accuracy over time",
+  "range30": "30 d",
+  "range90": "90 d",
+  "rangeAll": "All",
+  "noRunsYet": "No runs yet",
+  "worstLines": "Worst lines",
+  "showAll": "Show all",
+  "mostMissedMoves": "Most missed moves",
+  "noMissedMoves": "No move missed yet (at least 3 attempts).",
+  "missedOf": "{move} (missed {misses} of {attempts})",
+  "@missedOf": {
+    "placeholders": {
+      "move": {
+        "type": "String"
+      },
+      "misses": {
+        "type": "int"
+      },
+      "attempts": {
+        "type": "int"
+      }
+    }
+  },
+  "deviationReplies": "Deviation replies",
+  "deviationRepliesSummary": "{count, plural, =1{1 reply} other{{count} replies}} · {percent} % good",
+  "@deviationRepliesSummary": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "allLines": "All lines",
+  "sortBy": "Sort by",
+  "sortAccuracy": "Accuracy",
+  "sortLastPlayed": "Last played",
+  "sortRuns": "Runs",
+  "sortOrder": "Line order",
+  "filterAll": "All",
+  "filterWeak": "Weak only",
+  "filterUntrained": "Untrained",
+  "filterArchived": "Archived",
+  "lineRunsCount": "{count, plural, =1{1 run} other{{count} runs}}",
+  "@lineRunsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "lineDetail": "Line",
+  "notInCurrentPgn": "Not in current PGN",
+  "weakPool": "Weak pool",
+  "notWeak": "Not weak",
+  "weakCleanRuns": "In pool · clean runs {done} of {needed}",
+  "@weakCleanRuns": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "needed": {
+        "type": "int"
+      }
+    }
+  },
+  "srsState": "Spaced repetition",
+  "srsNew": "New",
+  "srsStateValue": "Due {date} · every {days} d · ease {ease}",
+  "@srsStateValue": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "days": {
+        "type": "int"
+      },
+      "ease": {
+        "type": "String"
+      }
+    }
+  },
+  "drillThisLine": "Drill this line",
+  "moveErrors": "Errors per move",
+  "missedCount": "missed {misses} of {attempts}",
+  "@missedCount": {
+    "placeholders": {
+      "misses": {
+        "type": "int"
+      },
+      "attempts": {
+        "type": "int"
+      }
+    }
+  },
+  "runHistory": "Run history",
+  "abandoned": "abandoned"
 }

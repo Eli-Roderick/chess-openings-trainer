@@ -32,6 +32,18 @@ abstract interface class RunRepository {
 
   /// Distinct days with at least one completed run, any repertoire (streak).
   Future<Set<String>> trainingDays();
+
+  /// [trainingDays], updated live.
+  Stream<Set<String>> watchTrainingDays();
+
+  /// Runs of [repertoireId] whose moves are [ucis] or a strict prefix of
+  /// it (direct and inherited candidates for a line's history), with
+  /// grades, oldest first.
+  Future<List<RunRecord>> runsAlong(String repertoireId, String ucis);
+
+  /// Runs of [repertoireId] stored under [lineKey], with grades, oldest
+  /// first (an archived line's history).
+  Future<List<RunRecord>> runsForKey(String repertoireId, String lineKey);
 }
 
 /// drift implementation of [RunRepository].
@@ -182,13 +194,55 @@ final class DriftRunRepository implements RunRepository {
     }
   }
 
+  JoinedSelectStatement<$RunsTable, DbRun> _days() =>
+      _db.selectOnly(_db.runs, distinct: true)
+        ..addColumns([_db.runs.localDay])
+        ..where(_db.runs.completed.equals(true));
+
   @override
-  Future<Set<String>> trainingDays() async {
-    final rows =
-        await (_db.selectOnly(_db.runs, distinct: true)
-              ..addColumns([_db.runs.localDay])
-              ..where(_db.runs.completed.equals(true)))
+  Future<Set<String>> trainingDays() async => {
+    for (final r in await _days().get()) r.read(_db.runs.localDay)!,
+  };
+
+  @override
+  Stream<Set<String>> watchTrainingDays() => _days().watch().map(
+    (rows) => {for (final r in rows) r.read(_db.runs.localDay)!},
+  );
+
+  @override
+  Future<List<RunRecord>> runsAlong(String repertoireId, String ucis) async {
+    final rows = await _db
+        .customSelect(
+          'SELECT * FROM runs WHERE repertoire_id = ?1 AND (ucis = ?2 OR '
+          "substr(?2, 1, length(ucis) + 1) = ucis || ' ') "
+          'ORDER BY finished_at, id',
+          variables: [
+            Variable.withString(repertoireId),
+            Variable.withString(ucis),
+          ],
+          readsFrom: {_db.runs},
+        )
+        .get();
+    return await _withChildren([for (final r in rows) _db.runs.map(r.data)]);
+  }
+
+  @override
+  Future<List<RunRecord>> runsForKey(
+    String repertoireId,
+    String lineKey,
+  ) async {
+    final runs =
+        await (_db.select(_db.runs)
+              ..where(
+                (r) =>
+                    r.repertoireId.equals(repertoireId) &
+                    r.lineKey.equals(lineKey),
+              )
+              ..orderBy([
+                (r) => OrderingTerm.asc(r.finishedAt),
+                (r) => OrderingTerm.asc(r.id),
+              ]))
             .get();
-    return {for (final r in rows) r.read(_db.runs.localDay)!};
+    return await _withChildren(runs);
   }
 }

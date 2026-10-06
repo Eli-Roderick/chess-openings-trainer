@@ -35,6 +35,7 @@ final class StatsService {
   /// Stores [run] and re-derives only the lines it affects.
   Future<void> recordRun(RunRecord run) async {
     await _runs.insertRun(run);
+    await _stats.addPlyResults(run);
     final lines = await _repertoires.lineRefs(run.repertoireId);
     final keys = switch (LineIndex(lines)
         .attribute(ucis: run.ucis, lineKey: run.lineKey)) {
@@ -63,6 +64,7 @@ final class StatsService {
       () => deriveRepertoire(lines: lines, runs: runs, settings: settings),
     );
     await _stats.replaceDerived(repertoireId, derived);
+    await _stats.rebuildPlyStats(repertoireId);
   }
 
   /// Re-derives every repertoire.

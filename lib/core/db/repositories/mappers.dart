@@ -222,14 +222,15 @@ RunRecord runRecordOf(
             : CheckStatus.values.byName(g.checkStatus!),
       ),
   ],
-  deviation: deviation == null
-      ? null
-      : DeviationEvent(
-          ply: deviation.ply,
-          deviationUci: deviation.deviationUci,
-          replyUci: deviation.replyUci,
-          bestUci: deviation.bestUci,
-          lossCp: deviation.lossCp,
-          passed: deviation.passed,
-        ),
+  deviation: deviation == null ? null : deviationOf(deviation),
+);
+
+/// Maps a stored deviation event.
+DeviationEvent deviationOf(DbDeviationEvent d) => DeviationEvent(
+  ply: d.ply,
+  deviationUci: d.deviationUci,
+  replyUci: d.replyUci,
+  bestUci: d.bestUci,
+  lossCp: d.lossCp,
+  passed: d.passed,
 );
