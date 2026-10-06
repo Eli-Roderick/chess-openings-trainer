@@ -128,3 +128,25 @@ Details of the plan corrections are in `docs/plan/corrections/P02.md`. SRS expec
 **D-50 SRS picker semantics.** `pickSrs` is called once per pick with the session pick index (every 4th pick prefers a new line). The daily review limit is checked first. Excluded (recent) lines are skipped when any other due or new line exists. `SrsCaughtUp` carries the earliest future due day and how many lines fall on it. Lines without user moves are never picked.
 
 **D-51 Runs and time in `chess_core`.** `Clock` (`SystemClock`, `FakeClock`) and `Rng` (`SeededRng`, `SystemRng`) are in `util/`; an architecture test fails on `DateTime.now(` or `Random(` in any package `lib/` file outside `util/`. The synthetic PGN generator now uses `SeededRng`. `localDay` subtracts the day-start hour with calendar arithmetic (not a `Duration`), so DST changes cannot shift the date.
+
+## P03 (persistence)
+
+Details of the plan corrections are in `docs/plan/corrections/P03.md`.
+
+**D-52 Table naming.** drift's default snake_case SQL names (`repertoire_id`, `line_stats`, ...) stand for the camelCase column names in 03 §2; data classes are prefixed `Db` (`DbRun`, `DbLine`, ...) so they never clash with chess_core's `Line`, `MoveGrade` or `DeviationEvent`. No foreign keys.
+
+**D-53 Database file.** `repertoire.sqlite` in the app support directory, opened by `drift_flutter` on a background isolate shared across isolates, `journal_mode=WAL`. The database opens lazily; `main()` reads the device id after the first frame, which creates it on first launch, then starts the stats service.
+
+**D-54 Bulk inserts.** Nodes and lines are written with multi-row `INSERT` statements (50 rows each) inside the create/re-import transaction. 1,000 × 16 synthetic repertoire: create about 85-150 ms, `loadTree` well under 150 ms (tests assert < 300 ms and < 150 ms after one warm-up import).
+
+**D-55 Home order.** Last trained first; never-trained repertoires after them, newest created first. Summaries come from one watched SQL query (subquery per repertoire for the line count, `line_stats` aggregated for accuracy, weak and due counts; archived keys excluded). Due counts take the caller's `today`.
+
+**D-56 Write paths.** Runs: `StatsService.recordRun` (insert in one transaction with grades, deviation and `lastTrainedAt`, then incremental derivation of the attributed lines). Create: repertoire, nodes, lines and empty `line_stats` in one transaction. Re-import: delete/insert nodes and lines and update the repertoire in one transaction, returns `ReimportDiff`; the caller then calls `StatsService.rebuildRepertoire`. Derivations over more than 2,000 runs run in `Isolate.run`. Weak-threshold or day-start changes rebuild every repertoire.
+
+**D-57 Settings storage.** One `settings` row per `AppSettings` field with a JSON value; only changed fields are written. Missing keys take defaults; a stored value that no longer parses (renamed enum, wrong type) is ignored instead of breaking start-up. Every numeric setting is clamped to its 01 §10 range and step. Play-on strength is `playOnElo` with 0 = full strength (a nullable field with a default could not store "full strength").
+
+**D-58 `lastTrainedAt`.** Updated by every stored run (completed or abandoned) as the maximum `finishedAt`; it is device-local and will be recomputed from runs after a sync (P12).
+
+**D-59 Repository interfaces.** Each repository is an `abstract interface class` with a drift implementation; Riverpod providers in `core/db/providers.dart` wire them to one `AppDatabase`. Tests use `AppDatabase.memory()` (`NativeDatabase.memory()`), a `FakeClock` and sequential ids. Transaction rollback is tested with a `@visibleForTesting` hook that throws mid-transaction.
+
+**D-60 Schema evolution.** `build.yaml` configures `drift_dev` (schema dir `drift_schemas/`, test dir `test/drift/`). Every schema change: bump `schemaVersion`, add the `onUpgrade` step, run `dart run drift_dev make-migrations` and `dart run drift_dev schema generate drift_schemas/app_database/ test/drift/app_database/generated/`, add an upgrade test.

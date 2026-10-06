@@ -7,6 +7,7 @@ analyzer:
     - lib/l10n/gen/**
     - build/**
     - drift_schemas/**
+    - test/drift/**/generated/**
     - android/**
     - windows/**
     - linux/**
