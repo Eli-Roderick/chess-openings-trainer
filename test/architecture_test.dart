@@ -52,6 +52,23 @@ void main() {
     expect(violations, isEmpty);
   });
 
+  test('package logic uses no real time or unseeded randomness outside '
+      'util/ (inject Clock / Rng)', () {
+    final banned = RegExp(r'DateTime\.now\(|\bRandom\(');
+    final violations = <String>[];
+    for (final pkg in Directory('packages').listSync().whereType<Directory>()) {
+      for (final f in _dartFiles(p.join(pkg.path, 'lib'))) {
+        if (p.split(f.path).contains('util')) continue;
+        final lines = f.readAsLinesSync();
+        for (var i = 0; i < lines.length; i++) {
+          final code = lines[i].split('//').first;
+          if (banned.hasMatch(code)) violations.add(_where(f, i + 1));
+        }
+      }
+    }
+    expect(violations, isEmpty);
+  });
+
   test('features do not import other features (except features/board)', () {
     const prefix = 'package:repertoire_trainer/features/';
     final violations = <String>[];

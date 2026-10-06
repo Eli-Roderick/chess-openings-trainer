@@ -6,8 +6,8 @@
 //       --min 90 lib/src/pgn lib/src/tree
 //
 // Reads the VM coverage JSON files directly (no extra dependency). A line
-// counts as covered if any test run hit it. Exit code 1 when a directory is
-// below the minimum, 2 on usage errors.
+// counts as covered if any test run hit it; generated files are skipped.
+// Exit code 1 when a directory is below the minimum, 2 on usage errors.
 import 'dart:convert';
 import 'dart:io';
 
@@ -48,7 +48,12 @@ void main(List<String> args) {
     for (final entry
         in (json['coverage']! as List).cast<Map<String, Object?>>()) {
       final source = _relativeSource(entry['source']! as String, name, package);
-      if (source == null) continue;
+      // Generated code (freezed, json_serializable, drift) is not ours.
+      if (source == null ||
+          source.endsWith('.g.dart') ||
+          source.endsWith('.freezed.dart')) {
+        continue;
+      }
       final lines = hits.putIfAbsent(source, () => {});
       final list = (entry['hits']! as List).cast<int>();
       for (var k = 0; k + 1 < list.length; k += 2) {
