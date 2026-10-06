@@ -106,3 +106,15 @@ install(DIRECTORY "${PROJECT_BUILD_DIR}/${FLUTTER_ASSET_DIR_NAME}"
 install(FILES "${AOT_LIBRARY}" DESTINATION "${INSTALL_BUNDLE_DATA_DIR}"
   CONFIGURATIONS Profile;Release
   COMPONENT Runtime)
+
+# Stockfish (docs/plan/05-engine.md §2): copy engine/windows/*.exe, placed by
+# tool/fetch_engines.dart, into <bundle>/engine/. The source directory is
+# created at configure time and matched at install time, so the bundle always
+# has an engine/ directory, builds without fetched engines still work, and
+# engines fetched after configuring are picked up on the next build.
+set(ENGINE_SOURCE_DIR "${PROJECT_SOURCE_DIR}/../engine/windows")
+file(MAKE_DIRECTORY "${ENGINE_SOURCE_DIR}")
+install(DIRECTORY "${ENGINE_SOURCE_DIR}/"
+  DESTINATION "${CMAKE_INSTALL_PREFIX}/engine"
+  COMPONENT Runtime
+  FILES_MATCHING PATTERN "*.exe")

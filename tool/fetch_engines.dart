@@ -31,11 +31,9 @@ Future<void> main(List<String> args) async {
     return;
   }
   final root = _repoRoot();
-  final manifest =
-      jsonDecode(
-            File(p.join(root, 'engine', 'checksums.json')).readAsStringSync(),
-          )
-          as Map<String, dynamic>;
+  final manifest = jsonDecode(
+    File(p.join(root, 'engine', 'checksums.json')).readAsStringSync(),
+  ) as Map<String, dynamic>;
   final binaries = (manifest['binaries'] as List)
       .cast<Map<String, dynamic>>()
       .map(_Binary.fromJson)
@@ -58,7 +56,7 @@ Future<void> main(List<String> args) async {
 }
 
 class _Options {
-  _Options(this.platforms, {required this.force});
+  new(this.platforms, {required this.force});
   final Set<String> platforms;
   final bool force;
 }
@@ -93,7 +91,7 @@ _Options? _parseArgs(List<String> args) {
 }
 
 class _Binary {
-  _Binary({
+  new({
     required this.platform,
     required this.url,
     required this.sha256,
@@ -102,7 +100,7 @@ class _Binary {
     required this.installPath,
   });
 
-  factory _Binary.fromJson(Map<String, dynamic> j) => _Binary(
+  factory fromJson(Map<String, dynamic> j) => _Binary(
     platform: j['platform'] as String,
     url: Uri.parse(j['url'] as String),
     sha256: j['sha256'] as String,
@@ -122,7 +120,7 @@ class _Binary {
 }
 
 class _FetchError implements Exception {
-  _FetchError(this.message);
+  new(this.message);
   final String message;
 }
 
@@ -160,9 +158,7 @@ Future<void> _install(
   final cacheDir = Directory(p.join(root, 'engine', '.cache'))
     ..createSync(recursive: true);
   final archive = File(p.join(cacheDir.path, b.archiveName));
-  if (force ||
-      !archive.existsSync() ||
-      await _sha256Of(archive) != b.sha256) {
+  if (force || !archive.existsSync() || await _sha256Of(archive) != b.sha256) {
     await _download(client, b.url, archive);
     final actual = await _sha256Of(archive);
     if (actual != b.sha256) {

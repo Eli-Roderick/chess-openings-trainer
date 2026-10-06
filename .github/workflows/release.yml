@@ -1,0 +1,109 @@
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: read
+
+jobs:
+  build-android:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: gradle
+      - uses: ./.github/actions/setup-flutter
+      - uses: actions/cache@v4
+        with:
+          path: engine/.cache
+          key: engines-android-${{ hashFiles('engine/checksums.json') }}
+      - name: Fetch Stockfish (android)
+        run: dart run tool/fetch_engines.dart --platform android
+      - name: Release signing key (required)
+        env:
+          KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          KEY_PROPERTIES: ${{ secrets.ANDROID_KEY_PROPERTIES }}
+        run: |
+          if [ -z "$KEYSTORE_BASE64" ] || [ -z "$KEY_PROPERTIES" ]; then
+            echo "::error::Releases must be signed with the release key; set ANDROID_KEYSTORE_BASE64 and ANDROID_KEY_PROPERTIES."
+            exit 1
+          fi
+          printf '%s' "$KEYSTORE_BASE64" | tr -d '\r\n ' | base64 -d > android/release.jks
+          printf '%s\n' "$KEY_PROPERTIES" | tr -d '\r' | grep -v '^storeFile=' > android/key.properties
+          echo 'storeFile=release.jks' >> android/key.properties
+      - name: Build APKs
+        run: flutter build apk --release --split-per-abi
+      - name: Rename APKs
+        run: |
+          mkdir -p dist
+          for abi in arm64-v8a armeabi-v7a; do
+            cp "build/app/outputs/flutter-apk/app-$abi-release.apk" \
+              "dist/repertoire-trainer-$GITHUB_REF_NAME-android-$abi.apk"
+          done
+      - uses: actions/upload-artifact@v4
+        with:
+          name: android
+          path: dist/
+          if-no-files-found: error
+
+  build-windows:
+    runs-on: windows-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-flutter
+      - uses: actions/cache@v4
+        with:
+          path: engine/.cache
+          key: engines-windows-${{ hashFiles('engine/checksums.json') }}
+      - name: Fetch Stockfish (windows)
+        run: dart run tool/fetch_engines.dart --platform windows
+      - name: Build Windows
+        run: flutter build windows --release
+      - name: Zip
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force dist | Out-Null
+          Compress-Archive -Path build/windows/x64/runner/Release/* `
+            -DestinationPath "dist/repertoire-trainer-$env:GITHUB_REF_NAME-windows-x64.zip"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: windows
+          path: dist/
+          if-no-files-found: error
+
+  release:
+    needs: [build-android, build-windows]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          path: dist
+          merge-multiple: true
+      - name: Create GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          tag="$(jq -r .stockfish.tag engine/checksums.json)"
+          source="$(jq -r .stockfish.source engine/checksums.json)"
+          cat > notes.md <<NOTES
+          Repertoire Trainer $GITHUB_REF_NAME.
+
+          - Android: install \`repertoire-trainer-$GITHUB_REF_NAME-android-arm64-v8a.apk\` (armeabi-v7a only for old 32-bit phones).
+          - Windows: unzip \`repertoire-trainer-$GITHUB_REF_NAME-windows-x64.zip\` and run \`repertoire_trainer.exe\`.
+
+          Licensed GPL-3.0-or-later; source is this repository at $GITHUB_REF_NAME.
+          Bundles Stockfish $tag (GPL-3.0), source: $source
+          NOTES
+          gh release create "$GITHUB_REF_NAME" dist/* \
+            --title "Repertoire Trainer $GITHUB_REF_NAME" \
+            --notes-file notes.md
