@@ -30,6 +30,18 @@ flutter build linux --release                 # build/linux/x64/release/bundle/
 
 Android release builds are signed with the key in `android/key.properties` (gitignored; template in `android/key.properties.example`) and fall back to debug signing when it is absent. Desktop builds copy the fetched engine into `<bundle>/engine/`.
 
+### Google Drive sync
+
+Sync needs OAuth client ids from your own Google Cloud project ([docs/GOOGLE_SETUP.md](docs/GOOGLE_SETUP.md)). Copy `config/google_oauth.example.json` to `config/google_oauth.json` (gitignored), fill in the three values and pass the file to every build or run:
+
+```sh
+flutter run --dart-define-from-file=config/google_oauth.json
+flutter build apk --release --split-per-abi --dart-define-from-file=config/google_oauth.json
+flutter build windows --release --dart-define-from-file=config/google_oauth.json
+```
+
+Without the file the app works normally and Settings → Sync and backup says "Sync is not configured in this build". The release workflow writes the file from the repository secrets `GOOGLE_ANDROID_SERVER_CLIENT_ID`, `GOOGLE_DESKTOP_CLIENT_ID` and `GOOGLE_DESKTOP_CLIENT_SECRET`.
+
 ## Test
 
 ```sh

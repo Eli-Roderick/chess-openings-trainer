@@ -132,13 +132,14 @@ final class _Plan {
 final class DrillController extends ChangeNotifier {
   /// Creates the controller; call [start].
   new({
-    required this.tree,
+    required RepertoireTree tree,
     required this.repertoireId,
     required this.deps,
     this.picker = const RandomPicker(),
     bool? startFromBranch,
     bool? deviations,
-  }) : _startFromBranch =
+  }) : _tree = tree,
+       _startFromBranch =
            startFromBranch ?? deps.settings().startFromBranchPoint,
        _deviationsOverride = deviations,
        _state = DrillState(
@@ -146,8 +147,27 @@ final class DrillController extends ChangeNotifier {
          board: BoardViewState(fen: tree.root.fen, orientation: tree.userSide),
        );
 
+  RepertoireTree _tree;
+  RepertoireTree? _nextTree;
+
   /// The repertoire.
-  final RepertoireTree tree;
+  RepertoireTree get tree => _tree;
+
+  /// A newer version of the repertoire (a sync changed its PGN): used from
+  /// the next line on, never in the middle of one.
+  void replaceTree(RepertoireTree tree) {
+    if (!_disposed) _nextTree = tree;
+  }
+
+  /// A line is being played (sync waits for its end, 06 §6).
+  bool get inLine => switch (_state.phase) {
+    DrillPhase.opponentToMove ||
+    DrillPhase.userToMove ||
+    DrillPhase.mistake ||
+    DrillPhase.deviationReply ||
+    DrillPhase.judging => true,
+    DrillPhase.loading || DrillPhase.empty || DrillPhase.lineComplete => false,
+  };
 
   /// Its id.
   final String repertoireId;
@@ -252,6 +272,10 @@ final class DrillController extends ChangeNotifier {
     // The previous run must be in the stats first (weak pool, SRS).
     final saving = _saving;
     if (saving != null) await saving;
+    if (_nextTree case final next?) {
+      _tree = next;
+      _nextTree = null;
+    }
     final context = await _context();
     if (token != _token || _disposed) return;
     final pick = picker.pick(context);

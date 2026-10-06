@@ -8,6 +8,7 @@ import 'package:repertoire_trainer/app/layout/adaptive_layout.dart';
 import 'package:repertoire_trainer/core/db/backup_queries.dart';
 import 'package:repertoire_trainer/core/db/providers.dart';
 import 'package:repertoire_trainer/core/files/providers.dart';
+import 'package:repertoire_trainer/core/sync/sync_controller.dart';
 import 'package:repertoire_trainer/features/backup/backup_service.dart';
 import 'package:repertoire_trainer/l10n/gen/app_localizations.dart';
 
@@ -100,7 +101,14 @@ class _SyncBackupState extends ConsumerState<SyncBackupScreen> {
         context: context,
         builder: (context) => AlertDialog(
           title: Text(l10n.replaceAllTitle),
-          content: Text(l10n.replaceAllBody(repertoires, runs)),
+          content: Text(
+            [
+              l10n.replaceAllBody(repertoires, runs),
+              // Other devices would bring the data back (06 §8).
+              if (ref.read(syncControllerProvider).enabled)
+                l10n.replaceSyncWarning,
+            ].join('\n\n'),
+          ),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(false),
@@ -149,12 +157,7 @@ class _SyncBackupState extends ConsumerState<SyncBackupScreen> {
           key: const Key('sync-backup'),
           children: [
             ListTile(title: Text(l10n.syncTitle)),
-            Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: AdaptiveLayout.gutter,
-              ),
-              child: Text(l10n.syncLater),
-            ),
+            const _SyncSection(),
             const Divider(height: 32),
             ListTile(title: Text(l10n.backupTitle)),
             if (busy != null)
@@ -270,6 +273,172 @@ class _ImportDialogState extends State<_ImportDialog> {
           key: const Key('start-import'),
           onPressed: () => Navigator.of(context).pop((_mode, _settings)),
           child: Text(l10n.importAction),
+        ),
+      ],
+    );
+  }
+}
+
+/// Drive sync: toggle, account, last sync, Sync now, Sign out, Delete
+/// cloud data (06 §6), errors (§7).
+class _SyncSection extends ConsumerWidget {
+  const new();
+
+  Future<void> _run(
+    BuildContext context,
+    Future<void> Function() action,
+  ) async {
+    final l10n = AppLocalizations.of(context);
+    final messenger = ScaffoldMessenger.of(context);
+    try {
+      await action();
+    } on Object catch (e) {
+      messenger
+        ..hideCurrentSnackBar()
+        ..showSnackBar(SnackBar(content: Text(l10n.syncFailed('$e'))));
+    }
+  }
+
+  Future<void> _deleteCloud(BuildContext context, SyncController c) async {
+    final l10n = AppLocalizations.of(context);
+    final messenger = ScaffoldMessenger.of(context);
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(l10n.deleteCloudTitle),
+        content: Text(l10n.deleteCloudBody),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: Text(l10n.cancel),
+          ),
+          FilledButton(
+            key: const Key('confirm-delete-cloud'),
+            onPressed: () => Navigator.of(context).pop(true),
+            child: Text(l10n.delete),
+          ),
+        ],
+      ),
+    );
+    if (!(ok ?? false)) return;
+    try {
+      final n = await c.deleteCloudData();
+      messenger.showSnackBar(SnackBar(content: Text(l10n.cloudDeleted(n))));
+    } on Object catch (e) {
+      messenger.showSnackBar(SnackBar(content: Text(l10n.syncFailed('$e'))));
+    }
+  }
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
+    final status = ref.watch(syncControllerProvider);
+    final c = ref.read(syncControllerProvider.notifier);
+    const pad = EdgeInsets.symmetric(horizontal: AdaptiveLayout.gutter);
+    if (status.phase == SyncPhase.notConfigured) {
+      return Padding(
+        padding: pad,
+        child: Text(
+          l10n.syncNotConfigured,
+          key: const Key('sync-unconfigured'),
+        ),
+      );
+    }
+    final last = status.lastSyncAt;
+    final lastText = last == null
+        ? l10n.syncNever
+        : DateFormat.yMMMd(Localizations.localeOf(context).toLanguageTag())
+              .add_Hm()
+              .format(DateTime.fromMillisecondsSinceEpoch(last));
+    final line = switch (status.phase) {
+      SyncPhase.syncing => l10n.syncRunning,
+      SyncPhase.offline => l10n.syncOffline,
+      SyncPhase.signInNeeded => l10n.syncSignInAgain,
+      SyncPhase.error => l10n.syncError(status.message ?? ''),
+      _ => l10n.syncLast(lastText),
+    };
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        SwitchListTile(
+          key: const Key('sync-toggle'),
+          title: Text(l10n.syncToggle),
+          subtitle: Text(
+            status.enabled
+                ? (status.account == null
+                      ? l10n.syncSignedIn
+                      : l10n.syncSignedInAs(status.account!))
+                : l10n.syncOffHint,
+          ),
+          value: status.enabled,
+          onChanged: status.phase == SyncPhase.syncing
+              ? null
+              : (on) => unawaited(_run(context, on ? c.enable : c.signOut)),
+        ),
+        if (status.enabled) ...[
+          ListTile(
+            key: const Key('sync-status'),
+            title: Text(line),
+            leading: status.phase == SyncPhase.syncing
+                ? const SizedBox.square(
+                    dimension: 20,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                : null,
+          ),
+          for (final w in status.warnings)
+            ListTile(
+              leading: const Icon(Icons.warning_amber),
+              title: Text(
+                w.newerSchema ? l10n.syncNewerDevice : l10n.syncCorruptFile,
+              ),
+            ),
+          Padding(
+            padding: pad,
+            child: Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: [
+                if (status.phase == SyncPhase.signInNeeded)
+                  FilledButton(
+                    key: const Key('sync-sign-in'),
+                    onPressed: () => unawaited(_run(context, c.signInAgain)),
+                    child: Text(l10n.signInAgain),
+                  )
+                else
+                  FilledButton.icon(
+                    key: const Key('sync-now'),
+                    icon: const Icon(Icons.sync),
+                    onPressed: status.phase == SyncPhase.syncing
+                        ? null
+                        : () => unawaited(_run(context, c.syncNow)),
+                    label: Text(l10n.syncNow),
+                  ),
+                OutlinedButton(
+                  key: const Key('sync-sign-out'),
+                  onPressed: () => unawaited(_run(context, c.signOut)),
+                  child: Text(l10n.signOut),
+                ),
+                TextButton(
+                  key: const Key('delete-cloud'),
+                  onPressed: () => unawaited(_deleteCloud(context, c)),
+                  child: Text(l10n.deleteCloudData),
+                ),
+              ],
+            ),
+          ),
+        ],
+        Padding(
+          padding: const EdgeInsets.fromLTRB(
+            AdaptiveLayout.gutter,
+            8,
+            AdaptiveLayout.gutter,
+            0,
+          ),
+          child: Text(
+            l10n.syncHelp,
+            style: Theme.of(context).textTheme.bodySmall,
+          ),
         ),
       ],
     );

@@ -37,8 +37,21 @@ jobs:
           printf '%s' "$KEYSTORE_BASE64" | tr -d '\r\n ' | base64 -d > android/release.jks
           printf '%s\n' "$KEY_PROPERTIES" | tr -d '\r' | grep -v '^storeFile=' > android/key.properties
           echo 'storeFile=release.jks' >> android/key.properties
+      - name: Google OAuth config (sync; optional)
+        env:
+          ANDROID_ID: ${{ secrets.GOOGLE_ANDROID_SERVER_CLIENT_ID }}
+          DESKTOP_ID: ${{ secrets.GOOGLE_DESKTOP_CLIENT_ID }}
+          DESKTOP_SECRET: ${{ secrets.GOOGLE_DESKTOP_CLIENT_SECRET }}
+        shell: bash
+        run: |
+          mkdir -p config
+          jq -n --arg a "$ANDROID_ID" --arg d "$DESKTOP_ID" --arg s "$DESKTOP_SECRET" \
+            '{GOOGLE_ANDROID_SERVER_CLIENT_ID: $a, GOOGLE_DESKTOP_CLIENT_ID: $d, GOOGLE_DESKTOP_CLIENT_SECRET: $s}' \
+            > config/google_oauth.json
       - name: Build APKs
-        run: flutter build apk --release --split-per-abi
+        run: >-
+          flutter build apk --release --split-per-abi
+          --dart-define-from-file=config/google_oauth.json
       - name: Rename APKs
         run: |
           mkdir -p dist
@@ -64,8 +77,21 @@ jobs:
           key: engines-windows-${{ hashFiles('engine/checksums.json') }}
       - name: Fetch Stockfish (windows)
         run: dart run tool/fetch_engines.dart --platform windows
+      - name: Google OAuth config (sync; optional)
+        env:
+          ANDROID_ID: ${{ secrets.GOOGLE_ANDROID_SERVER_CLIENT_ID }}
+          DESKTOP_ID: ${{ secrets.GOOGLE_DESKTOP_CLIENT_ID }}
+          DESKTOP_SECRET: ${{ secrets.GOOGLE_DESKTOP_CLIENT_SECRET }}
+        shell: bash
+        run: |
+          mkdir -p config
+          jq -n --arg a "$ANDROID_ID" --arg d "$DESKTOP_ID" --arg s "$DESKTOP_SECRET" \
+            '{GOOGLE_ANDROID_SERVER_CLIENT_ID: $a, GOOGLE_DESKTOP_CLIENT_ID: $d, GOOGLE_DESKTOP_CLIENT_SECRET: $s}' \
+            > config/google_oauth.json
       - name: Build Windows
-        run: flutter build windows --release
+        run: >-
+          flutter build windows --release
+          --dart-define-from-file=config/google_oauth.json
       - name: Zip
         shell: pwsh
         run: |

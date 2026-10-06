@@ -98,11 +98,8 @@ class SettingsSectionScreen extends StatelessWidget {
           SettingsSection.board => const BoardSettingsPage(),
           SettingsSection.engine => const EngineSettingsPage(),
           SettingsSection.about => const _About(),
-          // The router opens the Sync and backup feature for this one.
-          SettingsSection.sync => Padding(
-            padding: const EdgeInsets.all(AdaptiveLayout.gutter),
-            child: Text(l10n.syncLater),
-          ),
+          // The router opens the Sync and backup feature instead.
+          SettingsSection.sync => const SizedBox.shrink(),
         },
       ),
     );

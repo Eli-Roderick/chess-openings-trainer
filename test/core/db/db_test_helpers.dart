@@ -9,9 +9,12 @@ import 'package:repertoire_trainer/core/db/stats_service.dart';
 
 /// Everything wired to one in-memory database, deterministic ids and time.
 final class TestDb {
-  new({void Function(String)? debugHook, int isolateThreshold = 2000})
-    : db = AppDatabase.memory(),
-      clock = FakeClock(DateTime.utc(2026, 10, 6, 12)) {
+  new({
+    void Function(String)? debugHook,
+    int isolateThreshold = 2000,
+    this.idPrefix = 'id',
+  }) : db = AppDatabase.memory(),
+       clock = FakeClock(DateTime.utc(2026, 10, 6, 12)) {
     sync = DriftSyncStateRepository(db, newId: nextId);
     settings = DriftSettingsRepository(db);
     repertoires = DriftRepertoireRepository(
@@ -42,8 +45,11 @@ final class TestDb {
   late final StatsService service;
   var _id = 0;
 
+  /// Prefix of [nextId] (distinct per simulated device).
+  final String idPrefix;
+
   /// Sequential ids: id-1, id-2, ...
-  String nextId() => 'id-${++_id}';
+  String nextId() => '$idPrefix-${++_id}';
 
   Future<void> close() async {
     await service.dispose();

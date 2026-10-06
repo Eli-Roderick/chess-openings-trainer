@@ -4,11 +4,13 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:chess_core/chess_core.dart';
+import 'package:dartchess/dartchess.dart' show Side;
 import 'package:drift/native.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart' show ProviderScope;
 import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:flutter_test/flutter_test.dart';
+import 'package:http/http.dart' as http;
 import 'package:integration_test/integration_test.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
@@ -16,12 +18,24 @@ import 'package:repertoire_trainer/app/bootstrap.dart';
 import 'package:repertoire_trainer/app/router.dart';
 import 'package:repertoire_trainer/app/routes.dart';
 import 'package:repertoire_trainer/core/db/app_database.dart';
+import 'package:repertoire_trainer/core/db/merge_applier.dart';
 import 'package:repertoire_trainer/core/db/providers.dart';
+import 'package:repertoire_trainer/core/db/repositories/repertoire_repository.dart';
+import 'package:repertoire_trainer/core/db/repositories/run_repository.dart';
+import 'package:repertoire_trainer/core/db/repositories/settings_repository.dart';
+import 'package:repertoire_trainer/core/db/repositories/stats_repository.dart';
+import 'package:repertoire_trainer/core/db/repositories/sync_state_repository.dart';
+import 'package:repertoire_trainer/core/db/stats_service.dart';
 import 'package:repertoire_trainer/core/engine/engine_providers.dart';
 import 'package:repertoire_trainer/core/files/file_service.dart';
 import 'package:repertoire_trainer/core/files/providers.dart';
+import 'package:repertoire_trainer/core/sync/drive_auth.dart';
+import 'package:repertoire_trainer/core/sync/sync_controller.dart';
+import 'package:repertoire_trainer/core/sync/sync_service.dart';
 import 'package:repertoire_trainer/main.dart' as app;
 import 'package:uci_engine/uci_engine.dart';
+
+import '../test/core/sync/fake_drive.dart';
 
 /// Returns [picked] from the open dialog; keeps saved backups and hands
 /// them back when a backup is picked.
@@ -343,6 +357,131 @@ void main() {
     await _pumpUntil(tester, find.textContaining('Backup imported'));
     expect(await snapshot(), before);
   });
+
+  testWidgets('16. sync (fake Drive): the app and a second device converge; '
+      'the newest rename wins', (tester) async {
+    final drive = FakeDriveTransport();
+    final files = _PickFile(_file('x.pgn', ''));
+    await _boot(
+      tester,
+      await _tempDbFile(),
+      extra: [
+        fileServiceProvider.overrideWithValue(files),
+        driveAuthProvider.overrideWithValue(_SignedInAuth()),
+        driveConnectorProvider.overrideWithValue(() async => drive),
+      ],
+    );
+    await _pumpUntil(tester, find.byKey(const Key('try-demo')));
+    await tester.tap(find.byKey(const Key('try-demo')));
+    await _pumpUntil(tester, find.text('Demo: Italian (White)'));
+    final c = ProviderScope.containerOf(
+      tester.element(find.text('Demo: Italian (White)')),
+    );
+    final id = (await c.read(repertoireRepositoryProvider).records()).single.id;
+
+    // Device A (the app) turns sync on.
+    c.read(routerProvider).go(Routes.settingsSection('sync'));
+    await _pumpUntil(tester, find.byKey(const Key('sync-toggle')));
+    await tester.tap(find.byKey(const Key('sync-toggle')));
+    await _pumpUntil(tester, find.textContaining('Last sync:'));
+
+    // Device B: its own database and id on the same Drive.
+    final bDb = AppDatabase(NativeDatabase(await _tempDbFile()));
+    final bSync = DriftSyncStateRepository(bDb, newId: () => 'device-b');
+    var n = 0;
+    final bReps = DriftRepertoireRepository(
+      bDb,
+      clock: const SystemClock(),
+      newId: () => 'b-${n++}',
+      deviceId: bSync.deviceId,
+    );
+    final bRuns = DriftRunRepository(bDb);
+    final bStats = StatsService(
+      repertoires: bReps,
+      runs: bRuns,
+      stats: DriftStatsRepository(bDb),
+      settings: DriftSettingsRepository(bDb).load,
+    );
+    final b = SyncService(
+      connect: () async => drive,
+      refreshAuth: () async {},
+      applier: MergeApplier(
+        db: bDb,
+        repertoires: bReps,
+        runs: bRuns,
+        stats: bStats,
+        buildTree: (r) async => importPgn(r.pgn, Side.white).tree,
+      ),
+      repertoires: bReps,
+      runs: bRuns,
+      state: bSync,
+      deviceId: bSync.deviceId,
+      clock: const SystemClock(),
+    );
+    await b.sync();
+    expect((await bReps.records()).single.name, 'Demo: Italian (White)');
+    expect((await bReps.loadTree(id)).lines, hasLength(12));
+
+    // B trains a line and renames the repertoire later than A.
+    final line = (await bReps.lineRefs(id)).first;
+    final ucis = line.ucis.split(' ');
+    await bStats.recordRun(
+      RunRecord(
+        id: 'b-run-1',
+        repertoireId: id,
+        lineKey: line.key,
+        ucis: line.ucis,
+        mode: RunMode.random,
+        startPly: 0,
+        wrongMoveMode: WrongMoveMode.retry,
+        startedAt: DateTime.now().millisecondsSinceEpoch - 1000,
+        finishedAt: DateTime.now().millisecondsSinceEpoch,
+        localDay: '2026-10-06',
+        completed: true,
+        deviated: false,
+        gradedCount: 1,
+        creditSum: 1,
+        hintCount: 0,
+        deviceId: await bSync.deviceId(),
+        grades: [
+          MoveGrade(
+            ply: 1,
+            expected: ucis.first,
+            accepted: ucis.first,
+            firstAttempt: ucis.first,
+            result: GradeResult.correct,
+            credit: 1,
+            attempts: 1,
+            hintLevel: 0,
+          ),
+        ],
+      ),
+    );
+    await c.read(repertoireRepositoryProvider).rename(id, 'Renamed on A');
+    await Future<void>.delayed(const Duration(milliseconds: 5));
+    await bReps.rename(id, 'Renamed on B');
+    await b.sync();
+
+    // A syncs from Home: B's newer name and run arrive.
+    c.read(routerProvider).go(Routes.home);
+    await _pumpUntil(tester, find.byKey(const Key('home-sync')));
+    await tester.tap(find.byKey(const Key('home-sync')));
+    await _pumpUntil(tester, find.text('Renamed on B'));
+    await b.sync();
+    final aRuns = await c.read(runRepositoryProvider).allRuns();
+    expect(
+      [for (final r in aRuns) r.id],
+      [for (final r in await bRuns.allRuns()) r.id],
+    );
+    expect(
+      await c.read(repertoireRepositoryProvider).records(),
+      await bReps.records(),
+    );
+    final aStats = await c.read(statsRepositoryProvider).lineStats(id);
+    expect(aStats.firstWhere((s) => s.lineKey == line.key).runCount, 1);
+    await bStats.dispose();
+    await bDb.close();
+  });
 }
 
 /// Passes everything through and records the engine's output lines.
@@ -366,4 +505,25 @@ final class _RecordingTransport implements UciTransport {
 
   @override
   Future<void> kill() => _inner.kill();
+}
+
+/// Already signed in to the fake Drive.
+final class _SignedInAuth implements DriveAuth {
+  @override
+  bool get isConfigured => true;
+
+  @override
+  Future<bool> restore() async => true;
+
+  @override
+  Future<void> signIn() async {}
+
+  @override
+  Future<http.Client> client() async => http.Client();
+
+  @override
+  Future<void> refresh() async {}
+
+  @override
+  Future<void> signOut() async {}
 }

@@ -841,7 +841,6 @@
   "runHistory": "Run history",
   "abandoned": "abandoned",
   "syncTitle": "Google Drive sync",
-  "syncLater": "Sync between your devices arrives in a later version. Use backups to move data meanwhile.",
   "backupTitle": "Backup",
   "exportBackup": "Export backup",
   "exportBackupHint": "Repertoires, training history and settings in one file",
@@ -909,5 +908,76 @@
         "type": "int"
       }
     }
-  }
+  },
+  "updatedFromOtherDevice": "{name} was updated from another device.",
+  "@updatedFromOtherDevice": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "deletedOnOtherDevice": "This repertoire was deleted on another device.",
+  "syncNotConfigured": "Sync is not configured in this build.",
+  "syncToggle": "Sync with Google Drive",
+  "syncOffHint": "Keeps repertoires and training history the same on your phone and computer.",
+  "syncSignedIn": "Signed in",
+  "syncSignedInAs": "Signed in as {account}",
+  "@syncSignedInAs": {
+    "placeholders": {
+      "account": {
+        "type": "String"
+      }
+    }
+  },
+  "syncNever": "never",
+  "syncLast": "Last sync: {when}",
+  "@syncLast": {
+    "placeholders": {
+      "when": {
+        "type": "String"
+      }
+    }
+  },
+  "syncRunning": "Syncing…",
+  "syncOffline": "Offline, will retry",
+  "syncSignInAgain": "Sign in again to keep syncing.",
+  "syncError": "Sync failed: {message}",
+  "@syncError": {
+    "placeholders": {
+      "message": {
+        "type": "String"
+      }
+    }
+  },
+  "syncFailed": "Sync failed: {error}",
+  "@syncFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "syncNewerDevice": "Another device uses a newer app version. Update this device.",
+  "syncCorruptFile": "A file from another device could not be read; it was skipped.",
+  "signInAgain": "Sign in again",
+  "syncNow": "Sync now",
+  "signOut": "Sign out",
+  "deleteCloudData": "Delete cloud data",
+  "deleteCloudTitle": "Delete cloud data?",
+  "deleteCloudBody": "Deletes the sync files of all your devices from Google Drive. Data on this device stays.",
+  "cloudDeleted": "{count, plural, =1{1 file deleted} other{{count} files deleted}}",
+  "@cloudDeleted": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "syncHelp": "Sync uses a hidden app folder in your Google Drive. A device with a wrong clock can win or lose a rename or re-import; training history is never lost.",
+  "replaceSyncWarning": "Sync is on: the next sync brings back data from your other devices unless you also delete the cloud data.",
+  "deviceIdLabel": "Device id",
+  "syncPhaseLabel": "State",
+  "syncMessageLabel": "Message",
+  "listDriveFiles": "List Drive files"
 }
