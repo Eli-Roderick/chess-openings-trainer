@@ -58,7 +58,7 @@ Future<(Played, Host, ProviderContainer)> pumpBoard(
                 host.setState = setState;
                 return RepertoireBoard(
                   state: host.state,
-                  onUserMove: (m, r) => played.add((m, r)),
+                  onUserMove: (m, r, {required viaDrag}) => played.add((m, r)),
                 );
               },
             ),

@@ -124,7 +124,7 @@ final class RepertoireBoardController {
     final state = _state;
     final move = parseUci(uci);
     if (state == null || move == null) return false;
-    return state._userMove(move);
+    return state._userMove(move, viaDrag: true);
   }
 
   /// Flashes [square] red for 300 ms; completes when the flash is over.
@@ -168,8 +168,14 @@ class RepertoireBoard extends ConsumerStatefulWidget {
   /// What to show.
   final BoardViewState state;
 
-  /// Called with each legal user move, resolved against the position.
-  final void Function(NormalMove move, ResolvedMove resolved)? onUserMove;
+  /// Called with each legal user move, resolved against the position;
+  /// `viaDrag` when the piece was dropped (it does not animate).
+  final void Function(
+    NormalMove move,
+    ResolvedMove resolved, {
+    required bool viaDrag,
+  })?
+  onUserMove;
 
   /// Optional handle (flash, test moves).
   final RepertoireBoardController? controller;
@@ -255,7 +261,7 @@ class _RepertoireBoardState extends ConsumerState<RepertoireBoard> {
     );
   }
 
-  bool _userMove(Move move) {
+  bool _userMove(Move move, {required bool viaDrag}) {
     final s = widget.state;
     if (move is! NormalMove || s.movable == PlayerSide.none) return false;
     final position = positionFromFen(s.fen);
@@ -265,7 +271,7 @@ class _RepertoireBoardState extends ConsumerState<RepertoireBoard> {
     }
     final resolved = resolveMove(position, move);
     if (resolved == null) return false;
-    widget.onUserMove?.call(move, resolved);
+    widget.onUserMove?.call(move, resolved, viaDrag: viaDrag);
     return true;
   }
 
@@ -308,7 +314,8 @@ class _RepertoireBoardState extends ConsumerState<RepertoireBoard> {
                   settings: settings,
                   orientation: s.orientation,
                   shapes: s.shapes,
-                  onMove: (move, {viaDragAndDrop}) => _userMove(move),
+                  onMove: (move, {viaDragAndDrop}) =>
+                      _userMove(move, viaDrag: viaDragAndDrop ?? false),
                 ),
                 for (final MapEntry(key: sq, value: color) in overlays.entries)
                   Positioned(

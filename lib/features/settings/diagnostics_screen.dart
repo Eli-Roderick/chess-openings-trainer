@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:repertoire_trainer/app/layout/adaptive_layout.dart';
 import 'package:repertoire_trainer/core/db/providers.dart';
+import 'package:repertoire_trainer/core/diagnostics/drill_latency.dart';
 import 'package:repertoire_trainer/core/diagnostics/frame_stats.dart';
 import 'package:repertoire_trainer/core/diagnostics/startup_timings.dart';
 import 'package:repertoire_trainer/core/engine/engine_providers.dart';
@@ -76,6 +77,21 @@ class DiagnosticsScreen extends StatelessWidget {
                   ),
                 ],
               ),
+            ),
+            _Header(l10n.drillLatency),
+            ListenableBuilder(
+              listenable: DrillLatency.instance,
+              builder: (context, _) {
+                final latency = DrillLatency.instance;
+                return Column(
+                  key: const Key('diagnostics-latency'),
+                  children: [
+                    _Value(l10n.latencyP50, ms(latency.p50)),
+                    _Value(l10n.latencyP95, ms(latency.p95)),
+                    _Value(l10n.latencySamples, '${latency.count}'),
+                  ],
+                );
+              },
             ),
             _Header(l10n.engineTitle),
             const _EngineSection(),

@@ -684,4 +684,126 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get engineRecentJobs => 'Last jobs';
+
+  @override
+  String get trainTitle => 'Train';
+
+  @override
+  String get modeRandom => 'Random';
+
+  @override
+  String get trainingSettings => 'Training settings';
+
+  @override
+  String get noTrainableLines =>
+      'This repertoire has no line with moves of your colour.';
+
+  @override
+  String get yourMove => 'Your move';
+
+  @override
+  String get opponentToMove => 'Opponent to move';
+
+  @override
+  String skippedToMove(int move) {
+    return 'Skipped to move $move';
+  }
+
+  @override
+  String get comparableBanner =>
+      'That is not the move in your repertoire, but it is a comparable move.';
+
+  @override
+  String get notRepertoireMove => 'Not your repertoire move';
+
+  @override
+  String bannerWithMove(String move, String text) {
+    return '$move: $text';
+  }
+
+  @override
+  String runAccuracy(String credit, int graded, int percent) {
+    return '$credit/$graded · $percent %';
+  }
+
+  @override
+  String get hint => 'Hint';
+
+  @override
+  String get showMove => 'Show move';
+
+  @override
+  String moveProgress(int current, int total) {
+    return 'Move $current of $total';
+  }
+
+  @override
+  String get skipLine => 'Skip line';
+
+  @override
+  String get nextLine => 'Next line';
+
+  @override
+  String get sessionSummary => 'Session';
+
+  @override
+  String linesCompleted(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count lines completed',
+      one: '1 line completed',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String sessionAccuracy(int percent) {
+    return 'Accuracy $percent %';
+  }
+
+  @override
+  String get done => 'Done';
+
+  @override
+  String get wrongMoveBehaviour => 'Wrong move behaviour';
+
+  @override
+  String get wrongMoveRetry => 'Retry';
+
+  @override
+  String get wrongMoveRestart => 'Restart line';
+
+  @override
+  String get startFrom => 'Start from';
+
+  @override
+  String get startFromMove1 => 'Move 1';
+
+  @override
+  String get startFromBranch => 'Branch point';
+
+  @override
+  String get autoAdvanceDelay => 'Auto-advance delay';
+
+  @override
+  String get opponentDelay => 'Opponent move delay';
+
+  @override
+  String get showCommentsInDrills => 'Show comments during drills';
+
+  @override
+  String get showCommentArrows => 'Show comment arrows';
+
+  @override
+  String get drillLatency => 'Drill latency';
+
+  @override
+  String get latencyP50 => 'Median';
+
+  @override
+  String get latencyP95 => '95th percentile';
+
+  @override
+  String get latencySamples => 'Samples';
 }

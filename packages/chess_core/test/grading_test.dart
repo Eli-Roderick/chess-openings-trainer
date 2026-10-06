@@ -297,4 +297,21 @@ void main() {
     const dev = DeviationEvent(ply: 9, bestUci: 'a2a3', passed: false);
     expect(DeviationEvent.fromJson(dev.toJson()), dev);
   });
+
+  test('read-only grade access never creates a ply', () {
+    final r = builder();
+    expect(r.gradeAt(1), isNull);
+    expect(r.grades, isEmpty);
+    r.ply(1, expected: 'e2e4', accepted: ['e2e4']).attempt('d2d4');
+    r.ply(3, expected: 'g1f3', accepted: ['g1f3']);
+    expect(r.gradeAt(1)!.result, GradeResult.wrong);
+    expect(r.gradeAt(2), isNull);
+    // Ply 3 exists but has no event yet: not in the grades.
+    expect([for (final g in r.grades) g.ply], [1]);
+    r.gradeAt(3)!.attempt('g1f3');
+    expect(
+      [for (final g in r.grades) (g.ply, g.result)],
+      [(1, GradeResult.wrong), (3, GradeResult.correct)],
+    );
+  });
 }

@@ -440,5 +440,93 @@
   "calibrationNps": "Calibration nps",
   "calibrationDepth2s": "Depth in 2 s",
   "calibrationDepth1s": "Median depth in 1 s",
-  "engineRecentJobs": "Last jobs"
+  "engineRecentJobs": "Last jobs",
+  "trainTitle": "Train",
+  "modeRandom": "Random",
+  "trainingSettings": "Training settings",
+  "noTrainableLines": "This repertoire has no line with moves of your colour.",
+  "yourMove": "Your move",
+  "opponentToMove": "Opponent to move",
+  "skippedToMove": "Skipped to move {move}",
+  "@skippedToMove": {
+    "placeholders": {
+      "move": {
+        "type": "int"
+      }
+    }
+  },
+  "comparableBanner": "That is not the move in your repertoire, but it is a comparable move.",
+  "notRepertoireMove": "Not your repertoire move",
+  "bannerWithMove": "{move}: {text}",
+  "@bannerWithMove": {
+    "placeholders": {
+      "move": {
+        "type": "String"
+      },
+      "text": {
+        "type": "String"
+      }
+    }
+  },
+  "runAccuracy": "{credit}/{graded} · {percent} %",
+  "@runAccuracy": {
+    "placeholders": {
+      "credit": {
+        "type": "String"
+      },
+      "graded": {
+        "type": "int"
+      },
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "hint": "Hint",
+  "showMove": "Show move",
+  "moveProgress": "Move {current} of {total}",
+  "@moveProgress": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "skipLine": "Skip line",
+  "nextLine": "Next line",
+  "sessionSummary": "Session",
+  "linesCompleted": "{count, plural, =1{1 line completed} other{{count} lines completed}}",
+  "@linesCompleted": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "sessionAccuracy": "Accuracy {percent} %",
+  "@sessionAccuracy": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "done": "Done",
+  "wrongMoveBehaviour": "Wrong move behaviour",
+  "wrongMoveRetry": "Retry",
+  "wrongMoveRestart": "Restart line",
+  "startFrom": "Start from",
+  "startFromMove1": "Move 1",
+  "startFromBranch": "Branch point",
+  "autoAdvanceDelay": "Auto-advance delay",
+  "opponentDelay": "Opponent move delay",
+  "showCommentsInDrills": "Show comments during drills",
+  "showCommentArrows": "Show comment arrows",
+  "drillLatency": "Drill latency",
+  "latencyP50": "Median",
+  "latencyP95": "95th percentile",
+  "latencySamples": "Samples"
 }

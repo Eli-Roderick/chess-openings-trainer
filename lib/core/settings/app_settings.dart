@@ -69,6 +69,10 @@ abstract class AppSettings with _$AppSettings {
     /// Null = unlimited.
     int? srsMaxReviewsPerDay,
     @Default(defaultDayStartHour) int dayStartHour,
+
+    /// Drills start at the line's branch point instead of move 1 (the
+    /// default for the mode sheet, 01-product-spec §7.1).
+    @Default(false) bool startFromBranchPoint,
     // Board and sound.
     @Default('brown') String boardTheme,
     @Default('cburnett') String pieceSet,

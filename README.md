@@ -42,6 +42,7 @@ dart run tool/check_coverage.dart --package packages/chess_core --min 90 lib
 (cd packages/uci_engine && dart test --tags engine)   # needs engine/linux/stockfish
 flutter test
 xvfb-run -a flutter test integration_test/app_test.dart -d linux
+xvfb-run -a flutter test integration_test/drill_test.dart -d linux
 xvfb-run -a flutter drive --profile -d linux \
   --driver=test_driver/integration_test.dart \
   --target=integration_test/profile_test.dart   # cold start budget

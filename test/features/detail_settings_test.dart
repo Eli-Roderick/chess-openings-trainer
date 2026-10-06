@@ -28,7 +28,8 @@ void main() {
       expect(find.text('0 of 12 lines trained'), findsOneWidget);
       expect(find.text('Not trained'), findsOneWidget);
       expect(find.text('New available today'), findsOneWidget);
-      await tester.tap(find.byKey(const Key('train')));
+      // Stats is still a placeholder (P10).
+      await tester.tap(find.byKey(const Key('stats')));
       await h.settle();
       expect(find.text('Coming soon'), findsOneWidget);
     });
