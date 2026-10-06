@@ -1065,6 +1065,222 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Slow rasters'**
   String get framesSlowRasters;
+
+  /// No description provided for @analysisToggle.
+  ///
+  /// In en, this message translates to:
+  /// **'Analysis'**
+  String get analysisToggle;
+
+  /// No description provided for @engineUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Engine unavailable'**
+  String get engineUnavailable;
+
+  /// No description provided for @analysing.
+  ///
+  /// In en, this message translates to:
+  /// **'Analysing…'**
+  String get analysing;
+
+  /// No description provided for @analysisDepth.
+  ///
+  /// In en, this message translates to:
+  /// **'Depth {depth}'**
+  String analysisDepth(int depth);
+
+  /// No description provided for @engineThreadsCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 thread} other{{count} threads}}'**
+  String engineThreadsCount(int count);
+
+  /// No description provided for @engineMnps.
+  ///
+  /// In en, this message translates to:
+  /// **'{value} Mnps'**
+  String engineMnps(String value);
+
+  /// No description provided for @engineReady.
+  ///
+  /// In en, this message translates to:
+  /// **'ready'**
+  String get engineReady;
+
+  /// No description provided for @engineNotRunning.
+  ///
+  /// In en, this message translates to:
+  /// **'not running'**
+  String get engineNotRunning;
+
+  /// No description provided for @engineStarting.
+  ///
+  /// In en, this message translates to:
+  /// **'starting…'**
+  String get engineStarting;
+
+  /// No description provided for @engineError.
+  ///
+  /// In en, this message translates to:
+  /// **'error ({message}); restarts on the next search'**
+  String engineError(String message);
+
+  /// No description provided for @engineUnavailableStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'unavailable ({message}). Tap Restart engine.'**
+  String engineUnavailableStatus(String message);
+
+  /// No description provided for @comparableThreshold.
+  ///
+  /// In en, this message translates to:
+  /// **'Comparable threshold'**
+  String get comparableThreshold;
+
+  /// No description provided for @pawnsValue.
+  ///
+  /// In en, this message translates to:
+  /// **'{value} pawns'**
+  String pawnsValue(String value);
+
+  /// No description provided for @checkSearchTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Check search time'**
+  String get checkSearchTime;
+
+  /// No description provided for @secondsValue.
+  ///
+  /// In en, this message translates to:
+  /// **'{value} s'**
+  String secondsValue(String value);
+
+  /// No description provided for @engineThreads.
+  ///
+  /// In en, this message translates to:
+  /// **'Threads'**
+  String get engineThreads;
+
+  /// No description provided for @engineHash.
+  ///
+  /// In en, this message translates to:
+  /// **'Hash'**
+  String get engineHash;
+
+  /// No description provided for @autoValue.
+  ///
+  /// In en, this message translates to:
+  /// **'Auto ({value})'**
+  String autoValue(String value);
+
+  /// No description provided for @playOnStrength.
+  ///
+  /// In en, this message translates to:
+  /// **'Play-on strength'**
+  String get playOnStrength;
+
+  /// No description provided for @fullStrength.
+  ///
+  /// In en, this message translates to:
+  /// **'Full'**
+  String get fullStrength;
+
+  /// No description provided for @calibration.
+  ///
+  /// In en, this message translates to:
+  /// **'Calibration'**
+  String get calibration;
+
+  /// No description provided for @notCalibrated.
+  ///
+  /// In en, this message translates to:
+  /// **'Not calibrated yet'**
+  String get notCalibrated;
+
+  /// No description provided for @calibrationValue.
+  ///
+  /// In en, this message translates to:
+  /// **'{mnps} Mnps · depth {depth} in 1 s'**
+  String calibrationValue(String mnps, int depth);
+
+  /// No description provided for @runCalibration.
+  ///
+  /// In en, this message translates to:
+  /// **'Run calibration'**
+  String get runCalibration;
+
+  /// No description provided for @slowDeviceNote.
+  ///
+  /// In en, this message translates to:
+  /// **'This device usually needs more than 1 s per check; banners may appear a little later.'**
+  String get slowDeviceNote;
+
+  /// No description provided for @restartEngine.
+  ///
+  /// In en, this message translates to:
+  /// **'Restart engine'**
+  String get restartEngine;
+
+  /// No description provided for @engineTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Engine'**
+  String get engineTitle;
+
+  /// No description provided for @engineBinary.
+  ///
+  /// In en, this message translates to:
+  /// **'Binary'**
+  String get engineBinary;
+
+  /// No description provided for @engineMissing.
+  ///
+  /// In en, this message translates to:
+  /// **'Not found'**
+  String get engineMissing;
+
+  /// No description provided for @engineVariant.
+  ///
+  /// In en, this message translates to:
+  /// **'Variant'**
+  String get engineVariant;
+
+  /// No description provided for @engineVersion.
+  ///
+  /// In en, this message translates to:
+  /// **'Version'**
+  String get engineVersion;
+
+  /// No description provided for @engineState.
+  ///
+  /// In en, this message translates to:
+  /// **'State'**
+  String get engineState;
+
+  /// No description provided for @calibrationNps.
+  ///
+  /// In en, this message translates to:
+  /// **'Calibration nps'**
+  String get calibrationNps;
+
+  /// No description provided for @calibrationDepth2s.
+  ///
+  /// In en, this message translates to:
+  /// **'Depth in 2 s'**
+  String get calibrationDepth2s;
+
+  /// No description provided for @calibrationDepth1s.
+  ///
+  /// In en, this message translates to:
+  /// **'Median depth in 1 s'**
+  String get calibrationDepth1s;
+
+  /// No description provided for @engineRecentJobs.
+  ///
+  /// In en, this message translates to:
+  /// **'Last jobs'**
+  String get engineRecentJobs;
 }
 
 class _AppLocalizationsDelegate

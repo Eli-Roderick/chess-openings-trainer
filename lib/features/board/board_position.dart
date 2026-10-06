@@ -26,3 +26,19 @@ NormalMove? parseUci(String uci) => switch (Move.parse(uci)) {
   final NormalMove m => m,
   _ => null,
 };
+
+/// The legal prefix of [pv] (engine UCI moves) played from [fen], at most
+/// [max] moves, with SAN and the position after each move.
+List<ResolvedMove> resolvePv(String fen, List<String> pv, {int max = 12}) {
+  var position = positionFromFen(fen);
+  final out = <ResolvedMove>[];
+  for (final uci in pv.take(max)) {
+    final move = parseUci(uci);
+    if (move == null) break;
+    final resolved = resolveMove(position, move);
+    if (resolved == null) break;
+    out.add(resolved);
+    position = resolved.after;
+  }
+  return out;
+}

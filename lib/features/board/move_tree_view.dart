@@ -255,46 +255,65 @@ class _MoveTreeViewState extends State<MoveTreeView> {
           itemCount: layout.lines.length,
           itemBuilder: (context, index) {
             MoveTreeView.debugOnRowBuild?.call(index);
-            final line = layout.lines[index];
-            return Padding(
-              padding: EdgeInsets.only(left: 8 + _Layout.indent * line.depth),
-              child: Row(
-                children: [
-                  for (final (i, item) in line.items.indexed)
-                    SizedBox(
-                      width: line.widths[i],
-                      child: switch (item) {
-                        MoveItem() => _MoveChip(
-                          key: ValueKey('move-${item.node.id}'),
-                          text: item.text,
-                          selected: item.node.id == widget.current,
-                          style: line.depth == 0
-                              ? base?.copyWith(fontWeight: FontWeight.w600)
-                              : base,
-                          onTap: () => widget.onSelect(item.node),
-                        ),
-                        ForkToggle() => Align(
-                          alignment: Alignment.centerLeft,
-                          child: IconButton(
-                            key: ValueKey('fork-${item.fork.id}'),
-                            visualDensity: VisualDensity.compact,
-                            iconSize: 18,
-                            onPressed: () => _toggle(item.fork),
-                            icon: item.collapsed
-                                ? Text('+${item.variations}', style: base)
-                                : const Icon(Icons.unfold_less),
-                          ),
-                        ),
-                      },
-                    ),
-                ],
-              ),
-            );
+            // Reuse the widget of a line whose selection did not change, so a
+            // navigation rebuilds two lines, not every visible one.
+            final current = layout.lineOf[widget.current] == index
+                ? widget.current
+                : -1;
+            if (!identical(_cacheLayout, layout) || _cacheStyle != base) {
+              _cache.clear();
+              _cacheLayout = layout;
+              _cacheStyle = base;
+            }
+            final cached = _cache[index];
+            if (cached != null && cached.$1 == current) return cached.$2;
+            final built = _buildLine(layout.lines[index], base);
+            _cache[index] = (current, built);
+            return built;
           },
         );
       },
     );
   }
+
+  final _cache = <int, (int, Widget)>{};
+  _Layout? _cacheLayout;
+  TextStyle? _cacheStyle;
+
+  Widget _buildLine(_Line line, TextStyle? base) => Padding(
+    padding: EdgeInsets.only(left: 8 + _Layout.indent * line.depth),
+    child: Row(
+      children: [
+        for (final (i, item) in line.items.indexed)
+          SizedBox(
+            width: line.widths[i],
+            child: switch (item) {
+              MoveItem() => _MoveChip(
+                key: ValueKey('move-${item.node.id}'),
+                text: item.text,
+                selected: item.node.id == widget.current,
+                style: line.depth == 0
+                    ? base?.copyWith(fontWeight: FontWeight.w600)
+                    : base,
+                onTap: () => widget.onSelect(item.node),
+              ),
+              ForkToggle() => Align(
+                alignment: Alignment.centerLeft,
+                child: IconButton(
+                  key: ValueKey('fork-${item.fork.id}'),
+                  visualDensity: VisualDensity.compact,
+                  iconSize: 18,
+                  onPressed: () => _toggle(item.fork),
+                  icon: item.collapsed
+                      ? Text('+${item.variations}', style: base)
+                      : const Icon(Icons.unfold_less),
+                ),
+              ),
+            },
+          ),
+      ],
+    ),
+  );
 }
 
 /// One display line: part of a [MoveRow] that fits the width.
@@ -394,9 +413,11 @@ class _MoveChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
-    return InkWell(
+    // A plain GestureDetector: an InkWell per move (focus, actions, mouse
+    // region, ink) made rebuilding the move list too slow (P06).
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
       onTap: onTap,
-      borderRadius: BorderRadius.circular(4),
       child: Container(
         constraints: const BoxConstraints(minHeight: 32),
         alignment: Alignment.centerLeft,

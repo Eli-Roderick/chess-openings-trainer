@@ -1,6 +1,7 @@
 // Performance budgets measured AOT in profile mode (D-61):
 // - P04: Home shows data < 1 s after main() with 10 repertoires.
-// - P05: dragging pieces in Browse for 30 s has no frame over budget.
+// - P05/P06: dragging pieces in Browse for 30 s, with engine analysis
+//   running, has no frame over budget.
 // CI runs this file with
 // `xvfb-run flutter drive --profile -d linux
 //   --driver=test_driver/integration_test.dart
@@ -128,6 +129,10 @@ void main() {
       board.left + (file + 0.5) * square,
       board.top + (7 - rank + 0.5) * square,
     );
+    // Analysis runs during the whole script (P06: the engine never blocks
+    // the UI).
+    await tester.tap(find.byKey(const Key('analysis-toggle')));
+    await waitFor(find.byKey(const Key('pv-0')));
     // Warm-up: the first navigation after opening Browse has one-off costs
     // (about 30 ms of UI work on the CI runner, D-71); the script measures
     // steady-state dragging.
@@ -188,6 +193,7 @@ void main() {
       );
     }
     expect(drags, greaterThan(10));
+    expect(find.byKey(const Key('pv-0')), findsOneWidget);
     expect(stats.count, greaterThan(100));
     // The UI thread must not miss the budget; one miss in 30 s is tolerated
     // for scheduling noise on the shared CI VM. Raster time is logged but

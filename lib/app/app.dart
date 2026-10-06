@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:repertoire_trainer/app/router.dart';
 import 'package:repertoire_trainer/app/theme/app_theme.dart';
 import 'package:repertoire_trainer/core/db/providers.dart';
+import 'package:repertoire_trainer/core/engine/engine_lifecycle.dart';
 import 'package:repertoire_trainer/core/settings/app_settings.dart';
 import 'package:repertoire_trainer/features/board/board_appearance.dart';
 import 'package:repertoire_trainer/l10n/gen/app_localizations.dart';
@@ -30,8 +31,9 @@ class RepertoireTrainerApp extends ConsumerWidget {
         AppThemeMode.system => ThemeMode.system,
       },
       routerConfig: ref.watch(routerProvider),
-      builder: (context, child) =>
-          PieceSetPrecacher(child: child ?? const SizedBox.shrink()),
+      builder: (context, child) => EngineLifecycle(
+        child: PieceSetPrecacher(child: child ?? const SizedBox.shrink()),
+      ),
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
       debugShowCheckedModeBanner: false,

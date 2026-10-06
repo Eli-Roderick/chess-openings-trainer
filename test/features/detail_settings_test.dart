@@ -171,7 +171,7 @@ void main() {
 
     testWidgets('sections without settings yet say so', (tester) async {
       final h = await AppHarness.pump(tester);
-      await go(h, Routes.settingsSection('engine'));
+      await go(h, Routes.settingsSection('sync'));
       expect(
         find.text('These settings arrive in a later version.'),
         findsOneWidget,

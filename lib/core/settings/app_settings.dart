@@ -94,6 +94,9 @@ abstract class AppSettings with _$AppSettings {
 
     /// Windows: the engine variant that answered (avx2 / sse41), if known.
     String? engineVariant,
+
+    /// Number of lines in Browse analysis (01-product-spec §9).
+    @Default(1) int analysisLines,
     // Appearance.
     @Default(AppThemeMode.dark) AppThemeMode themeMode,
   }) = _AppSettings;
@@ -116,6 +119,9 @@ abstract class AppSettings with _$AppSettings {
     soundVolumePercent: soundVolumePercent.clamp(0, 100),
     comparableThresholdCp: comparableThresholdCp.clamp(10, 100),
     checkSearchMs: checkSearchMs.clamp(500, 3000),
+    engineThreads: engineThreads?.clamp(1, 1024),
+    engineHashMb: engineHashMb?.clamp(16, 1024),
+    analysisLines: analysisLines.clamp(1, 3),
   );
 
   /// Weak-pool entry threshold as a fraction.

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:chess_core/chess_core.dart';
 import 'package:chessground/chessground.dart';
 import 'package:dartchess/dartchess.dart' hide File;
@@ -9,13 +11,17 @@ import 'package:repertoire_trainer/app/routes.dart';
 import 'package:repertoire_trainer/app/shortcuts.dart';
 import 'package:repertoire_trainer/core/audio/sound_service.dart';
 import 'package:repertoire_trainer/core/db/providers.dart';
+import 'package:repertoire_trainer/core/engine/engine_providers.dart';
 import 'package:repertoire_trainer/core/haptics/haptics_service.dart';
+import 'package:repertoire_trainer/core/settings/app_settings.dart';
 import 'package:repertoire_trainer/features/board/board_appearance.dart';
 import 'package:repertoire_trainer/features/board/board_position.dart';
 import 'package:repertoire_trainer/features/board/comment_panel.dart';
+import 'package:repertoire_trainer/features/board/eval_bar.dart';
 import 'package:repertoire_trainer/features/board/move_tree_view.dart';
 import 'package:repertoire_trainer/features/board/repertoire_board.dart';
 import 'package:repertoire_trainer/l10n/gen/app_localizations.dart';
+import 'package:uci_engine/uci_engine.dart';
 
 /// A move played off the repertoire in free exploration (never saved).
 @immutable
@@ -95,11 +101,80 @@ class BrowseView extends ConsumerStatefulWidget {
   ConsumerState<BrowseView> createState() => _BrowseViewState();
 }
 
+const _phoneBarWidth = 14.0;
+
 class _BrowseViewState extends ConsumerState<BrowseView> {
   late TreeNode _node = _start();
   final _free = <FreeMove>[];
   late Side _orientation = widget.tree.userSide;
   final _board = RepertoireBoardController();
+
+  // Analysis (01-product-spec §9): on while [_analysis]; [_update] belongs
+  // to [_analysedFen].
+  bool _analysis = false;
+  StreamSubscription<AnalysisUpdate>? _analysisSub;
+
+  /// Analysis updates arrive 10 times a second; only the eval bar and the
+  /// lines listen, so the board and move list do not rebuild.
+  final _update = ValueNotifier<AnalysisUpdate?>(null);
+  String? _analysedFen;
+  int? _analysedLines;
+
+  @override
+  void dispose() {
+    unawaited(_analysisSub?.cancel());
+    _update.dispose();
+    super.dispose();
+  }
+
+  /// Changes the position and keeps the analysis on it.
+  void _change(VoidCallback fn) {
+    setState(fn);
+    _syncAnalysis();
+  }
+
+  void _syncAnalysis() {
+    final lines =
+        (ref.read(settingsProvider).value ?? const AppSettings()).analysisLines;
+    if (!_analysis) {
+      unawaited(_analysisSub?.cancel());
+      _analysisSub = null;
+      _analysedFen = null;
+      return;
+    }
+    if (_analysedFen == _fen && _analysedLines == lines) return;
+    unawaited(_analysisSub?.cancel());
+    _analysedFen = _fen;
+    _analysedLines = lines;
+    _update.value = null;
+    _analysisSub = ref
+        .read(engineServiceProvider)
+        .analyse(_fen, multiPv: lines)
+        .listen(
+          (u) {
+            if (mounted) _update.value = u;
+          },
+          onError: (Object _) {
+            if (mounted) setState(() => _analysis = false);
+          },
+        );
+  }
+
+  void _toggleAnalysis() {
+    setState(() => _analysis = !_analysis);
+    if (!_analysis) _update.value = null;
+    _syncAnalysis();
+  }
+
+  /// Plays the first [count] moves of an engine line into free exploration.
+  void _playPv(List<ResolvedMove> moves, int count) {
+    _change(() {
+      for (final m in moves.take(count)) {
+        _free.add(FreeMove(uci: m.uci, san: m.san, fen: m.after.fen));
+      }
+    });
+    _moved(moves[count - 1].san);
+  }
 
   TreeNode _start() {
     final id = widget.initialNode;
@@ -120,7 +195,7 @@ class _BrowseViewState extends ConsumerState<BrowseView> {
   }
 
   void _goTo(TreeNode node, {bool sound = false}) {
-    setState(() {
+    _change(() {
       _free.clear();
       _node = node;
     });
@@ -129,7 +204,7 @@ class _BrowseViewState extends ConsumerState<BrowseView> {
 
   void _back() {
     if (_free.isNotEmpty) {
-      setState(_free.removeLast);
+      _change(_free.removeLast);
     } else if (_node.parent != null) {
       _goTo(_node.parent!);
     }
@@ -166,7 +241,7 @@ class _BrowseViewState extends ConsumerState<BrowseView> {
 
   void _flip() => setState(() => _orientation = _orientation.opposite);
 
-  void _backToRepertoire() => setState(_free.clear);
+  void _backToRepertoire() => _change(_free.clear);
 
   void _onUserMove(NormalMove move, ResolvedMove resolved) {
     ref.read(hapticsServiceProvider).light();
@@ -176,7 +251,7 @@ class _BrowseViewState extends ConsumerState<BrowseView> {
           .firstOrNull;
       if (child != null) return _goTo(child, sound: true);
     }
-    setState(
+    _change(
       () => _free.add(
         FreeMove(uci: resolved.uci, san: resolved.san, fen: resolved.after.fen),
       ),
@@ -226,7 +301,41 @@ class _BrowseViewState extends ConsumerState<BrowseView> {
     final showArrows = ref.watch(
       settingsProvider.select((s) => s.value?.showCommentArrows ?? true),
     );
+    ref.listen(
+      settingsProvider.select((s) => s.value?.analysisLines),
+      (_, _) => _syncAnalysis(),
+    );
+    final engineAvailable = ref.watch(
+      engineStatusProvider.select((s) => s.value?.isAvailable ?? true),
+    );
+    if (!engineAvailable && _analysis) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted && _analysis) _toggleAnalysis();
+      });
+    }
     final commentNode = _free.isEmpty && _node.isUserMove ? _node : null;
+    final evalBar = RepaintBoundary(
+      child: ValueListenableBuilder(
+        valueListenable: _update,
+        builder: (context, update, _) => EvalBar(
+          score: update?.lines.firstOrNull?.score,
+          whiteAtBottom: _orientation == Side.white,
+        ),
+      ),
+    );
+    final analysisPanel = _analysis
+        ? RepaintBoundary(
+            child: ValueListenableBuilder(
+              valueListenable: _update,
+              builder: (context, update, _) => _AnalysisLines(
+                update: update,
+                fen: _fen,
+                ply: _node.ply + _free.length,
+                onPlay: _playPv,
+              ),
+            ),
+          )
+        : null;
     final board = RepertoireBoard(
       controller: _board,
       state: BoardViewState(
@@ -313,6 +422,16 @@ class _BrowseViewState extends ConsumerState<BrowseView> {
               title: Text(widget.title),
               actions: [
                 IconButton(
+                  key: const Key('analysis-toggle'),
+                  tooltip: engineAvailable
+                      ? l10n.analysisToggle
+                      : l10n.engineUnavailable,
+                  isSelected: _analysis,
+                  icon: const Icon(Icons.insights_outlined),
+                  selectedIcon: const Icon(Icons.insights),
+                  onPressed: engineAvailable ? _toggleAnalysis : null,
+                ),
+                IconButton(
                   key: const Key('flip-board'),
                   tooltip: l10n.flipBoard,
                   icon: const Icon(Icons.swap_vert),
@@ -325,12 +444,28 @@ class _BrowseViewState extends ConsumerState<BrowseView> {
                 phone: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    AspectRatio(aspectRatio: 1, child: board),
+                    if (_analysis)
+                      // The eval bar sits at the board's left edge.
+                      LayoutBuilder(
+                        builder: (context, c) => SizedBox(
+                          height: c.maxWidth - _phoneBarWidth,
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              evalBar,
+                              Expanded(child: board),
+                            ],
+                          ),
+                        ),
+                      )
+                    else
+                      AspectRatio(aspectRatio: 1, child: board),
                     Expanded(
                       child: swipeArea(
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
+                            ?analysisPanel,
                             info(maxHeight: screenHeight * 0.35),
                             const Divider(height: 1),
                             Expanded(child: moves),
@@ -350,11 +485,13 @@ class _BrowseViewState extends ConsumerState<BrowseView> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         SizedBox.square(dimension: side, child: board),
+                        if (_analysis) SizedBox(height: side, child: evalBar),
                         Expanded(
                           child: swipeArea(
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.stretch,
                               children: [
+                                ?analysisPanel,
                                 info(maxHeight: c.maxHeight * 0.4),
                                 const Divider(height: 1),
                                 Expanded(child: moves),
@@ -455,6 +592,155 @@ class _NavBar extends StatelessWidget {
             icon: const Icon(Icons.last_page),
             onPressed: onLast,
           ),
+        ],
+      ),
+    );
+  }
+}
+
+/// SAN of engine lines, cached: consecutive updates mostly repeat the same
+/// lines, so each (position, line) is resolved once.
+final _pvCache = <(String, String), List<ResolvedMove>>{};
+
+List<ResolvedMove> _cachedPv(String fen, List<String> pv) {
+  final key = (fen, pv.take(12).join(' '));
+  final hit = _pvCache[key];
+  if (hit != null) return hit;
+  if (_pvCache.length > 64) _pvCache.clear();
+  return _pvCache[key] = resolvePv(fen, pv);
+}
+
+/// Engine lines under the board: "+0.35 d22" and up to 12 SAN moves per
+/// line; tapping a move plays the line up to it into free exploration.
+class _AnalysisLines extends ConsumerWidget {
+  const new({
+    required this.update,
+    required this.fen,
+    required this.ply,
+    required this.onPlay,
+  });
+
+  final AnalysisUpdate? update;
+  final String fen;
+
+  /// Ply of the analysed position (its next move has ply + 1).
+  final int ply;
+  final void Function(List<ResolvedMove> moves, int count) onPlay;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
+    final theme = Theme.of(context);
+    final lines =
+        ref.watch(settingsProvider.select((s) => s.value?.analysisLines)) ?? 1;
+    final mono = theme.textTheme.bodySmall?.copyWith(
+      fontFeatures: const [FontFeature.tabularFigures()],
+    );
+    final update = this.update;
+    // Constant height for the line count: the panel's height must not change
+    // with every update, or the move list below re-lays out and rebuilds.
+    final scale = MediaQuery.textScalerOf(context).scale(1);
+    return SizedBox(
+      height: (40 + 34.0 * lines) * scale,
+      child: Padding(
+        key: const Key('analysis-panel'),
+        padding: const EdgeInsets.fromLTRB(8, 4, 8, 0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    update == null
+                        ? l10n.analysing
+                        : l10n.analysisDepth(update.depth),
+                    key: const Key('analysis-depth'),
+                    style: theme.textTheme.labelMedium,
+                  ),
+                ),
+                SegmentedButton<int>(
+                  key: const Key('analysis-lines'),
+                  showSelectedIcon: false,
+                  style: const ButtonStyle(
+                    visualDensity: VisualDensity.compact,
+                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  ),
+                  segments: [
+                    for (var n = 1; n <= 3; n++)
+                      ButtonSegment(value: n, label: Text('$n')),
+                  ],
+                  selected: {lines},
+                  onSelectionChanged: (v) => unawaited(
+                    ref
+                        .read(settingsRepositoryProvider)
+                        .update((s) => s.copyWith(analysisLines: v.single)),
+                  ),
+                ),
+              ],
+            ),
+            if (update == null)
+              const LinearProgressIndicator()
+            else
+              for (final (i, line) in update.lines.indexed)
+                _PvRow(
+                  key: Key('pv-$i'),
+                  label: evalLabel(line.score),
+                  moves: _cachedPv(fen, line.pv),
+                  firstPly: ply + 1,
+                  style: mono,
+                  onPlay: onPlay,
+                ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _PvRow extends StatelessWidget {
+  const new({
+    required this.label,
+    required this.moves,
+    required this.firstPly,
+    required this.style,
+    required this.onPlay,
+    super.key,
+  });
+
+  final String label;
+  final List<ResolvedMove> moves;
+  final int firstPly;
+  final TextStyle? style;
+  final void Function(List<ResolvedMove> moves, int count) onPlay;
+
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Row(
+        children: [
+          SizedBox(
+            width: 56,
+            child: Text(
+              label,
+              style: style?.copyWith(fontWeight: FontWeight.w700),
+            ),
+          ),
+          for (final (i, m) in moves.indexed)
+            InkWell(
+              key: Key('pv-move-$i'),
+              onTap: () => onPlay(moves, i + 1),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 6),
+                child: Text(
+                  i == 0 || (firstPly + i).isOdd
+                      ? formatSanMoves([m.san], firstPly: firstPly + i)
+                      : m.san,
+                  style: style,
+                ),
+              ),
+            ),
         ],
       ),
     );
