@@ -78,7 +78,7 @@ class SettingsScreen extends StatelessWidget {
   }
 }
 
-/// One settings section. Only Appearance and About work in P04.
+/// One settings section (Sync and backup has its own screen).
 class SettingsSectionScreen extends StatelessWidget {
   /// Shows [section].
   const new({required this.section, super.key});
@@ -98,9 +98,10 @@ class SettingsSectionScreen extends StatelessWidget {
           SettingsSection.board => const BoardSettingsPage(),
           SettingsSection.engine => const EngineSettingsPage(),
           SettingsSection.about => const _About(),
-          _ => Padding(
+          // The router opens the Sync and backup feature for this one.
+          SettingsSection.sync => Padding(
             padding: const EdgeInsets.all(AdaptiveLayout.gutter),
-            child: Text(l10n.settingsLater),
+            child: Text(l10n.syncLater),
           ),
         },
       ),

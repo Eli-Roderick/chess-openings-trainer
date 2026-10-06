@@ -6,12 +6,15 @@ import 'dart:typed_data';
 import 'package:chess_core/chess_core.dart';
 import 'package:drift/native.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart' show ProviderScope;
 import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:repertoire_trainer/app/bootstrap.dart';
+import 'package:repertoire_trainer/app/router.dart';
+import 'package:repertoire_trainer/app/routes.dart';
 import 'package:repertoire_trainer/core/db/app_database.dart';
 import 'package:repertoire_trainer/core/db/providers.dart';
 import 'package:repertoire_trainer/core/engine/engine_providers.dart';
@@ -20,11 +23,13 @@ import 'package:repertoire_trainer/core/files/providers.dart';
 import 'package:repertoire_trainer/main.dart' as app;
 import 'package:uci_engine/uci_engine.dart';
 
-/// Returns [picked] from the open dialog.
+/// Returns [picked] from the open dialog; keeps saved backups and hands
+/// them back when a backup is picked.
 final class _PickFile implements FileService {
   new(this.picked);
 
   final PickedFile picked;
+  final backups = <String, Uint8List>{};
 
   @override
   Future<PickedFile?> pickPgn() async => picked;
@@ -34,6 +39,20 @@ final class _PickFile implements FileService {
     required String fileName,
     required String text,
   }) async => null;
+
+  @override
+  Future<PickedFile?> pickBackup() async => backups.isEmpty
+      ? null
+      : PickedFile(name: backups.keys.last, bytes: backups.values.last);
+
+  @override
+  Future<String?> saveBackup({
+    required String fileName,
+    required Uint8List bytes,
+  }) async {
+    backups[fileName] = bytes;
+    return '/fake/$fileName';
+  }
 }
 
 var _dbCount = 0;
@@ -233,6 +252,96 @@ void main() {
           l,
     ];
     expect(late, isEmpty);
+  });
+
+  testWidgets('15. backup round trip: export, wipe, import (merge), '
+      'identical repertoires, runs and stats', (tester) async {
+    final files = _PickFile(_file('x.pgn', ''));
+    await _boot(
+      tester,
+      await _tempDbFile(),
+      extra: [fileServiceProvider.overrideWithValue(files)],
+    );
+    await _pumpUntil(tester, find.byKey(const Key('try-demo')));
+    await tester.tap(find.byKey(const Key('try-demo')));
+    await _pumpUntil(tester, find.text('Demo: Italian (White)'));
+    final c = ProviderScope.containerOf(
+      tester.element(find.text('Demo: Italian (White)')),
+    );
+    final repertoires = c.read(repertoireRepositoryProvider);
+    final id = (await repertoires.records()).single.id;
+    final lines = await repertoires.lineRefs(id);
+    // Some history: two runs per line, one with a miss.
+    var n = 0;
+    for (final l in lines) {
+      final ucis = l.ucis.split(' ');
+      for (final miss in [true, false]) {
+        n++;
+        final grades = [
+          for (var ply = 1; ply <= ucis.length; ply += 2)
+            MoveGrade(
+              ply: ply,
+              expected: ucis[ply - 1],
+              accepted: ucis[ply - 1],
+              firstAttempt: miss && ply == 3 ? 'a2a3' : ucis[ply - 1],
+              result: miss && ply == 3
+                  ? GradeResult.wrong
+                  : GradeResult.correct,
+              credit: miss && ply == 3 ? 0 : 1,
+              attempts: 1,
+              hintLevel: 0,
+            ),
+        ];
+        await c
+            .read(statsServiceProvider)
+            .recordRun(
+              RunRecord(
+                id: 'run-$n',
+                repertoireId: id,
+                lineKey: l.key,
+                ucis: l.ucis,
+                mode: RunMode.random,
+                startPly: 0,
+                wrongMoveMode: WrongMoveMode.retry,
+                startedAt: n * 1000,
+                finishedAt: n * 1000 + 500,
+                localDay: '2026-10-0${n % 6 + 1}',
+                completed: true,
+                deviated: false,
+                gradedCount: grades.length,
+                creditSum: grades.fold(0, (a, g) => a + g.credit),
+                hintCount: 0,
+                deviceId: 'dev',
+                grades: grades,
+              ),
+            );
+      }
+    }
+    Future<String> snapshot() async => [
+      await repertoires.records(),
+      await c.read(runRepositoryProvider).allRuns(),
+      await c.read(statsRepositoryProvider).lineStats(id),
+    ].toString();
+    final before = await snapshot();
+
+    c.read(routerProvider).go(Routes.settingsSection('sync'));
+    await _pumpUntil(tester, find.byKey(const Key('export-backup')));
+    await tester.tap(find.byKey(const Key('export-backup')));
+    await _pumpUntil(tester, find.textContaining('Backup saved'));
+    expect(files.backups, hasLength(1));
+
+    await repertoires.deleteAll();
+    expect(await repertoires.records(), isEmpty);
+
+    await tester.tap(find.byKey(const Key('import-backup')));
+    await _pumpUntil(tester, find.byKey(const Key('import-dialog')));
+    expect(
+      find.textContaining('1 repertoire, ${lines.length * 2} runs'),
+      findsOneWidget,
+    );
+    await tester.tap(find.byKey(const Key('start-import')));
+    await _pumpUntil(tester, find.textContaining('Backup imported'));
+    expect(await snapshot(), before);
   });
 }
 

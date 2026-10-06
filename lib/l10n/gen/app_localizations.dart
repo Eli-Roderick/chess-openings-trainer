@@ -688,12 +688,6 @@ abstract class AppLocalizations {
   /// **'About'**
   String get settingsAbout;
 
-  /// No description provided for @settingsLater.
-  ///
-  /// In en, this message translates to:
-  /// **'These settings arrive in a later version.'**
-  String get settingsLater;
-
   /// No description provided for @themeLabel.
   ///
   /// In en, this message translates to:
@@ -2157,6 +2151,144 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'abandoned'**
   String get abandoned;
+
+  /// No description provided for @syncTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Google Drive sync'**
+  String get syncTitle;
+
+  /// No description provided for @syncLater.
+  ///
+  /// In en, this message translates to:
+  /// **'Sync between your devices arrives in a later version. Use backups to move data meanwhile.'**
+  String get syncLater;
+
+  /// No description provided for @backupTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Backup'**
+  String get backupTitle;
+
+  /// No description provided for @exportBackup.
+  ///
+  /// In en, this message translates to:
+  /// **'Export backup'**
+  String get exportBackup;
+
+  /// No description provided for @exportBackupHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Repertoires, training history and settings in one file'**
+  String get exportBackupHint;
+
+  /// No description provided for @importBackup.
+  ///
+  /// In en, this message translates to:
+  /// **'Import backup'**
+  String get importBackup;
+
+  /// No description provided for @importBackupHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Merge a backup file into this device, or replace everything'**
+  String get importBackupHint;
+
+  /// No description provided for @backupExporting.
+  ///
+  /// In en, this message translates to:
+  /// **'Preparing the backup…'**
+  String get backupExporting;
+
+  /// No description provided for @backupReading.
+  ///
+  /// In en, this message translates to:
+  /// **'Reading the backup…'**
+  String get backupReading;
+
+  /// No description provided for @backupImporting.
+  ///
+  /// In en, this message translates to:
+  /// **'Importing…'**
+  String get backupImporting;
+
+  /// No description provided for @backupSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Backup saved: {where}'**
+  String backupSaved(String where);
+
+  /// No description provided for @backupFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Backup failed: {error}'**
+  String backupFailed(String error);
+
+  /// No description provided for @backupNewer.
+  ///
+  /// In en, this message translates to:
+  /// **'This backup is from a newer app version. Update this device first.'**
+  String get backupNewer;
+
+  /// No description provided for @backupInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Not a Repertoire Trainer backup.'**
+  String get backupInvalid;
+
+  /// No description provided for @backupContents.
+  ///
+  /// In en, this message translates to:
+  /// **'{repertoires, plural, =1{1 repertoire} other{{repertoires} repertoires}}, {runs, plural, =1{1 run} other{{runs} runs}}, exported {date}'**
+  String backupContents(int repertoires, int runs, String date);
+
+  /// No description provided for @importMerge.
+  ///
+  /// In en, this message translates to:
+  /// **'Merge'**
+  String get importMerge;
+
+  /// No description provided for @importMergeHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Keeps everything on this device; newer repertoire changes win, all runs are kept.'**
+  String get importMergeHint;
+
+  /// No description provided for @replaceAll.
+  ///
+  /// In en, this message translates to:
+  /// **'Replace all'**
+  String get replaceAll;
+
+  /// No description provided for @importReplaceHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Deletes this device\'s repertoires and runs first.'**
+  String get importReplaceHint;
+
+  /// No description provided for @restoreSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Also restore settings'**
+  String get restoreSettings;
+
+  /// No description provided for @replaceAllTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Replace all?'**
+  String get replaceAllTitle;
+
+  /// No description provided for @replaceAllBody.
+  ///
+  /// In en, this message translates to:
+  /// **'This deletes {repertoires, plural, =1{1 repertoire} other{{repertoires} repertoires}} and {runs, plural, =1{1 run} other{{runs} runs}} on this device before importing.'**
+  String replaceAllBody(int repertoires, int runs);
+
+  /// No description provided for @backupImported.
+  ///
+  /// In en, this message translates to:
+  /// **'Backup imported: {repertoires, plural, =1{1 repertoire} other{{repertoires} repertoires}} updated, {runs, plural, =1{1 run} other{{runs} runs}} added.'**
+  String backupImported(int repertoires, int runs);
 }
 
 class _AppLocalizationsDelegate

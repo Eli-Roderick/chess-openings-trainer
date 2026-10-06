@@ -41,7 +41,7 @@ jobs:
       - name: chess_core coverage >= 90 %
         run: >-
           dart run tool/check_coverage.dart --package packages/chess_core
-          --min 90 lib lib/src/pgn lib/src/tree
+          --min 90 lib lib/src/pgn lib/src/tree lib/src/sync
       - name: chess_core training coverage >= 95 %
         run: >-
           dart run tool/check_coverage.dart --package packages/chess_core

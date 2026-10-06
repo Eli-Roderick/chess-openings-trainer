@@ -96,9 +96,11 @@ abstract class RunRecord with _$RunRecord {
   /// not; docs/plan/04-algorithms.md §2.1).
   bool get isEligible => completed && gradedCount > 0;
 
-  /// Every graded move got full credit.
+  /// Every graded move got full credit. Credits are at most
+  /// [creditCorrect], so the totals decide it: derivation can run on runs
+  /// loaded without their grades.
   bool get allPerfect =>
-      grades.isNotEmpty && grades.every((g) => g.credit == creditCorrect);
+      gradedCount > 0 && creditSum == gradedCount * creditCorrect;
 }
 
 /// The grade of one user move in a run (03 §2.5).

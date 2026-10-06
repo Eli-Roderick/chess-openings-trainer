@@ -144,6 +144,21 @@ abstract interface class RepertoireRepository {
   /// Ids of all repertoires, deleted ones included.
   Future<List<String>> allIds();
 
+  /// Every repertoire as a sync / backup record, deleted ones included.
+  Future<List<RepertoireRecord>> records();
+
+  /// Stores [record] as it is (a merge winner): inserts it or updates its
+  /// source columns, keeping local ones. With [tree], replaces its nodes
+  /// and lines (a new or changed PGN). Safe inside a transaction.
+  Future<void> putRecord(RepertoireRecord record, {RepertoireTree? tree});
+
+  /// Deletes everything of [id] but its row (a merged tombstone): nodes,
+  /// lines, derived stats and runs.
+  Future<void> purge(String id);
+
+  /// Deletes every repertoire, run and derived row (backup "Replace all").
+  Future<void> deleteAll();
+
   /// The in-memory tree of [id] (cached, LRU of 3).
   Future<RepertoireTree> loadTree(String id);
 }
@@ -180,6 +195,9 @@ final class RepertoireCache {
 
   /// Drops [id].
   void invalidate(String id) => _entries.remove(id);
+
+  /// Ids of the cached trees.
+  Iterable<String> get ids => _entries.keys;
 
   /// Number of cached trees.
   int get length => _entries.length;
@@ -468,6 +486,99 @@ ORDER BY r.last_trained_at IS NULL, r.last_trained_at DESC, r.created_at DESC
         ),
     ];
   }
+
+  @override
+  Future<List<RepertoireRecord>> records() async => [
+    for (final r in await (_db.select(
+      _db.repertoires,
+    )..orderBy([(r) => OrderingTerm.asc(r.id)])).get())
+      RepertoireRecord(
+        id: r.id,
+        name: r.name,
+        color: r.color,
+        pgn: r.pgn,
+        pgnHash: r.pgnHash,
+        description: r.description,
+        createdAt: r.createdAt,
+        updatedAt: r.updatedAt,
+        updatedBy: r.updatedBy,
+        deleted: r.deleted,
+      ),
+  ];
+
+  @override
+  Future<void> putRecord(RepertoireRecord record, {RepertoireTree? tree}) =>
+      _db.transaction(() async {
+        final source = RepertoiresCompanion(
+          name: Value(record.name),
+          color: Value(record.color),
+          pgn: Value(record.pgn),
+          pgnHash: Value(record.pgnHash),
+          description: Value(record.description),
+          createdAt: Value(record.createdAt),
+          updatedAt: Value(record.updatedAt),
+          updatedBy: Value(record.updatedBy),
+          deleted: Value(record.deleted),
+        );
+        final updated = await (_db.update(
+          _db.repertoires,
+        )..where((r) => r.id.equals(record.id))).write(source);
+        if (updated == 0) {
+          await _db
+              .into(_db.repertoires)
+              .insert(source.copyWith(id: Value(record.id)));
+        }
+        if (tree != null) {
+          await _deleteTree(record.id);
+          await _insertTree(record.id, tree);
+        }
+        _cache.invalidate(record.id);
+      });
+
+  Future<void> _deleteTree(String id) async {
+    await (_db.delete(_db.nodes)..where((n) => n.repertoireId.equals(id))).go();
+    await (_db.delete(_db.lines)..where((l) => l.repertoireId.equals(id))).go();
+  }
+
+  @override
+  Future<void> purge(String id) => _db.transaction(() async {
+    await _deleteTree(id);
+    final runIds = _db.selectOnly(_db.runs)
+      ..addColumns([_db.runs.id])
+      ..where(_db.runs.repertoireId.equals(id));
+    await (_db.delete(
+      _db.moveGrades,
+    )..where((g) => g.runId.isInQuery(runIds))).go();
+    await (_db.delete(
+      _db.deviationEvents,
+    )..where((d) => d.runId.isInQuery(runIds))).go();
+    await (_db.delete(_db.runs)..where((r) => r.repertoireId.equals(id))).go();
+    await (_db.delete(
+      _db.lineStatsTable,
+    )..where((s) => s.repertoireId.equals(id))).go();
+    await (_db.delete(
+      _db.plyStats,
+    )..where((s) => s.repertoireId.equals(id))).go();
+    _cache.invalidate(id);
+  });
+
+  @override
+  Future<void> deleteAll() => _db.transaction(() async {
+    final tables = <TableInfo<Table, Object?>>[
+      _db.moveGrades,
+      _db.deviationEvents,
+      _db.runs,
+      _db.lineStatsTable,
+      _db.plyStats,
+      _db.nodes,
+      _db.lines,
+      _db.repertoires,
+    ];
+    for (final t in tables) {
+      await _db.delete(t).go();
+    }
+    [..._cache.ids].forEach(_cache.invalidate);
+  });
 
   @override
   Future<List<String>> allIds() async => [

@@ -1,8 +1,10 @@
 /// Pure Dart chess logic for Repertoire Trainer: PGN import and export,
 /// repertoire trees and lines, and the training rules (grading, accuracy,
-/// pickers, weak pool, SRS, streak, stats derivation, re-import diff).
+/// pickers, weak pool, SRS, streak, stats derivation, re-import diff) and
+/// the sync / backup records, codec and merge.
 ///
-/// Imports nothing from Flutter or the app, and no `dart:io`.
+/// Imports nothing from Flutter or the app, and no `dart:io` (the app
+/// supplies gzip to the codec).
 library;
 
 export 'src/pgn/board_shape.dart';
@@ -22,6 +24,9 @@ export 'src/pgn/pgn_importer.dart';
 export 'src/pgn/pgn_reader.dart';
 export 'src/pgn/report.dart';
 export 'src/pgn/synthetic_pgn.dart';
+export 'src/sync/codec.dart';
+export 'src/sync/merge.dart';
+export 'src/sync/records.dart';
 export 'src/training/accuracy.dart';
 export 'src/training/attribution.dart';
 export 'src/training/constants.dart';

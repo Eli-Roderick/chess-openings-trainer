@@ -24,7 +24,20 @@ abstract interface class FileService {
   /// Saves [text] (UTF-8) through a save dialog proposing [fileName];
   /// returns where it was saved, or null if cancelled.
   Future<String?> saveText({required String fileName, required String text});
+
+  /// Lets the user choose a backup file; null if cancelled.
+  Future<PickedFile?> pickBackup();
+
+  /// Saves backup [bytes] through a save dialog proposing [fileName];
+  /// returns where it was saved, or null if cancelled.
+  Future<String?> saveBackup({
+    required String fileName,
+    required Uint8List bytes,
+  });
 }
+
+/// Backup file extension (docs/plan/06-sync.md §8).
+const backupExtension = 'rtbackup';
 
 /// [FileService] backed by `file_picker`.
 final class PlatformFileService implements FileService {
@@ -52,6 +65,30 @@ final class PlatformFileService implements FileService {
       mimeType: 'application/x-chess-pgn',
       type: FileType.custom,
       allowedExtensions: const ['pgn'],
+    );
+    if (uri == null) return null;
+    return uri.scheme == 'file' ? uri.toFilePath() : uri.pathSegments.last;
+  }
+
+  @override
+  Future<PickedFile?> pickBackup() async {
+    // Android's picker does not know the extension's MIME type: any file.
+    final file = await FilePicker.pickFile();
+    if (file == null) return null;
+    return PickedFile(name: file.name, bytes: await file.xFile.readAsBytes());
+  }
+
+  @override
+  Future<String?> saveBackup({
+    required String fileName,
+    required Uint8List bytes,
+  }) async {
+    final uri = await FilePicker.saveFile(
+      fileName: fileName,
+      bytes: bytes,
+      mimeType: 'application/gzip',
+      type: FileType.custom,
+      allowedExtensions: const [backupExtension],
     );
     if (uri == null) return null;
     return uri.scheme == 'file' ? uri.toFilePath() : uri.pathSegments.last;

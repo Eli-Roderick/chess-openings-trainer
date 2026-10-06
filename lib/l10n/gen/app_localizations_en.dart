@@ -357,9 +357,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settingsAbout => 'About';
 
   @override
-  String get settingsLater => 'These settings arrive in a later version.';
-
-  @override
   String get themeLabel => 'Theme';
 
   @override
@@ -1233,4 +1230,125 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get abandoned => 'abandoned';
+
+  @override
+  String get syncTitle => 'Google Drive sync';
+
+  @override
+  String get syncLater =>
+      'Sync between your devices arrives in a later version. Use backups to move data meanwhile.';
+
+  @override
+  String get backupTitle => 'Backup';
+
+  @override
+  String get exportBackup => 'Export backup';
+
+  @override
+  String get exportBackupHint =>
+      'Repertoires, training history and settings in one file';
+
+  @override
+  String get importBackup => 'Import backup';
+
+  @override
+  String get importBackupHint =>
+      'Merge a backup file into this device, or replace everything';
+
+  @override
+  String get backupExporting => 'Preparing the backup…';
+
+  @override
+  String get backupReading => 'Reading the backup…';
+
+  @override
+  String get backupImporting => 'Importing…';
+
+  @override
+  String backupSaved(String where) {
+    return 'Backup saved: $where';
+  }
+
+  @override
+  String backupFailed(String error) {
+    return 'Backup failed: $error';
+  }
+
+  @override
+  String get backupNewer =>
+      'This backup is from a newer app version. Update this device first.';
+
+  @override
+  String get backupInvalid => 'Not a Repertoire Trainer backup.';
+
+  @override
+  String backupContents(int repertoires, int runs, String date) {
+    String _temp0 = intl.Intl.pluralLogic(
+      repertoires,
+      locale: localeName,
+      other: '$repertoires repertoires',
+      one: '1 repertoire',
+    );
+    String _temp1 = intl.Intl.pluralLogic(
+      runs,
+      locale: localeName,
+      other: '$runs runs',
+      one: '1 run',
+    );
+    return '$_temp0, $_temp1, exported $date';
+  }
+
+  @override
+  String get importMerge => 'Merge';
+
+  @override
+  String get importMergeHint =>
+      'Keeps everything on this device; newer repertoire changes win, all runs are kept.';
+
+  @override
+  String get replaceAll => 'Replace all';
+
+  @override
+  String get importReplaceHint =>
+      'Deletes this device\'s repertoires and runs first.';
+
+  @override
+  String get restoreSettings => 'Also restore settings';
+
+  @override
+  String get replaceAllTitle => 'Replace all?';
+
+  @override
+  String replaceAllBody(int repertoires, int runs) {
+    String _temp0 = intl.Intl.pluralLogic(
+      repertoires,
+      locale: localeName,
+      other: '$repertoires repertoires',
+      one: '1 repertoire',
+    );
+    String _temp1 = intl.Intl.pluralLogic(
+      runs,
+      locale: localeName,
+      other: '$runs runs',
+      one: '1 run',
+    );
+    return 'This deletes $_temp0 and $_temp1 on this device before importing.';
+  }
+
+  @override
+  String backupImported(int repertoires, int runs) {
+    String _temp0 = intl.Intl.pluralLogic(
+      repertoires,
+      locale: localeName,
+      other: '$repertoires repertoires',
+      one: '1 repertoire',
+    );
+    String _temp1 = intl.Intl.pluralLogic(
+      runs,
+      locale: localeName,
+      other: '$runs runs',
+      one: '1 run',
+    );
+    return 'Backup imported: $_temp0 updated, $_temp1 added.';
+  }
 }

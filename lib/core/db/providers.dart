@@ -1,10 +1,14 @@
 import 'dart:async';
+import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:chess_core/chess_core.dart';
+import 'package:dartchess/dartchess.dart' show Side;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/misc.dart'
     show FutureProviderFamily, StreamProviderFamily;
 import 'package:repertoire_trainer/core/db/app_database.dart';
+import 'package:repertoire_trainer/core/db/merge_applier.dart';
 import 'package:repertoire_trainer/core/db/repositories/repertoire_repository.dart';
 import 'package:repertoire_trainer/core/db/repositories/run_repository.dart';
 import 'package:repertoire_trainer/core/db/repositories/settings_repository.dart';
@@ -12,6 +16,7 @@ import 'package:repertoire_trainer/core/db/repositories/stats_repository.dart';
 import 'package:repertoire_trainer/core/db/repositories/sync_state_repository.dart';
 import 'package:repertoire_trainer/core/db/stats_queries.dart';
 import 'package:repertoire_trainer/core/db/stats_service.dart';
+import 'package:repertoire_trainer/core/import/import_runner.dart';
 import 'package:repertoire_trainer/core/settings/app_settings.dart';
 import 'package:uuid/uuid.dart';
 
@@ -157,3 +162,25 @@ final streakProvider = StreamProvider<Streak>((ref) {
       .watchTrainingDays()
       .map((days) => computeStreak(days, today));
 });
+
+/// Applies merged records (sync, backup import); trees are imported on an
+/// isolate.
+final mergeApplierProvider = Provider<MergeApplier>(
+  (ref) => MergeApplier(
+    db: ref.watch(databaseProvider),
+    repertoires: ref.watch(repertoireRepositoryProvider),
+    runs: ref.watch(runRepositoryProvider),
+    stats: ref.watch(statsServiceProvider),
+    buildTree: (record) async {
+      final runner = ref.read(importRunnerProvider);
+      final side = record.color == 'b' ? Side.black : Side.white;
+      await for (final p in runner(
+        Uint8List.fromList(utf8.encode(record.pgn)),
+        side,
+      )) {
+        if (p case ImportFinished(:final result)) return result.tree;
+      }
+      return null;
+    },
+  ),
+);
