@@ -169,13 +169,10 @@ void main() {
       await tester.pump();
     });
 
-    testWidgets('sections without settings yet say so', (tester) async {
+    testWidgets('Sync and backup opens the backup screen', (tester) async {
       final h = await AppHarness.pump(tester);
       await go(h, Routes.settingsSection('sync'));
-      expect(
-        find.text('These settings arrive in a later version.'),
-        findsOneWidget,
-      );
+      expect(find.byKey(const Key('sync-backup')), findsOneWidget);
     });
   });
 

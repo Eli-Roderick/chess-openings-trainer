@@ -4,6 +4,7 @@
 //   running, has no frame over budget.
 // - P07: drill latency p95 <= 300 ms.
 // - P10: the stats screen opens in < 300 ms with 20k runs.
+// - P11: a backup of 20k runs exports in < 3 s and imports in < 5 s.
 // CI runs this file with
 // `xvfb-run flutter drive --profile -d linux
 //   --driver=test_driver/integration_test.dart
@@ -28,6 +29,8 @@ import 'package:repertoire_trainer/app/bootstrap.dart';
 import 'package:repertoire_trainer/app/router.dart';
 import 'package:repertoire_trainer/app/routes.dart';
 import 'package:repertoire_trainer/core/db/app_database.dart';
+import 'package:repertoire_trainer/core/db/backup_queries.dart';
+import 'package:repertoire_trainer/core/db/merge_applier.dart';
 import 'package:repertoire_trainer/core/db/providers.dart';
 import 'package:repertoire_trainer/core/db/repositories/repertoire_repository.dart';
 import 'package:repertoire_trainer/core/db/repositories/run_repository.dart';
@@ -38,6 +41,7 @@ import 'package:repertoire_trainer/core/db/stats_service.dart';
 import 'package:repertoire_trainer/core/diagnostics/drill_latency.dart';
 import 'package:repertoire_trainer/core/diagnostics/frame_stats.dart';
 import 'package:repertoire_trainer/core/diagnostics/startup_timings.dart';
+import 'package:repertoire_trainer/features/backup/backup_service.dart';
 import 'package:repertoire_trainer/features/board/repertoire_board.dart';
 
 void main() {
@@ -287,78 +291,8 @@ void main() {
     }
   });
   testWidgets('stats screen opens in < 300 ms with 20k runs', (tester) async {
-    final dir = await Directory.systemTemp.createTemp('rt_stats_');
-    final dbFile = File(p.join(dir.path, 'repertoire.sqlite'));
-    final seed = AppDatabase(NativeDatabase(dbFile));
-    var next = 0;
-    final sync = DriftSyncStateRepository(seed, newId: () => 'dev');
-    final repo = DriftRepertoireRepository(
-      seed,
-      clock: const SystemClock(),
-      newId: () => 'id-${next++}',
-      deviceId: sync.deviceId,
-    );
-    final pgn = generateSyntheticPgn(lines: 12, depth: 12, seed: 2);
-    final id = await repo.create(
-      name: 'Big',
-      color: Side.white,
-      pgn: pgn,
-      result: importPgn(pgn, Side.white),
-    );
-    final lines = await repo.lineRefs(id);
-    final runs = DriftRunRepository(seed);
     const total = 20000;
-    final start = DateTime.utc(2026);
-    final batch = <RunRecord>[];
-    for (var i = 0; i < total; i++) {
-      final line = lines[i % lines.length];
-      final ucis = line.ucis.split(' ');
-      final at = start.add(Duration(minutes: 20 * i));
-      final grades = [
-        for (var ply = 1; ply <= ucis.length && ply <= 11; ply += 2)
-          MoveGrade(
-            ply: ply,
-            expected: ucis[ply - 1],
-            accepted: ucis[ply - 1],
-            firstAttempt: (i + ply) % 7 == 0 ? 'a2a3' : ucis[ply - 1],
-            result: (i + ply) % 7 == 0
-                ? GradeResult.wrong
-                : GradeResult.correct,
-            credit: (i + ply) % 7 == 0 ? 0 : 1,
-            attempts: 1,
-            hintLevel: 0,
-          ),
-      ];
-      batch.add(
-        RunRecord(
-          id: 'run-$i',
-          repertoireId: id,
-          lineKey: line.key,
-          ucis: line.ucis,
-          mode: RunMode.random,
-          startPly: 0,
-          wrongMoveMode: WrongMoveMode.retry,
-          startedAt: at.millisecondsSinceEpoch - 60000,
-          finishedAt: at.millisecondsSinceEpoch,
-          localDay: localDay(at, 4),
-          completed: true,
-          deviated: false,
-          gradedCount: grades.length,
-          creditSum: grades.fold(0, (a, g) => a + g.credit),
-          hintCount: 0,
-          deviceId: 'dev',
-          grades: grades,
-        ),
-      );
-    }
-    await runs.insertIfAbsent(batch);
-    await StatsService(
-      repertoires: repo,
-      runs: runs,
-      stats: DriftStatsRepository(seed),
-      settings: DriftSettingsRepository(seed).load,
-    ).rebuildRepertoire(id);
-    await seed.close();
+    final (dbFile, id) = await _seedRuns(total);
 
     await bootstrap(
       overrides: [
@@ -395,4 +329,149 @@ void main() {
       expect(open.elapsed, lessThan(const Duration(milliseconds: 300)));
     }
   });
+
+  testWidgets('backup of 20k runs: export < 3 s, import < 5 s', (tester) async {
+    final (dbFile, _) = await _seedRuns(20000);
+    BackupService service(AppDatabase db) {
+      final repertoires = DriftRepertoireRepository(
+        db,
+        clock: const SystemClock(),
+        newId: () => 'unused',
+        deviceId: () async => 'dev',
+      );
+      final runs = DriftRunRepository(db);
+      final settings = DriftSettingsRepository(db);
+      final stats = StatsService(
+        repertoires: repertoires,
+        runs: runs,
+        stats: DriftStatsRepository(db),
+        settings: settings.load,
+      );
+      return BackupService(
+        repertoires: repertoires,
+        runs: runs,
+        settings: settings,
+        applier: MergeApplier(
+          db: db,
+          repertoires: repertoires,
+          runs: runs,
+          stats: stats,
+          buildTree: (r) async => importPgn(r.pgn, Side.white).tree,
+        ),
+        queries: BackupQueries(db),
+        deviceId: () async => 'dev',
+        clock: const SystemClock(),
+      );
+    }
+
+    final source = AppDatabase(NativeDatabase.createInBackground(dbFile));
+    final export = Stopwatch()..start();
+    final backup = await service(source).export();
+    export.stop();
+    await source.close();
+
+    final target = AppDatabase(
+      NativeDatabase.createInBackground(
+        File(p.join(dbFile.parent.path, 'target.sqlite')),
+      ),
+    );
+    final into = service(target);
+    final import = Stopwatch()..start();
+    final report = await into.import(
+      await into.read(backup.bytes),
+      replace: false,
+      restoreSettings: false,
+    );
+    import.stop();
+    expect(report.insertedRuns, 20000);
+    expect(await DriftRunRepository(target).count(), 20000);
+    await target.close();
+    // The timing log for the acceptance criterion.
+    // ignore: avoid_print
+    print(
+      'Backup (${kDebugMode ? 'debug' : 'AOT'}): '
+      '${backup.bytes.length ~/ 1024} KB, export '
+      '${export.elapsedMilliseconds} ms, import '
+      '${import.elapsedMilliseconds} ms',
+    );
+    if (!kDebugMode) {
+      expect(export.elapsed, lessThan(const Duration(seconds: 3)));
+      expect(import.elapsed, lessThan(const Duration(seconds: 5)));
+    }
+  });
+}
+
+/// A database file holding one repertoire (12 lines) with [total] runs and
+/// derived stats; returns the file and the repertoire id.
+Future<(File, String)> _seedRuns(int total) async {
+  final dir = await Directory.systemTemp.createTemp('rt_stats_');
+  final dbFile = File(p.join(dir.path, 'repertoire.sqlite'));
+  final seed = AppDatabase(NativeDatabase(dbFile));
+  var next = 0;
+  final sync = DriftSyncStateRepository(seed, newId: () => 'dev');
+  final repo = DriftRepertoireRepository(
+    seed,
+    clock: const SystemClock(),
+    newId: () => 'id-${next++}',
+    deviceId: sync.deviceId,
+  );
+  final pgn = generateSyntheticPgn(lines: 12, depth: 12, seed: 2);
+  final id = await repo.create(
+    name: 'Big',
+    color: Side.white,
+    pgn: pgn,
+    result: importPgn(pgn, Side.white),
+  );
+  final lines = await repo.lineRefs(id);
+  final runs = DriftRunRepository(seed);
+  final start = DateTime.utc(2026);
+  final batch = <RunRecord>[];
+  for (var i = 0; i < total; i++) {
+    final line = lines[i % lines.length];
+    final ucis = line.ucis.split(' ');
+    final at = start.add(Duration(minutes: 20 * i));
+    final grades = [
+      for (var ply = 1; ply <= ucis.length && ply <= 11; ply += 2)
+        MoveGrade(
+          ply: ply,
+          expected: ucis[ply - 1],
+          accepted: ucis[ply - 1],
+          firstAttempt: (i + ply) % 7 == 0 ? 'a2a3' : ucis[ply - 1],
+          result: (i + ply) % 7 == 0 ? GradeResult.wrong : GradeResult.correct,
+          credit: (i + ply) % 7 == 0 ? 0 : 1,
+          attempts: 1,
+          hintLevel: 0,
+        ),
+    ];
+    batch.add(
+      RunRecord(
+        id: 'run-$i',
+        repertoireId: id,
+        lineKey: line.key,
+        ucis: line.ucis,
+        mode: RunMode.random,
+        startPly: 0,
+        wrongMoveMode: WrongMoveMode.retry,
+        startedAt: at.millisecondsSinceEpoch - 60000,
+        finishedAt: at.millisecondsSinceEpoch,
+        localDay: localDay(at, 4),
+        completed: true,
+        deviated: false,
+        gradedCount: grades.length,
+        creditSum: grades.fold(0, (a, g) => a + g.credit),
+        hintCount: 0,
+        deviceId: 'dev',
+        grades: grades,
+      ),
+    );
+  }
+  await runs.insertIfAbsent(batch);
+  await StatsService(
+    repertoires: repo,
+    runs: runs,
+    stats: DriftStatsRepository(seed),
+    settings: DriftSettingsRepository(seed).load,
+  ).rebuildRepertoire(id);
+  await seed.close();
+  return (dbFile, id);
 }

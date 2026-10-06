@@ -43,7 +43,7 @@ final class StatsService {
       InheritedAttribution(:final keys) => keys,
       ArchivedAttribution(:final key) => [key],
     };
-    final runs = await _runs.runsForRepertoire(run.repertoireId);
+    final runs = await _runs.runsForDerivation(run.repertoireId);
     final settings = (await _settings()).deriveSettings;
     final derived = await _maybeIsolate(
       runs.length,
@@ -57,7 +57,7 @@ final class StatsService {
   /// sync merge).
   Future<void> rebuildRepertoire(String repertoireId) async {
     final lines = await _repertoires.lineRefs(repertoireId);
-    final runs = await _runs.runsForRepertoire(repertoireId);
+    final runs = await _runs.runsForDerivation(repertoireId);
     final settings = (await _settings()).deriveSettings;
     final derived = await _maybeIsolate(
       runs.length,

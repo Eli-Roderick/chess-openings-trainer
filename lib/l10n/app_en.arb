@@ -252,7 +252,6 @@
   "settingsAppearance": "Appearance",
   "settingsSync": "Sync and backup",
   "settingsAbout": "About",
-  "settingsLater": "These settings arrive in a later version.",
   "themeLabel": "Theme",
   "themeDark": "Dark",
   "themeLight": "Light",
@@ -840,5 +839,75 @@
     }
   },
   "runHistory": "Run history",
-  "abandoned": "abandoned"
+  "abandoned": "abandoned",
+  "syncTitle": "Google Drive sync",
+  "syncLater": "Sync between your devices arrives in a later version. Use backups to move data meanwhile.",
+  "backupTitle": "Backup",
+  "exportBackup": "Export backup",
+  "exportBackupHint": "Repertoires, training history and settings in one file",
+  "importBackup": "Import backup",
+  "importBackupHint": "Merge a backup file into this device, or replace everything",
+  "backupExporting": "Preparing the backup…",
+  "backupReading": "Reading the backup…",
+  "backupImporting": "Importing…",
+  "backupSaved": "Backup saved: {where}",
+  "@backupSaved": {
+    "placeholders": {
+      "where": {
+        "type": "String"
+      }
+    }
+  },
+  "backupFailed": "Backup failed: {error}",
+  "@backupFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "backupNewer": "This backup is from a newer app version. Update this device first.",
+  "backupInvalid": "Not a Repertoire Trainer backup.",
+  "backupContents": "{repertoires, plural, =1{1 repertoire} other{{repertoires} repertoires}}, {runs, plural, =1{1 run} other{{runs} runs}}, exported {date}",
+  "@backupContents": {
+    "placeholders": {
+      "repertoires": {
+        "type": "int"
+      },
+      "runs": {
+        "type": "int"
+      },
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "importMerge": "Merge",
+  "importMergeHint": "Keeps everything on this device; newer repertoire changes win, all runs are kept.",
+  "replaceAll": "Replace all",
+  "importReplaceHint": "Deletes this device's repertoires and runs first.",
+  "restoreSettings": "Also restore settings",
+  "replaceAllTitle": "Replace all?",
+  "replaceAllBody": "This deletes {repertoires, plural, =1{1 repertoire} other{{repertoires} repertoires}} and {runs, plural, =1{1 run} other{{runs} runs}} on this device before importing.",
+  "@replaceAllBody": {
+    "placeholders": {
+      "repertoires": {
+        "type": "int"
+      },
+      "runs": {
+        "type": "int"
+      }
+    }
+  },
+  "backupImported": "Backup imported: {repertoires, plural, =1{1 repertoire} other{{repertoires} repertoires}} updated, {runs, plural, =1{1 run} other{{runs} runs}} added.",
+  "@backupImported": {
+    "placeholders": {
+      "repertoires": {
+        "type": "int"
+      },
+      "runs": {
+        "type": "int"
+      }
+    }
+  }
 }

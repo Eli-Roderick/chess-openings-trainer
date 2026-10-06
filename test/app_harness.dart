@@ -40,6 +40,21 @@ final class FakeFileService implements FileService {
     saved[fileName] = text;
     return '/fake/$fileName';
   }
+
+  PickedFile? pickedBackup;
+  final savedBackups = <String, Uint8List>{};
+
+  @override
+  Future<PickedFile?> pickBackup() async => pickedBackup;
+
+  @override
+  Future<String?> saveBackup({
+    required String fileName,
+    required Uint8List bytes,
+  }) async {
+    savedBackups[fileName] = bytes;
+    return '/fake/$fileName';
+  }
 }
 
 /// Records played sounds instead of playing them.

@@ -2,6 +2,7 @@ import 'package:chess_core/chess_core.dart' show RunMode;
 import 'package:flutter/widgets.dart' show ValueKey;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:repertoire_trainer/features/backup/sync_backup_screen.dart';
 import 'package:repertoire_trainer/features/board/free_move.dart';
 import 'package:repertoire_trainer/features/browse/browse_screen.dart';
 import 'package:repertoire_trainer/features/drill/drill_screen.dart';
@@ -110,11 +111,12 @@ final routerProvider = Provider<GoRouter>((ref) {
             routes: [
               GoRoute(
                 path: ':section',
-                builder: (context, state) => SettingsSectionScreen(
-                  section: SettingsSection.values.byName(
-                    state.pathParameters['section']!,
-                  ),
-                ),
+                builder: (context, state) => switch (SettingsSection.values
+                    .byName(state.pathParameters['section']!)) {
+                  // Lives in its own feature (backup, then sync in P12).
+                  SettingsSection.sync => const SyncBackupScreen(),
+                  final section => SettingsSectionScreen(section: section),
+                },
               ),
             ],
           ),
