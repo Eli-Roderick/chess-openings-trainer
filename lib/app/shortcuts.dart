@@ -50,6 +50,27 @@ final class LeaveIntent extends Intent {
   const new();
 }
 
+/// H: hint (drill).
+final class HintIntent extends Intent {
+  /// Creates the intent.
+  const new();
+}
+
+/// Space / Enter: next line (drill end bar).
+final class NextLineIntent extends Intent {
+  /// Creates the intent.
+  const new();
+}
+
+/// The drill key map (01-product-spec §15).
+const drillShortcuts = <ShortcutActivator, Intent>{
+  SingleActivator(LogicalKeyboardKey.keyF): FlipBoardIntent(),
+  SingleActivator(LogicalKeyboardKey.keyH): HintIntent(),
+  SingleActivator(LogicalKeyboardKey.space): NextLineIntent(),
+  SingleActivator(LogicalKeyboardKey.enter): NextLineIntent(),
+  SingleActivator(LogicalKeyboardKey.escape): LeaveIntent(),
+};
+
 /// The Browse key map.
 const browseShortcuts = <ShortcutActivator, Intent>{
   SingleActivator(LogicalKeyboardKey.keyF): FlipBoardIntent(),

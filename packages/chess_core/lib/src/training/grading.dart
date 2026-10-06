@@ -209,6 +209,17 @@ final class RunBuilder {
     );
   }
 
+  /// The grading of [ply] so far, or null if nothing happened at it
+  /// (read-only: unlike [ply] it never creates a builder).
+  PlyGradeBuilder? gradeAt(int ply) => _plies[ply];
+
+  /// Grades of the plies with an attempt or hint so far, by ply (pending
+  /// checks count as wrong until they resolve).
+  List<MoveGrade> get grades => [
+    for (final p in _plies.values)
+      if (p.hasFirstEvent) p.build(),
+  ]..sort((a, b) => a.ply.compareTo(b.ply));
+
   /// The user switched to another repertoire line (alternative move).
   void switchLine({required String lineKey, required String ucis}) {
     _lineKey = lineKey;

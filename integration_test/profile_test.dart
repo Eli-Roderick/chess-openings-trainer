@@ -12,12 +12,13 @@ import 'dart:io';
 import 'dart:ui' show FramePhase, FrameTiming;
 
 import 'package:chess_core/chess_core.dart';
+import 'package:chessground/chessground.dart' show PlayerSide;
 import 'package:dartchess/dartchess.dart' show Side;
 import 'package:drift/native.dart';
 import 'package:flutter/foundation.dart';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:path/path.dart' as p;
@@ -26,6 +27,7 @@ import 'package:repertoire_trainer/core/db/app_database.dart';
 import 'package:repertoire_trainer/core/db/providers.dart';
 import 'package:repertoire_trainer/core/db/repositories/repertoire_repository.dart';
 import 'package:repertoire_trainer/core/db/repositories/sync_state_repository.dart';
+import 'package:repertoire_trainer/core/diagnostics/drill_latency.dart';
 import 'package:repertoire_trainer/core/diagnostics/frame_stats.dart';
 import 'package:repertoire_trainer/core/diagnostics/startup_timings.dart';
 import 'package:repertoire_trainer/features/board/repertoire_board.dart';
@@ -200,5 +202,75 @@ void main() {
     // not asserted: the runner has no GPU and rasterizes in software
     // (D-71). Devices are checked by hand (P05 device checklist).
     if (!kDebugMode) expect(stats.slowBuilds, lessThanOrEqualTo(1));
+  });
+
+  testWidgets('drill latency p95 <= 300 ms (user move -> opponent move)', (
+    tester,
+  ) async {
+    final dir = await Directory.systemTemp.createTemp('rt_latency_');
+    final dbFile = File(p.join(dir.path, 'repertoire.sqlite'));
+    await bootstrap(
+      overrides: [
+        databaseProvider.overrideWith((ref) {
+          final db = AppDatabase(NativeDatabase.createInBackground(dbFile));
+          ref.onDispose(db.close);
+          return db;
+        }),
+      ],
+    );
+    Future<void> waitFor(Finder f) async {
+      final watch = Stopwatch()..start();
+      while (f.evaluate().isEmpty && watch.elapsed.inSeconds < 30) {
+        await tester.pump(const Duration(milliseconds: 20));
+      }
+      expect(f, findsWidgets);
+    }
+
+    await waitFor(find.byKey(const Key('try-demo')));
+    await tester.tap(find.byKey(const Key('try-demo')));
+    await waitFor(find.text('Demo: Italian (White)'));
+    await tester.tap(find.text('Demo: Italian (White)'));
+    await waitFor(find.byKey(const Key('train')));
+    final container = ProviderScope.containerOf(
+      tester.element(find.byKey(const Key('train'))),
+    );
+    final id = (await container.read(repertoireSummariesProvider.future))
+        .single
+        .id;
+    final tree = await container
+        .read(repertoireRepositoryProvider)
+        .loadTree(id);
+    await tester.tap(find.byKey(const Key('train')));
+    await waitFor(find.byType(RepertoireBoard));
+    DrillLatency.instance.reset();
+    BoardViewState board() =>
+        tester.widget<RepertoireBoard>(find.byType(RepertoireBoard)).state;
+    var userMoves = 0;
+    final watch = Stopwatch()..start();
+    while (userMoves < 30 && watch.elapsed.inSeconds < 90) {
+      await tester.pump(const Duration(milliseconds: 10));
+      if (find.byKey(const Key('end-bar')).evaluate().isNotEmpty) {
+        await tester.tap(find.byKey(const Key('next-line')));
+        continue;
+      }
+      if (board().movable == PlayerSide.none) continue;
+      final node = tree.nodes.firstWhere((n) => n.fen == board().fen);
+      final move = node.children.firstWhere((c) => c.isUserMove);
+      // Played like a dropped piece (the board's test hook).
+      container.read(activeBoardProvider)!.debugPlayUserMove(move.uci!);
+      userMoves++;
+    }
+    final latency = DrillLatency.instance;
+    // The timing log for the acceptance criterion.
+    // ignore: avoid_print
+    print(
+      'Drill latency (${kDebugMode ? 'debug' : 'AOT'}): '
+      '${latency.count} replies, p50 ${latency.p50?.inMilliseconds} ms, '
+      'p95 ${latency.p95?.inMilliseconds} ms (opponent delay 250 ms)',
+    );
+    expect(latency.count, greaterThan(10));
+    if (!kDebugMode) {
+      expect(latency.p95, lessThanOrEqualTo(const Duration(milliseconds: 300)));
+    }
   });
 }

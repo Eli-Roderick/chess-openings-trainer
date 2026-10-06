@@ -1281,6 +1281,210 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Last jobs'**
   String get engineRecentJobs;
+
+  /// No description provided for @trainTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Train'**
+  String get trainTitle;
+
+  /// No description provided for @modeRandom.
+  ///
+  /// In en, this message translates to:
+  /// **'Random'**
+  String get modeRandom;
+
+  /// No description provided for @trainingSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Training settings'**
+  String get trainingSettings;
+
+  /// No description provided for @noTrainableLines.
+  ///
+  /// In en, this message translates to:
+  /// **'This repertoire has no line with moves of your colour.'**
+  String get noTrainableLines;
+
+  /// No description provided for @yourMove.
+  ///
+  /// In en, this message translates to:
+  /// **'Your move'**
+  String get yourMove;
+
+  /// No description provided for @opponentToMove.
+  ///
+  /// In en, this message translates to:
+  /// **'Opponent to move'**
+  String get opponentToMove;
+
+  /// No description provided for @skippedToMove.
+  ///
+  /// In en, this message translates to:
+  /// **'Skipped to move {move}'**
+  String skippedToMove(int move);
+
+  /// No description provided for @comparableBanner.
+  ///
+  /// In en, this message translates to:
+  /// **'That is not the move in your repertoire, but it is a comparable move.'**
+  String get comparableBanner;
+
+  /// No description provided for @notRepertoireMove.
+  ///
+  /// In en, this message translates to:
+  /// **'Not your repertoire move'**
+  String get notRepertoireMove;
+
+  /// No description provided for @bannerWithMove.
+  ///
+  /// In en, this message translates to:
+  /// **'{move}: {text}'**
+  String bannerWithMove(String move, String text);
+
+  /// No description provided for @runAccuracy.
+  ///
+  /// In en, this message translates to:
+  /// **'{credit}/{graded} · {percent} %'**
+  String runAccuracy(String credit, int graded, int percent);
+
+  /// No description provided for @hint.
+  ///
+  /// In en, this message translates to:
+  /// **'Hint'**
+  String get hint;
+
+  /// No description provided for @showMove.
+  ///
+  /// In en, this message translates to:
+  /// **'Show move'**
+  String get showMove;
+
+  /// No description provided for @moveProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'Move {current} of {total}'**
+  String moveProgress(int current, int total);
+
+  /// No description provided for @skipLine.
+  ///
+  /// In en, this message translates to:
+  /// **'Skip line'**
+  String get skipLine;
+
+  /// No description provided for @nextLine.
+  ///
+  /// In en, this message translates to:
+  /// **'Next line'**
+  String get nextLine;
+
+  /// No description provided for @sessionSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'Session'**
+  String get sessionSummary;
+
+  /// No description provided for @linesCompleted.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 line completed} other{{count} lines completed}}'**
+  String linesCompleted(int count);
+
+  /// No description provided for @sessionAccuracy.
+  ///
+  /// In en, this message translates to:
+  /// **'Accuracy {percent} %'**
+  String sessionAccuracy(int percent);
+
+  /// No description provided for @done.
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get done;
+
+  /// No description provided for @wrongMoveBehaviour.
+  ///
+  /// In en, this message translates to:
+  /// **'Wrong move behaviour'**
+  String get wrongMoveBehaviour;
+
+  /// No description provided for @wrongMoveRetry.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry'**
+  String get wrongMoveRetry;
+
+  /// No description provided for @wrongMoveRestart.
+  ///
+  /// In en, this message translates to:
+  /// **'Restart line'**
+  String get wrongMoveRestart;
+
+  /// No description provided for @startFrom.
+  ///
+  /// In en, this message translates to:
+  /// **'Start from'**
+  String get startFrom;
+
+  /// No description provided for @startFromMove1.
+  ///
+  /// In en, this message translates to:
+  /// **'Move 1'**
+  String get startFromMove1;
+
+  /// No description provided for @startFromBranch.
+  ///
+  /// In en, this message translates to:
+  /// **'Branch point'**
+  String get startFromBranch;
+
+  /// No description provided for @autoAdvanceDelay.
+  ///
+  /// In en, this message translates to:
+  /// **'Auto-advance delay'**
+  String get autoAdvanceDelay;
+
+  /// No description provided for @opponentDelay.
+  ///
+  /// In en, this message translates to:
+  /// **'Opponent move delay'**
+  String get opponentDelay;
+
+  /// No description provided for @showCommentsInDrills.
+  ///
+  /// In en, this message translates to:
+  /// **'Show comments during drills'**
+  String get showCommentsInDrills;
+
+  /// No description provided for @showCommentArrows.
+  ///
+  /// In en, this message translates to:
+  /// **'Show comment arrows'**
+  String get showCommentArrows;
+
+  /// No description provided for @drillLatency.
+  ///
+  /// In en, this message translates to:
+  /// **'Drill latency'**
+  String get drillLatency;
+
+  /// No description provided for @latencyP50.
+  ///
+  /// In en, this message translates to:
+  /// **'Median'**
+  String get latencyP50;
+
+  /// No description provided for @latencyP95.
+  ///
+  /// In en, this message translates to:
+  /// **'95th percentile'**
+  String get latencyP95;
+
+  /// No description provided for @latencySamples.
+  ///
+  /// In en, this message translates to:
+  /// **'Samples'**
+  String get latencySamples;
 }
 
 class _AppLocalizationsDelegate

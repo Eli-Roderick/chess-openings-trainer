@@ -212,3 +212,17 @@ Details of the plan corrections are in `docs/plan/corrections/P06.md`.
 **D-84 Engine settings.** Status line `Stockfish 18 ready · N threads · X Mnps · variant`, or the error. Comparable threshold 0.10-1.00 pawns (step 0.05), check search time 0.5-3.0 s (step 0.1), Threads Auto or 1..cores, Hash Auto or 16-1024 MB, play-on strength 1500/2000/2500/Full, Run calibration, Restart engine.
 
 **D-85 Profile budget with the engine.** `integration_test/profile_test.dart` runs the 30 s drag script with Browse analysis on (real Stockfish on CI). The P05 tolerance (at most one slow build) still applies.
+
+## P07 (drill)
+
+Details of the plan corrections are in `docs/plan/corrections/P07.md`.
+
+**D-86 Drill controller.** `DrillController` (plain Dart `ChangeNotifier`, `lib/features/drill/`) runs the P07 state machine: loading → opponentToMove / userToMove → mistake → … → lineComplete. Every timer and async callback is tied to a run token and does nothing after the line changed or the drill closed. Dependencies come in as functions (`DrillDeps`: clock, rng, ids, settings, line stats, recent starts, `recordRun`, comparable check, effects) so the unit tests run in fake time with fakes. The screen builds the dependencies from the provider container, not the widget's `ref`, because an abandoned run is stored after the screen is disposed.
+
+**D-87 Mistakes.** A wrong move shows the piece on the target square (board not interactive), plays the error sound and a medium haptic, flashes the square for 300 ms and queues the comparable check (first attempt only). Retry: the previous FEN is set and the piece animates home. Restart: `RunBuilder.restart()`, the board jumps to the start position under a 200 ms fade, and the opponent replays from there. A check result applies to its own run while that run is unfinished; the comparable banner shows for 4 s, prefixed with the move when the user has moved on.
+
+**D-88 Line end.** On the last move: line-complete sound, end bar with the run's accuracy and Next line (a countdown ring; any tap on the bar stops the countdown; delay 0 goes straight on). The run is finalized in the background: up to 3 s for pending checks, then `StatsService.recordRun`; `finishedAt` is the moment the line ended. Skip line and leaving mid-line store the run with `completed = false`. Leaving after at least one completed line shows the session summary (lines, accuracy).
+
+**D-89 Drill screen.** App bar: name · Random, flip, training settings (a sheet with the same list as Settings → Training). Info panel: "Skipped to move N" chip (tap: the skipped moves), comment panel of the last correct user move ("Your move" / "Opponent to move" otherwise), banner on top. Bottom bar: Hint / Show move, "Move N of M", run accuracy "credit/graded · %", Skip line. Wide: the right panel adds the line's moves with result marks (✓ ½ ✗ ?). Keys: H, F, Space/Enter (next line), Esc.
+
+**D-90 Drill latency metric.** `DrillLatency` (`lib/core/diagnostics/`) keeps the last 200 user-move → opponent-move times; Diagnostics shows p50, p95 and the sample count. The profile integration run asserts p95 ≤ 300 ms with the default 250 ms delay.

@@ -243,7 +243,11 @@ class _BrowseViewState extends ConsumerState<BrowseView> {
 
   void _backToRepertoire() => _change(_free.clear);
 
-  void _onUserMove(NormalMove move, ResolvedMove resolved) {
+  void _onUserMove(
+    NormalMove move,
+    ResolvedMove resolved, {
+    required bool viaDrag,
+  }) {
     ref.read(hapticsServiceProvider).light();
     if (_free.isEmpty) {
       final child = _node.children
