@@ -22,10 +22,13 @@ ResolvedMove? resolveMove(Position position, NormalMove move) {
 }
 
 /// Parses a tree UCI (`e2e4`, `e7e8q`, castling `e1g1`) as a board move.
-NormalMove? parseUci(String uci) => switch (Move.parse(uci)) {
-  final NormalMove m => m,
-  _ => null,
-};
+NormalMove? parseUci(String uci) {
+  if (uci.length < 4) return null;
+  return switch (Move.parse(uci)) {
+    final NormalMove m => m,
+    _ => null,
+  };
+}
 
 /// The legal prefix of [pv] (engine UCI moves) played from [fen], at most
 /// [max] moves, with SAN and the position after each move.

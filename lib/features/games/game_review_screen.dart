@@ -182,6 +182,7 @@ class _GameReviewScreenState extends ConsumerState<GameReviewScreen> {
     );
     final strip = _MoveStrip(
       sans: sans,
+      labels: data.review.labels,
       ply: ply,
       controller: _strip,
       onSelect: (p) => _go(p, n),
@@ -291,6 +292,13 @@ class _GameReviewScreenState extends ConsumerState<GameReviewScreen> {
     );
   }
 
+  /// The engine's move before [ply]; null where that position was not
+  /// analysed (book moves, analysis still running).
+  NormalMove? _bestMove(ReviewData data, int ply) {
+    final best = data.analyses[ply - 1]?.best;
+    return best == null ? null : parseUci(best);
+  }
+
   BoardViewState _boardState(
     ReviewData data,
     int ply,
@@ -308,7 +316,7 @@ class _GameReviewScreenState extends ConsumerState<GameReviewScreen> {
           lastMove: parseUci(solved.uci),
         );
       }
-      final best = parseUci(data.analyses[retry.ply - 1]?.best ?? '');
+      final best = _bestMove(data, retry.ply);
       return BoardViewState(
         fen: before,
         orientation: orientation,
@@ -319,7 +327,7 @@ class _GameReviewScreenState extends ConsumerState<GameReviewScreen> {
         },
       );
     }
-    final best = ply == 0 ? null : parseUci(data.analyses[ply - 1]?.best ?? '');
+    final best = ply == 0 ? null : _bestMove(data, ply);
     final played = ply == 0 ? null : replay.moves[ply - 1];
     return BoardViewState(
       fen: replay.fen(ply),
@@ -529,12 +537,16 @@ class _CoachCard extends StatelessWidget {
 class _MoveStrip extends StatelessWidget {
   const new({
     required this.sans,
+    required this.labels,
     required this.ply,
     required this.controller,
     required this.onSelect,
   });
 
   final List<String> sans;
+
+  /// The label of each move, as the board marks it.
+  final List<MoveLabel?> labels;
   final int ply;
   final ScrollController controller;
   final ValueChanged<int> onSelect;
@@ -578,14 +590,27 @@ class _MoveStrip extends StatelessWidget {
                         ),
                       ),
                     ),
-                    child: Text(
-                      p.isOdd ? '${(p + 1) ~/ 2}. ${sans[i]}' : sans[i],
-                      style: theme.textTheme.titleMedium?.copyWith(
-                        fontWeight: selected ? FontWeight.w800 : null,
-                        color: p > ply
-                            ? theme.colorScheme.onSurface.withValues(alpha: 0.6)
-                            : null,
-                      ),
+                    child: Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        Text(
+                          p.isOdd ? '${(p + 1) ~/ 2}. ${sans[i]}' : sans[i],
+                          style: theme.textTheme.titleMedium?.copyWith(
+                            fontWeight: selected ? FontWeight.w800 : null,
+                            color: p > ply
+                                ? theme.colorScheme.onSurface.withValues(
+                                    alpha: 0.6,
+                                  )
+                                : null,
+                          ),
+                        ),
+                        if (i < labels.length && labels[i] != null)
+                          Positioned(
+                            top: 1,
+                            right: 2,
+                            child: MoveMark(labels[i]!, size: 14),
+                          ),
+                      ],
                     ),
                   ),
                 );

@@ -1,8 +1,11 @@
 import 'dart:convert';
+import 'dart:math' as math;
 
 import 'package:chess_core/chess_core.dart';
+import 'package:dartchess/dartchess.dart' show Chess, NormalMove, Position;
 import 'package:drift/drift.dart' show Value;
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart' show LogicalKeyboardKey;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
@@ -19,6 +22,7 @@ import 'package:repertoire_trainer/features/games/chess_com_client.dart';
 import 'package:repertoire_trainer/features/games/chess_com_parser.dart';
 import 'package:repertoire_trainer/features/games/games_screen.dart';
 import 'package:repertoire_trainer/features/games/games_service.dart';
+import 'package:repertoire_trainer/features/games/move_marks.dart';
 import 'package:repertoire_trainer/features/games/review_model.dart';
 import 'package:repertoire_trainer/l10n/gen/app_localizations_en.dart';
 
@@ -581,6 +585,144 @@ void main() {
       expect(find.text('Summary'), findsOneWidget);
       await tester.tap(find.byKey(const Key('review-flip')));
       await tester.pump();
+    });
+
+    testWidgets('phone: arrows walk the whole game and back without errors', (
+      tester,
+    ) async {
+      tester.view
+        ..physicalSize = const Size(390 * 3, 780 * 3)
+        ..devicePixelRatio = 3;
+      addTearDown(tester.view.reset);
+      await open(tester, board: true);
+      for (var i = 0; i < 8; i++) {
+        for (final k in ['review-best', 'review-show']) {
+          final f = find.byKey(Key(k));
+          if (f.evaluate().isNotEmpty) {
+            await tester.tap(f, warnIfMissed: false);
+            await tester.pump();
+          }
+        }
+        await tester.tap(find.byKey(const Key('nav-forward')));
+        await tester.pump();
+      }
+      for (var i = 0; i < 8; i++) {
+        await tester.tap(find.byKey(const Key('nav-back')));
+        await tester.pump();
+      }
+      await tester.sendKeyEvent(LogicalKeyboardKey.arrowRight);
+      await tester.pump();
+      // The stepped-to move carries its label mark on the coach card, the
+      // board square and its chip in the strip.
+      expect(find.byType(MoveMark), findsAtLeastNWidgets(3));
+      await tester.sendKeyEvent(LogicalKeyboardKey.end);
+      await tester.pump();
+      expect(tester.takeException(), isNull);
+    });
+
+    testWidgets('phone: a long game steps forward and back without errors', (
+      tester,
+    ) async {
+      tester.view
+        ..physicalSize = const Size(390 * 3, 780 * 3)
+        ..devicePixelRatio = 3;
+      addTearDown(tester.view.reset);
+      final h = await AppHarness.pump(tester);
+      final rng = math.Random(3);
+      Position pos = Chess.initial;
+      final ucis = <String>[];
+      final sans = <String>[];
+      while (ucis.length < 60) {
+        final moves = [
+          for (final MapEntry(key: from, value: tos) in pos.legalMoves.entries)
+            for (final to in tos.squares) NormalMove(from: from, to: to),
+        ];
+        if (moves.isEmpty) break;
+        final m = moves[rng.nextInt(moves.length)];
+        final (after, san) = pos.makeSan(m);
+        ucis.add(m.uci);
+        sans.add(san);
+        pos = after;
+      }
+      final repo = h.container.read(gamesRepositoryProvider);
+      await repo.upsertGames([
+        ImportedGamesCompanion.insert(
+          id: 'g',
+          username: 'eli',
+          url: '',
+          endTime: 0,
+          timeClass: 'blitz',
+          timeControl: '180+2',
+          rated: true,
+          userWhite: true,
+          result: 'win',
+          resultDetail: 'resigned',
+          whiteName: 'Eli',
+          blackName: 'opp',
+          whiteRating: 1500,
+          blackRating: 1500,
+          ucis: ucis.join(' '),
+          sans: sans.join(' '),
+          pgn: '',
+          fetchedAt: 0,
+        ),
+      ]);
+      for (var ply = 0; ply <= ucis.length; ply++) {
+        await repo.savePosition(
+          GameAnalysisCompanion.insert(
+            gameId: 'g',
+            profile: AnalysisProfile.standard.index,
+            ply: ply,
+            cp: Value(rng.nextInt(600) - 300),
+            pv: Value(ply < ucis.length ? ucis[ply] : ''),
+            depth: 18,
+          ),
+        );
+      }
+      await repo.completeReview(
+        GameReviewsCompanion.insert(
+          gameId: 'g',
+          profile: AnalysisProfile.standard.index,
+          engine: 'sf',
+          analysed: ucis.length + 1,
+          total: ucis.length + 1,
+          complete: true,
+          updatedAt: 0,
+        ),
+        List<int?>.filled(ucis.length, null),
+      );
+      h.container.read(routerProvider).go(Routes.gameBoard('g'));
+      await spin(tester, 20);
+      for (var i = 0; i < ucis.length; i++) {
+        await tester.tap(find.byKey(const Key('nav-forward')));
+        await tester.pump();
+      }
+      for (var i = 0; i < ucis.length; i++) {
+        await tester.tap(find.byKey(const Key('nav-back')));
+        await tester.pump();
+      }
+      expect(tester.takeException(), isNull);
+    });
+
+    testWidgets('arrows while the analysis is still running do not throw', (
+      tester,
+    ) async {
+      tester.view
+        ..physicalSize = const Size(390 * 3, 780 * 3)
+        ..devicePixelRatio = 3;
+      addTearDown(tester.view.reset);
+      await open(tester, analysed: false);
+      await tester.tap(find.byKey(const Key('continue-review')));
+      await spin(tester, 2);
+      for (var i = 0; i < 6; i++) {
+        await tester.tap(find.byKey(const Key('nav-forward')));
+        await spin(tester, 2);
+      }
+      for (var i = 0; i < 6; i++) {
+        await tester.tap(find.byKey(const Key('nav-back')));
+        await spin(tester, 2);
+      }
+      expect(tester.takeException(), isNull);
     });
 
     testWidgets('opening an unanalysed game analyses it and fills in', (
