@@ -7,6 +7,7 @@ import 'package:repertoire_trainer/features/backup/sync_backup_screen.dart';
 import 'package:repertoire_trainer/features/board/free_move.dart';
 import 'package:repertoire_trainer/features/browse/browse_screen.dart';
 import 'package:repertoire_trainer/features/drill/drill_screen.dart';
+import 'package:repertoire_trainer/features/games/games_screen.dart';
 import 'package:repertoire_trainer/features/home/home_screen.dart';
 import 'package:repertoire_trainer/features/import/create_screen.dart';
 import 'package:repertoire_trainer/features/import/reimport_screen.dart';
@@ -138,6 +139,10 @@ final routerProvider = Provider<GoRouter>((ref) {
               // Opened without a position (a restored deep link).
               _ => const HomeScreen(),
             },
+          ),
+          GoRoute(
+            path: 'games',
+            builder: (context, state) => const GamesScreen(),
           ),
           GoRoute(
             path: 'diagnostics',

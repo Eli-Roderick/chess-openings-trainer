@@ -89,6 +89,12 @@ class _HomeState extends ConsumerState<HomeScreen> {
         actions: [
           const _SyncIcon(),
           IconButton(
+            key: const Key('open-games'),
+            tooltip: l10n.gameReview,
+            icon: const Icon(Icons.manage_search),
+            onPressed: () => context.push(Routes.games),
+          ),
+          IconButton(
             key: const Key('open-settings'),
             tooltip: l10n.settings,
             icon: const Icon(Icons.settings_outlined),

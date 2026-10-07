@@ -104,6 +104,9 @@ abstract class AppSettings with _$AppSettings {
 
     /// Number of lines in Browse analysis (01-product-spec §9).
     @Default(1) int analysisLines,
+
+    /// Last chess.com username looked up in Game Review.
+    String? chessComUsername,
     // Appearance.
     @Default(AppThemeMode.dark) AppThemeMode themeMode,
   }) = _AppSettings;

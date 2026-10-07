@@ -224,6 +224,14 @@ void main() {
     await v2.customStatement('DROP TABLE ply_stats');
     await v2.customStatement('DROP INDEX runs_daily_stats');
     await v2.customStatement('DROP INDEX runs_key_ucis');
+    for (final t in [
+      'imported_games',
+      'game_archives',
+      'game_reviews',
+      'game_analysis',
+    ]) {
+      await v2.customStatement('DROP TABLE $t');
+    }
     await v2.customStatement('PRAGMA user_version = 1');
     await v2.close();
     final upgraded = AppDatabase(NativeDatabase(file));

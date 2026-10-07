@@ -49,6 +49,7 @@ _AppSettings _$AppSettingsFromJson(Map<String, dynamic> json) => _AppSettings(
   playOnElo: (json['playOnElo'] as num?)?.toInt() ?? 2500,
   engineVariant: json['engineVariant'] as String?,
   analysisLines: (json['analysisLines'] as num?)?.toInt() ?? 1,
+  chessComUsername: json['chessComUsername'] as String?,
   themeMode:
       $enumDecodeNullable(_$AppThemeModeEnumMap, json['themeMode']) ??
       AppThemeMode.dark,
@@ -88,6 +89,7 @@ Map<String, dynamic> _$AppSettingsToJson(_AppSettings instance) =>
       'playOnElo': instance.playOnElo,
       'engineVariant': instance.engineVariant,
       'analysisLines': instance.analysisLines,
+      'chessComUsername': instance.chessComUsername,
       'themeMode': _$AppThemeModeEnumMap[instance.themeMode]!,
     };
 

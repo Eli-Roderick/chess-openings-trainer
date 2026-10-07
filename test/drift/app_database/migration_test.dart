@@ -28,9 +28,23 @@ void main() {
     await db.close();
   });
 
+  test('2 → 3 adds the Game Review tables', () async {
+    final schema = await verifier.schemaAt(2);
+    final db = AppDatabase(schema.newConnection());
+    await verifier.migrateAndValidate(db, 3);
+    await db.close();
+  });
+
+  test('1 → 3 in one upgrade', () async {
+    final schema = await verifier.schemaAt(1);
+    final db = AppDatabase(schema.newConnection());
+    await verifier.migrateAndValidate(db, 3);
+    await db.close();
+  });
+
   test('a fresh database validates against the latest schema', () async {
     final db = AppDatabase.memory();
-    expect(db.schemaVersion, 2);
+    expect(db.schemaVersion, 3);
     final schema = await verifier.schemaAt(db.schemaVersion);
     final migrated = AppDatabase(schema.newConnection());
     await verifier.migrateAndValidate(migrated, db.schemaVersion);

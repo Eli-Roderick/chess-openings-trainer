@@ -7,6 +7,7 @@
 /// supplies gzip to the codec).
 library;
 
+export 'src/games/played_game.dart';
 export 'src/pgn/board_shape.dart';
 export 'src/pgn/comment_parser.dart'
     show

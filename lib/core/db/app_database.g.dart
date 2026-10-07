@@ -6271,6 +6271,2897 @@ class AppMetaCompanion extends UpdateCompanion<DbAppMeta> {
   }
 }
 
+class $ImportedGamesTable extends ImportedGames
+    with TableInfo<$ImportedGamesTable, DbImportedGame> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $ImportedGamesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _usernameMeta = const VerificationMeta(
+    'username',
+  );
+  @override
+  late final GeneratedColumn<String> username = GeneratedColumn<String>(
+    'username',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _urlMeta = const VerificationMeta('url');
+  @override
+  late final GeneratedColumn<String> url = GeneratedColumn<String>(
+    'url',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _endTimeMeta = const VerificationMeta(
+    'endTime',
+  );
+  @override
+  late final GeneratedColumn<int> endTime = GeneratedColumn<int>(
+    'end_time',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _timeClassMeta = const VerificationMeta(
+    'timeClass',
+  );
+  @override
+  late final GeneratedColumn<String> timeClass = GeneratedColumn<String>(
+    'time_class',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _timeControlMeta = const VerificationMeta(
+    'timeControl',
+  );
+  @override
+  late final GeneratedColumn<String> timeControl = GeneratedColumn<String>(
+    'time_control',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _ratedMeta = const VerificationMeta('rated');
+  @override
+  late final GeneratedColumn<bool> rated = GeneratedColumn<bool>(
+    'rated',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("rated" IN (0, 1))',
+    ),
+  );
+  static const VerificationMeta _userWhiteMeta = const VerificationMeta(
+    'userWhite',
+  );
+  @override
+  late final GeneratedColumn<bool> userWhite = GeneratedColumn<bool>(
+    'user_white',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("user_white" IN (0, 1))',
+    ),
+  );
+  static const VerificationMeta _resultMeta = const VerificationMeta('result');
+  @override
+  late final GeneratedColumn<String> result = GeneratedColumn<String>(
+    'result',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _resultDetailMeta = const VerificationMeta(
+    'resultDetail',
+  );
+  @override
+  late final GeneratedColumn<String> resultDetail = GeneratedColumn<String>(
+    'result_detail',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _whiteNameMeta = const VerificationMeta(
+    'whiteName',
+  );
+  @override
+  late final GeneratedColumn<String> whiteName = GeneratedColumn<String>(
+    'white_name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _blackNameMeta = const VerificationMeta(
+    'blackName',
+  );
+  @override
+  late final GeneratedColumn<String> blackName = GeneratedColumn<String>(
+    'black_name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _whiteRatingMeta = const VerificationMeta(
+    'whiteRating',
+  );
+  @override
+  late final GeneratedColumn<int> whiteRating = GeneratedColumn<int>(
+    'white_rating',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _blackRatingMeta = const VerificationMeta(
+    'blackRating',
+  );
+  @override
+  late final GeneratedColumn<int> blackRating = GeneratedColumn<int>(
+    'black_rating',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _ecoMeta = const VerificationMeta('eco');
+  @override
+  late final GeneratedColumn<String> eco = GeneratedColumn<String>(
+    'eco',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _openingMeta = const VerificationMeta(
+    'opening',
+  );
+  @override
+  late final GeneratedColumn<String> opening = GeneratedColumn<String>(
+    'opening',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _ucisMeta = const VerificationMeta('ucis');
+  @override
+  late final GeneratedColumn<String> ucis = GeneratedColumn<String>(
+    'ucis',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _sansMeta = const VerificationMeta('sans');
+  @override
+  late final GeneratedColumn<String> sans = GeneratedColumn<String>(
+    'sans',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _clocksMeta = const VerificationMeta('clocks');
+  @override
+  late final GeneratedColumn<String> clocks = GeneratedColumn<String>(
+    'clocks',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _pgnMeta = const VerificationMeta('pgn');
+  @override
+  late final GeneratedColumn<String> pgn = GeneratedColumn<String>(
+    'pgn',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _fetchedAtMeta = const VerificationMeta(
+    'fetchedAt',
+  );
+  @override
+  late final GeneratedColumn<int> fetchedAt = GeneratedColumn<int>(
+    'fetched_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    username,
+    url,
+    endTime,
+    timeClass,
+    timeControl,
+    rated,
+    userWhite,
+    result,
+    resultDetail,
+    whiteName,
+    blackName,
+    whiteRating,
+    blackRating,
+    eco,
+    opening,
+    ucis,
+    sans,
+    clocks,
+    pgn,
+    fetchedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'imported_games';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<DbImportedGame> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('username')) {
+      context.handle(
+        _usernameMeta,
+        username.isAcceptableOrUnknown(data['username']!, _usernameMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_usernameMeta);
+    }
+    if (data.containsKey('url')) {
+      context.handle(
+        _urlMeta,
+        url.isAcceptableOrUnknown(data['url']!, _urlMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_urlMeta);
+    }
+    if (data.containsKey('end_time')) {
+      context.handle(
+        _endTimeMeta,
+        endTime.isAcceptableOrUnknown(data['end_time']!, _endTimeMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_endTimeMeta);
+    }
+    if (data.containsKey('time_class')) {
+      context.handle(
+        _timeClassMeta,
+        timeClass.isAcceptableOrUnknown(data['time_class']!, _timeClassMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_timeClassMeta);
+    }
+    if (data.containsKey('time_control')) {
+      context.handle(
+        _timeControlMeta,
+        timeControl.isAcceptableOrUnknown(
+          data['time_control']!,
+          _timeControlMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_timeControlMeta);
+    }
+    if (data.containsKey('rated')) {
+      context.handle(
+        _ratedMeta,
+        rated.isAcceptableOrUnknown(data['rated']!, _ratedMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_ratedMeta);
+    }
+    if (data.containsKey('user_white')) {
+      context.handle(
+        _userWhiteMeta,
+        userWhite.isAcceptableOrUnknown(data['user_white']!, _userWhiteMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_userWhiteMeta);
+    }
+    if (data.containsKey('result')) {
+      context.handle(
+        _resultMeta,
+        result.isAcceptableOrUnknown(data['result']!, _resultMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_resultMeta);
+    }
+    if (data.containsKey('result_detail')) {
+      context.handle(
+        _resultDetailMeta,
+        resultDetail.isAcceptableOrUnknown(
+          data['result_detail']!,
+          _resultDetailMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_resultDetailMeta);
+    }
+    if (data.containsKey('white_name')) {
+      context.handle(
+        _whiteNameMeta,
+        whiteName.isAcceptableOrUnknown(data['white_name']!, _whiteNameMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_whiteNameMeta);
+    }
+    if (data.containsKey('black_name')) {
+      context.handle(
+        _blackNameMeta,
+        blackName.isAcceptableOrUnknown(data['black_name']!, _blackNameMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_blackNameMeta);
+    }
+    if (data.containsKey('white_rating')) {
+      context.handle(
+        _whiteRatingMeta,
+        whiteRating.isAcceptableOrUnknown(
+          data['white_rating']!,
+          _whiteRatingMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_whiteRatingMeta);
+    }
+    if (data.containsKey('black_rating')) {
+      context.handle(
+        _blackRatingMeta,
+        blackRating.isAcceptableOrUnknown(
+          data['black_rating']!,
+          _blackRatingMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_blackRatingMeta);
+    }
+    if (data.containsKey('eco')) {
+      context.handle(
+        _ecoMeta,
+        eco.isAcceptableOrUnknown(data['eco']!, _ecoMeta),
+      );
+    }
+    if (data.containsKey('opening')) {
+      context.handle(
+        _openingMeta,
+        opening.isAcceptableOrUnknown(data['opening']!, _openingMeta),
+      );
+    }
+    if (data.containsKey('ucis')) {
+      context.handle(
+        _ucisMeta,
+        ucis.isAcceptableOrUnknown(data['ucis']!, _ucisMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_ucisMeta);
+    }
+    if (data.containsKey('sans')) {
+      context.handle(
+        _sansMeta,
+        sans.isAcceptableOrUnknown(data['sans']!, _sansMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_sansMeta);
+    }
+    if (data.containsKey('clocks')) {
+      context.handle(
+        _clocksMeta,
+        clocks.isAcceptableOrUnknown(data['clocks']!, _clocksMeta),
+      );
+    }
+    if (data.containsKey('pgn')) {
+      context.handle(
+        _pgnMeta,
+        pgn.isAcceptableOrUnknown(data['pgn']!, _pgnMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_pgnMeta);
+    }
+    if (data.containsKey('fetched_at')) {
+      context.handle(
+        _fetchedAtMeta,
+        fetchedAt.isAcceptableOrUnknown(data['fetched_at']!, _fetchedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_fetchedAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  DbImportedGame map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return DbImportedGame(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      username: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}username'],
+      )!,
+      url: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}url'],
+      )!,
+      endTime: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}end_time'],
+      )!,
+      timeClass: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}time_class'],
+      )!,
+      timeControl: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}time_control'],
+      )!,
+      rated: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}rated'],
+      )!,
+      userWhite: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}user_white'],
+      )!,
+      result: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}result'],
+      )!,
+      resultDetail: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}result_detail'],
+      )!,
+      whiteName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}white_name'],
+      )!,
+      blackName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}black_name'],
+      )!,
+      whiteRating: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}white_rating'],
+      )!,
+      blackRating: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}black_rating'],
+      )!,
+      eco: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}eco'],
+      ),
+      opening: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}opening'],
+      ),
+      ucis: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}ucis'],
+      )!,
+      sans: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}sans'],
+      )!,
+      clocks: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}clocks'],
+      ),
+      pgn: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}pgn'],
+      )!,
+      fetchedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}fetched_at'],
+      )!,
+    );
+  }
+
+  @override
+  $ImportedGamesTable createAlias(String alias) {
+    return $ImportedGamesTable(attachedDatabase, alias);
+  }
+}
+
+class DbImportedGame extends DataClass implements Insertable<DbImportedGame> {
+  /// `chesscom:<game id>`.
+  final String id;
+
+  /// The account the game was fetched for, lower case.
+  final String username;
+  final String url;
+
+  /// Unix seconds.
+  final int endTime;
+
+  /// `bullet`, `blitz`, `rapid` or `daily`.
+  final String timeClass;
+
+  /// chess.com's time control, e.g. `180+2` or `1/86400`.
+  final String timeControl;
+  final bool rated;
+
+  /// Whether [username] had White.
+  final bool userWhite;
+
+  /// From the user's side: `win`, `draw` or `loss`.
+  final String result;
+
+  /// chess.com's result code for the losing (or drawing) side, e.g.
+  /// `checkmated`, `timeout`, `agreed`.
+  final String resultDetail;
+  final String whiteName;
+  final String blackName;
+  final int whiteRating;
+  final int blackRating;
+  final String? eco;
+  final String? opening;
+
+  /// Mainline moves in UCI, space-separated.
+  final String ucis;
+
+  /// Mainline moves in SAN, space-separated.
+  final String sans;
+
+  /// Remaining clock after each ply in tenths of a second, comma-separated,
+  /// or null without `%clk`.
+  final String? clocks;
+  final String pgn;
+  final int fetchedAt;
+  const DbImportedGame({
+    required this.id,
+    required this.username,
+    required this.url,
+    required this.endTime,
+    required this.timeClass,
+    required this.timeControl,
+    required this.rated,
+    required this.userWhite,
+    required this.result,
+    required this.resultDetail,
+    required this.whiteName,
+    required this.blackName,
+    required this.whiteRating,
+    required this.blackRating,
+    this.eco,
+    this.opening,
+    required this.ucis,
+    required this.sans,
+    this.clocks,
+    required this.pgn,
+    required this.fetchedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['username'] = Variable<String>(username);
+    map['url'] = Variable<String>(url);
+    map['end_time'] = Variable<int>(endTime);
+    map['time_class'] = Variable<String>(timeClass);
+    map['time_control'] = Variable<String>(timeControl);
+    map['rated'] = Variable<bool>(rated);
+    map['user_white'] = Variable<bool>(userWhite);
+    map['result'] = Variable<String>(result);
+    map['result_detail'] = Variable<String>(resultDetail);
+    map['white_name'] = Variable<String>(whiteName);
+    map['black_name'] = Variable<String>(blackName);
+    map['white_rating'] = Variable<int>(whiteRating);
+    map['black_rating'] = Variable<int>(blackRating);
+    if (!nullToAbsent || eco != null) {
+      map['eco'] = Variable<String>(eco);
+    }
+    if (!nullToAbsent || opening != null) {
+      map['opening'] = Variable<String>(opening);
+    }
+    map['ucis'] = Variable<String>(ucis);
+    map['sans'] = Variable<String>(sans);
+    if (!nullToAbsent || clocks != null) {
+      map['clocks'] = Variable<String>(clocks);
+    }
+    map['pgn'] = Variable<String>(pgn);
+    map['fetched_at'] = Variable<int>(fetchedAt);
+    return map;
+  }
+
+  ImportedGamesCompanion toCompanion(bool nullToAbsent) {
+    return ImportedGamesCompanion(
+      id: Value(id),
+      username: Value(username),
+      url: Value(url),
+      endTime: Value(endTime),
+      timeClass: Value(timeClass),
+      timeControl: Value(timeControl),
+      rated: Value(rated),
+      userWhite: Value(userWhite),
+      result: Value(result),
+      resultDetail: Value(resultDetail),
+      whiteName: Value(whiteName),
+      blackName: Value(blackName),
+      whiteRating: Value(whiteRating),
+      blackRating: Value(blackRating),
+      eco: eco == null && nullToAbsent ? const Value.absent() : Value(eco),
+      opening: opening == null && nullToAbsent
+          ? const Value.absent()
+          : Value(opening),
+      ucis: Value(ucis),
+      sans: Value(sans),
+      clocks: clocks == null && nullToAbsent
+          ? const Value.absent()
+          : Value(clocks),
+      pgn: Value(pgn),
+      fetchedAt: Value(fetchedAt),
+    );
+  }
+
+  factory DbImportedGame.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return DbImportedGame(
+      id: serializer.fromJson<String>(json['id']),
+      username: serializer.fromJson<String>(json['username']),
+      url: serializer.fromJson<String>(json['url']),
+      endTime: serializer.fromJson<int>(json['endTime']),
+      timeClass: serializer.fromJson<String>(json['timeClass']),
+      timeControl: serializer.fromJson<String>(json['timeControl']),
+      rated: serializer.fromJson<bool>(json['rated']),
+      userWhite: serializer.fromJson<bool>(json['userWhite']),
+      result: serializer.fromJson<String>(json['result']),
+      resultDetail: serializer.fromJson<String>(json['resultDetail']),
+      whiteName: serializer.fromJson<String>(json['whiteName']),
+      blackName: serializer.fromJson<String>(json['blackName']),
+      whiteRating: serializer.fromJson<int>(json['whiteRating']),
+      blackRating: serializer.fromJson<int>(json['blackRating']),
+      eco: serializer.fromJson<String?>(json['eco']),
+      opening: serializer.fromJson<String?>(json['opening']),
+      ucis: serializer.fromJson<String>(json['ucis']),
+      sans: serializer.fromJson<String>(json['sans']),
+      clocks: serializer.fromJson<String?>(json['clocks']),
+      pgn: serializer.fromJson<String>(json['pgn']),
+      fetchedAt: serializer.fromJson<int>(json['fetchedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'username': serializer.toJson<String>(username),
+      'url': serializer.toJson<String>(url),
+      'endTime': serializer.toJson<int>(endTime),
+      'timeClass': serializer.toJson<String>(timeClass),
+      'timeControl': serializer.toJson<String>(timeControl),
+      'rated': serializer.toJson<bool>(rated),
+      'userWhite': serializer.toJson<bool>(userWhite),
+      'result': serializer.toJson<String>(result),
+      'resultDetail': serializer.toJson<String>(resultDetail),
+      'whiteName': serializer.toJson<String>(whiteName),
+      'blackName': serializer.toJson<String>(blackName),
+      'whiteRating': serializer.toJson<int>(whiteRating),
+      'blackRating': serializer.toJson<int>(blackRating),
+      'eco': serializer.toJson<String?>(eco),
+      'opening': serializer.toJson<String?>(opening),
+      'ucis': serializer.toJson<String>(ucis),
+      'sans': serializer.toJson<String>(sans),
+      'clocks': serializer.toJson<String?>(clocks),
+      'pgn': serializer.toJson<String>(pgn),
+      'fetchedAt': serializer.toJson<int>(fetchedAt),
+    };
+  }
+
+  DbImportedGame copyWith({
+    String? id,
+    String? username,
+    String? url,
+    int? endTime,
+    String? timeClass,
+    String? timeControl,
+    bool? rated,
+    bool? userWhite,
+    String? result,
+    String? resultDetail,
+    String? whiteName,
+    String? blackName,
+    int? whiteRating,
+    int? blackRating,
+    Value<String?> eco = const Value.absent(),
+    Value<String?> opening = const Value.absent(),
+    String? ucis,
+    String? sans,
+    Value<String?> clocks = const Value.absent(),
+    String? pgn,
+    int? fetchedAt,
+  }) => DbImportedGame(
+    id: id ?? this.id,
+    username: username ?? this.username,
+    url: url ?? this.url,
+    endTime: endTime ?? this.endTime,
+    timeClass: timeClass ?? this.timeClass,
+    timeControl: timeControl ?? this.timeControl,
+    rated: rated ?? this.rated,
+    userWhite: userWhite ?? this.userWhite,
+    result: result ?? this.result,
+    resultDetail: resultDetail ?? this.resultDetail,
+    whiteName: whiteName ?? this.whiteName,
+    blackName: blackName ?? this.blackName,
+    whiteRating: whiteRating ?? this.whiteRating,
+    blackRating: blackRating ?? this.blackRating,
+    eco: eco.present ? eco.value : this.eco,
+    opening: opening.present ? opening.value : this.opening,
+    ucis: ucis ?? this.ucis,
+    sans: sans ?? this.sans,
+    clocks: clocks.present ? clocks.value : this.clocks,
+    pgn: pgn ?? this.pgn,
+    fetchedAt: fetchedAt ?? this.fetchedAt,
+  );
+  DbImportedGame copyWithCompanion(ImportedGamesCompanion data) {
+    return DbImportedGame(
+      id: data.id.present ? data.id.value : this.id,
+      username: data.username.present ? data.username.value : this.username,
+      url: data.url.present ? data.url.value : this.url,
+      endTime: data.endTime.present ? data.endTime.value : this.endTime,
+      timeClass: data.timeClass.present ? data.timeClass.value : this.timeClass,
+      timeControl: data.timeControl.present
+          ? data.timeControl.value
+          : this.timeControl,
+      rated: data.rated.present ? data.rated.value : this.rated,
+      userWhite: data.userWhite.present ? data.userWhite.value : this.userWhite,
+      result: data.result.present ? data.result.value : this.result,
+      resultDetail: data.resultDetail.present
+          ? data.resultDetail.value
+          : this.resultDetail,
+      whiteName: data.whiteName.present ? data.whiteName.value : this.whiteName,
+      blackName: data.blackName.present ? data.blackName.value : this.blackName,
+      whiteRating: data.whiteRating.present
+          ? data.whiteRating.value
+          : this.whiteRating,
+      blackRating: data.blackRating.present
+          ? data.blackRating.value
+          : this.blackRating,
+      eco: data.eco.present ? data.eco.value : this.eco,
+      opening: data.opening.present ? data.opening.value : this.opening,
+      ucis: data.ucis.present ? data.ucis.value : this.ucis,
+      sans: data.sans.present ? data.sans.value : this.sans,
+      clocks: data.clocks.present ? data.clocks.value : this.clocks,
+      pgn: data.pgn.present ? data.pgn.value : this.pgn,
+      fetchedAt: data.fetchedAt.present ? data.fetchedAt.value : this.fetchedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('DbImportedGame(')
+          ..write('id: $id, ')
+          ..write('username: $username, ')
+          ..write('url: $url, ')
+          ..write('endTime: $endTime, ')
+          ..write('timeClass: $timeClass, ')
+          ..write('timeControl: $timeControl, ')
+          ..write('rated: $rated, ')
+          ..write('userWhite: $userWhite, ')
+          ..write('result: $result, ')
+          ..write('resultDetail: $resultDetail, ')
+          ..write('whiteName: $whiteName, ')
+          ..write('blackName: $blackName, ')
+          ..write('whiteRating: $whiteRating, ')
+          ..write('blackRating: $blackRating, ')
+          ..write('eco: $eco, ')
+          ..write('opening: $opening, ')
+          ..write('ucis: $ucis, ')
+          ..write('sans: $sans, ')
+          ..write('clocks: $clocks, ')
+          ..write('pgn: $pgn, ')
+          ..write('fetchedAt: $fetchedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hashAll([
+    id,
+    username,
+    url,
+    endTime,
+    timeClass,
+    timeControl,
+    rated,
+    userWhite,
+    result,
+    resultDetail,
+    whiteName,
+    blackName,
+    whiteRating,
+    blackRating,
+    eco,
+    opening,
+    ucis,
+    sans,
+    clocks,
+    pgn,
+    fetchedAt,
+  ]);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is DbImportedGame &&
+          other.id == this.id &&
+          other.username == this.username &&
+          other.url == this.url &&
+          other.endTime == this.endTime &&
+          other.timeClass == this.timeClass &&
+          other.timeControl == this.timeControl &&
+          other.rated == this.rated &&
+          other.userWhite == this.userWhite &&
+          other.result == this.result &&
+          other.resultDetail == this.resultDetail &&
+          other.whiteName == this.whiteName &&
+          other.blackName == this.blackName &&
+          other.whiteRating == this.whiteRating &&
+          other.blackRating == this.blackRating &&
+          other.eco == this.eco &&
+          other.opening == this.opening &&
+          other.ucis == this.ucis &&
+          other.sans == this.sans &&
+          other.clocks == this.clocks &&
+          other.pgn == this.pgn &&
+          other.fetchedAt == this.fetchedAt);
+}
+
+class ImportedGamesCompanion extends UpdateCompanion<DbImportedGame> {
+  final Value<String> id;
+  final Value<String> username;
+  final Value<String> url;
+  final Value<int> endTime;
+  final Value<String> timeClass;
+  final Value<String> timeControl;
+  final Value<bool> rated;
+  final Value<bool> userWhite;
+  final Value<String> result;
+  final Value<String> resultDetail;
+  final Value<String> whiteName;
+  final Value<String> blackName;
+  final Value<int> whiteRating;
+  final Value<int> blackRating;
+  final Value<String?> eco;
+  final Value<String?> opening;
+  final Value<String> ucis;
+  final Value<String> sans;
+  final Value<String?> clocks;
+  final Value<String> pgn;
+  final Value<int> fetchedAt;
+  final Value<int> rowid;
+  const ImportedGamesCompanion({
+    this.id = const Value.absent(),
+    this.username = const Value.absent(),
+    this.url = const Value.absent(),
+    this.endTime = const Value.absent(),
+    this.timeClass = const Value.absent(),
+    this.timeControl = const Value.absent(),
+    this.rated = const Value.absent(),
+    this.userWhite = const Value.absent(),
+    this.result = const Value.absent(),
+    this.resultDetail = const Value.absent(),
+    this.whiteName = const Value.absent(),
+    this.blackName = const Value.absent(),
+    this.whiteRating = const Value.absent(),
+    this.blackRating = const Value.absent(),
+    this.eco = const Value.absent(),
+    this.opening = const Value.absent(),
+    this.ucis = const Value.absent(),
+    this.sans = const Value.absent(),
+    this.clocks = const Value.absent(),
+    this.pgn = const Value.absent(),
+    this.fetchedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  ImportedGamesCompanion.insert({
+    required String id,
+    required String username,
+    required String url,
+    required int endTime,
+    required String timeClass,
+    required String timeControl,
+    required bool rated,
+    required bool userWhite,
+    required String result,
+    required String resultDetail,
+    required String whiteName,
+    required String blackName,
+    required int whiteRating,
+    required int blackRating,
+    this.eco = const Value.absent(),
+    this.opening = const Value.absent(),
+    required String ucis,
+    required String sans,
+    this.clocks = const Value.absent(),
+    required String pgn,
+    required int fetchedAt,
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       username = Value(username),
+       url = Value(url),
+       endTime = Value(endTime),
+       timeClass = Value(timeClass),
+       timeControl = Value(timeControl),
+       rated = Value(rated),
+       userWhite = Value(userWhite),
+       result = Value(result),
+       resultDetail = Value(resultDetail),
+       whiteName = Value(whiteName),
+       blackName = Value(blackName),
+       whiteRating = Value(whiteRating),
+       blackRating = Value(blackRating),
+       ucis = Value(ucis),
+       sans = Value(sans),
+       pgn = Value(pgn),
+       fetchedAt = Value(fetchedAt);
+  static Insertable<DbImportedGame> custom({
+    Expression<String>? id,
+    Expression<String>? username,
+    Expression<String>? url,
+    Expression<int>? endTime,
+    Expression<String>? timeClass,
+    Expression<String>? timeControl,
+    Expression<bool>? rated,
+    Expression<bool>? userWhite,
+    Expression<String>? result,
+    Expression<String>? resultDetail,
+    Expression<String>? whiteName,
+    Expression<String>? blackName,
+    Expression<int>? whiteRating,
+    Expression<int>? blackRating,
+    Expression<String>? eco,
+    Expression<String>? opening,
+    Expression<String>? ucis,
+    Expression<String>? sans,
+    Expression<String>? clocks,
+    Expression<String>? pgn,
+    Expression<int>? fetchedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (username != null) 'username': username,
+      if (url != null) 'url': url,
+      if (endTime != null) 'end_time': endTime,
+      if (timeClass != null) 'time_class': timeClass,
+      if (timeControl != null) 'time_control': timeControl,
+      if (rated != null) 'rated': rated,
+      if (userWhite != null) 'user_white': userWhite,
+      if (result != null) 'result': result,
+      if (resultDetail != null) 'result_detail': resultDetail,
+      if (whiteName != null) 'white_name': whiteName,
+      if (blackName != null) 'black_name': blackName,
+      if (whiteRating != null) 'white_rating': whiteRating,
+      if (blackRating != null) 'black_rating': blackRating,
+      if (eco != null) 'eco': eco,
+      if (opening != null) 'opening': opening,
+      if (ucis != null) 'ucis': ucis,
+      if (sans != null) 'sans': sans,
+      if (clocks != null) 'clocks': clocks,
+      if (pgn != null) 'pgn': pgn,
+      if (fetchedAt != null) 'fetched_at': fetchedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  ImportedGamesCompanion copyWith({
+    Value<String>? id,
+    Value<String>? username,
+    Value<String>? url,
+    Value<int>? endTime,
+    Value<String>? timeClass,
+    Value<String>? timeControl,
+    Value<bool>? rated,
+    Value<bool>? userWhite,
+    Value<String>? result,
+    Value<String>? resultDetail,
+    Value<String>? whiteName,
+    Value<String>? blackName,
+    Value<int>? whiteRating,
+    Value<int>? blackRating,
+    Value<String?>? eco,
+    Value<String?>? opening,
+    Value<String>? ucis,
+    Value<String>? sans,
+    Value<String?>? clocks,
+    Value<String>? pgn,
+    Value<int>? fetchedAt,
+    Value<int>? rowid,
+  }) {
+    return ImportedGamesCompanion(
+      id: id ?? this.id,
+      username: username ?? this.username,
+      url: url ?? this.url,
+      endTime: endTime ?? this.endTime,
+      timeClass: timeClass ?? this.timeClass,
+      timeControl: timeControl ?? this.timeControl,
+      rated: rated ?? this.rated,
+      userWhite: userWhite ?? this.userWhite,
+      result: result ?? this.result,
+      resultDetail: resultDetail ?? this.resultDetail,
+      whiteName: whiteName ?? this.whiteName,
+      blackName: blackName ?? this.blackName,
+      whiteRating: whiteRating ?? this.whiteRating,
+      blackRating: blackRating ?? this.blackRating,
+      eco: eco ?? this.eco,
+      opening: opening ?? this.opening,
+      ucis: ucis ?? this.ucis,
+      sans: sans ?? this.sans,
+      clocks: clocks ?? this.clocks,
+      pgn: pgn ?? this.pgn,
+      fetchedAt: fetchedAt ?? this.fetchedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (username.present) {
+      map['username'] = Variable<String>(username.value);
+    }
+    if (url.present) {
+      map['url'] = Variable<String>(url.value);
+    }
+    if (endTime.present) {
+      map['end_time'] = Variable<int>(endTime.value);
+    }
+    if (timeClass.present) {
+      map['time_class'] = Variable<String>(timeClass.value);
+    }
+    if (timeControl.present) {
+      map['time_control'] = Variable<String>(timeControl.value);
+    }
+    if (rated.present) {
+      map['rated'] = Variable<bool>(rated.value);
+    }
+    if (userWhite.present) {
+      map['user_white'] = Variable<bool>(userWhite.value);
+    }
+    if (result.present) {
+      map['result'] = Variable<String>(result.value);
+    }
+    if (resultDetail.present) {
+      map['result_detail'] = Variable<String>(resultDetail.value);
+    }
+    if (whiteName.present) {
+      map['white_name'] = Variable<String>(whiteName.value);
+    }
+    if (blackName.present) {
+      map['black_name'] = Variable<String>(blackName.value);
+    }
+    if (whiteRating.present) {
+      map['white_rating'] = Variable<int>(whiteRating.value);
+    }
+    if (blackRating.present) {
+      map['black_rating'] = Variable<int>(blackRating.value);
+    }
+    if (eco.present) {
+      map['eco'] = Variable<String>(eco.value);
+    }
+    if (opening.present) {
+      map['opening'] = Variable<String>(opening.value);
+    }
+    if (ucis.present) {
+      map['ucis'] = Variable<String>(ucis.value);
+    }
+    if (sans.present) {
+      map['sans'] = Variable<String>(sans.value);
+    }
+    if (clocks.present) {
+      map['clocks'] = Variable<String>(clocks.value);
+    }
+    if (pgn.present) {
+      map['pgn'] = Variable<String>(pgn.value);
+    }
+    if (fetchedAt.present) {
+      map['fetched_at'] = Variable<int>(fetchedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ImportedGamesCompanion(')
+          ..write('id: $id, ')
+          ..write('username: $username, ')
+          ..write('url: $url, ')
+          ..write('endTime: $endTime, ')
+          ..write('timeClass: $timeClass, ')
+          ..write('timeControl: $timeControl, ')
+          ..write('rated: $rated, ')
+          ..write('userWhite: $userWhite, ')
+          ..write('result: $result, ')
+          ..write('resultDetail: $resultDetail, ')
+          ..write('whiteName: $whiteName, ')
+          ..write('blackName: $blackName, ')
+          ..write('whiteRating: $whiteRating, ')
+          ..write('blackRating: $blackRating, ')
+          ..write('eco: $eco, ')
+          ..write('opening: $opening, ')
+          ..write('ucis: $ucis, ')
+          ..write('sans: $sans, ')
+          ..write('clocks: $clocks, ')
+          ..write('pgn: $pgn, ')
+          ..write('fetchedAt: $fetchedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $GameArchivesTable extends GameArchives
+    with TableInfo<$GameArchivesTable, DbGameArchive> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $GameArchivesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _usernameMeta = const VerificationMeta(
+    'username',
+  );
+  @override
+  late final GeneratedColumn<String> username = GeneratedColumn<String>(
+    'username',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _archiveMeta = const VerificationMeta(
+    'archive',
+  );
+  @override
+  late final GeneratedColumn<String> archive = GeneratedColumn<String>(
+    'archive',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _etagMeta = const VerificationMeta('etag');
+  @override
+  late final GeneratedColumn<String> etag = GeneratedColumn<String>(
+    'etag',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _lastModifiedMeta = const VerificationMeta(
+    'lastModified',
+  );
+  @override
+  late final GeneratedColumn<String> lastModified = GeneratedColumn<String>(
+    'last_modified',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _fetchedAtMeta = const VerificationMeta(
+    'fetchedAt',
+  );
+  @override
+  late final GeneratedColumn<int> fetchedAt = GeneratedColumn<int>(
+    'fetched_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    username,
+    archive,
+    etag,
+    lastModified,
+    fetchedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'game_archives';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<DbGameArchive> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('username')) {
+      context.handle(
+        _usernameMeta,
+        username.isAcceptableOrUnknown(data['username']!, _usernameMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_usernameMeta);
+    }
+    if (data.containsKey('archive')) {
+      context.handle(
+        _archiveMeta,
+        archive.isAcceptableOrUnknown(data['archive']!, _archiveMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_archiveMeta);
+    }
+    if (data.containsKey('etag')) {
+      context.handle(
+        _etagMeta,
+        etag.isAcceptableOrUnknown(data['etag']!, _etagMeta),
+      );
+    }
+    if (data.containsKey('last_modified')) {
+      context.handle(
+        _lastModifiedMeta,
+        lastModified.isAcceptableOrUnknown(
+          data['last_modified']!,
+          _lastModifiedMeta,
+        ),
+      );
+    }
+    if (data.containsKey('fetched_at')) {
+      context.handle(
+        _fetchedAtMeta,
+        fetchedAt.isAcceptableOrUnknown(data['fetched_at']!, _fetchedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_fetchedAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {username, archive};
+  @override
+  DbGameArchive map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return DbGameArchive(
+      username: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}username'],
+      )!,
+      archive: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}archive'],
+      )!,
+      etag: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}etag'],
+      ),
+      lastModified: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}last_modified'],
+      ),
+      fetchedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}fetched_at'],
+      )!,
+    );
+  }
+
+  @override
+  $GameArchivesTable createAlias(String alias) {
+    return $GameArchivesTable(attachedDatabase, alias);
+  }
+}
+
+class DbGameArchive extends DataClass implements Insertable<DbGameArchive> {
+  final String username;
+  final String archive;
+  final String? etag;
+  final String? lastModified;
+  final int fetchedAt;
+  const DbGameArchive({
+    required this.username,
+    required this.archive,
+    this.etag,
+    this.lastModified,
+    required this.fetchedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['username'] = Variable<String>(username);
+    map['archive'] = Variable<String>(archive);
+    if (!nullToAbsent || etag != null) {
+      map['etag'] = Variable<String>(etag);
+    }
+    if (!nullToAbsent || lastModified != null) {
+      map['last_modified'] = Variable<String>(lastModified);
+    }
+    map['fetched_at'] = Variable<int>(fetchedAt);
+    return map;
+  }
+
+  GameArchivesCompanion toCompanion(bool nullToAbsent) {
+    return GameArchivesCompanion(
+      username: Value(username),
+      archive: Value(archive),
+      etag: etag == null && nullToAbsent ? const Value.absent() : Value(etag),
+      lastModified: lastModified == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lastModified),
+      fetchedAt: Value(fetchedAt),
+    );
+  }
+
+  factory DbGameArchive.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return DbGameArchive(
+      username: serializer.fromJson<String>(json['username']),
+      archive: serializer.fromJson<String>(json['archive']),
+      etag: serializer.fromJson<String?>(json['etag']),
+      lastModified: serializer.fromJson<String?>(json['lastModified']),
+      fetchedAt: serializer.fromJson<int>(json['fetchedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'username': serializer.toJson<String>(username),
+      'archive': serializer.toJson<String>(archive),
+      'etag': serializer.toJson<String?>(etag),
+      'lastModified': serializer.toJson<String?>(lastModified),
+      'fetchedAt': serializer.toJson<int>(fetchedAt),
+    };
+  }
+
+  DbGameArchive copyWith({
+    String? username,
+    String? archive,
+    Value<String?> etag = const Value.absent(),
+    Value<String?> lastModified = const Value.absent(),
+    int? fetchedAt,
+  }) => DbGameArchive(
+    username: username ?? this.username,
+    archive: archive ?? this.archive,
+    etag: etag.present ? etag.value : this.etag,
+    lastModified: lastModified.present ? lastModified.value : this.lastModified,
+    fetchedAt: fetchedAt ?? this.fetchedAt,
+  );
+  DbGameArchive copyWithCompanion(GameArchivesCompanion data) {
+    return DbGameArchive(
+      username: data.username.present ? data.username.value : this.username,
+      archive: data.archive.present ? data.archive.value : this.archive,
+      etag: data.etag.present ? data.etag.value : this.etag,
+      lastModified: data.lastModified.present
+          ? data.lastModified.value
+          : this.lastModified,
+      fetchedAt: data.fetchedAt.present ? data.fetchedAt.value : this.fetchedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('DbGameArchive(')
+          ..write('username: $username, ')
+          ..write('archive: $archive, ')
+          ..write('etag: $etag, ')
+          ..write('lastModified: $lastModified, ')
+          ..write('fetchedAt: $fetchedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode =>
+      Object.hash(username, archive, etag, lastModified, fetchedAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is DbGameArchive &&
+          other.username == this.username &&
+          other.archive == this.archive &&
+          other.etag == this.etag &&
+          other.lastModified == this.lastModified &&
+          other.fetchedAt == this.fetchedAt);
+}
+
+class GameArchivesCompanion extends UpdateCompanion<DbGameArchive> {
+  final Value<String> username;
+  final Value<String> archive;
+  final Value<String?> etag;
+  final Value<String?> lastModified;
+  final Value<int> fetchedAt;
+  final Value<int> rowid;
+  const GameArchivesCompanion({
+    this.username = const Value.absent(),
+    this.archive = const Value.absent(),
+    this.etag = const Value.absent(),
+    this.lastModified = const Value.absent(),
+    this.fetchedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  GameArchivesCompanion.insert({
+    required String username,
+    required String archive,
+    this.etag = const Value.absent(),
+    this.lastModified = const Value.absent(),
+    required int fetchedAt,
+    this.rowid = const Value.absent(),
+  }) : username = Value(username),
+       archive = Value(archive),
+       fetchedAt = Value(fetchedAt);
+  static Insertable<DbGameArchive> custom({
+    Expression<String>? username,
+    Expression<String>? archive,
+    Expression<String>? etag,
+    Expression<String>? lastModified,
+    Expression<int>? fetchedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (username != null) 'username': username,
+      if (archive != null) 'archive': archive,
+      if (etag != null) 'etag': etag,
+      if (lastModified != null) 'last_modified': lastModified,
+      if (fetchedAt != null) 'fetched_at': fetchedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  GameArchivesCompanion copyWith({
+    Value<String>? username,
+    Value<String>? archive,
+    Value<String?>? etag,
+    Value<String?>? lastModified,
+    Value<int>? fetchedAt,
+    Value<int>? rowid,
+  }) {
+    return GameArchivesCompanion(
+      username: username ?? this.username,
+      archive: archive ?? this.archive,
+      etag: etag ?? this.etag,
+      lastModified: lastModified ?? this.lastModified,
+      fetchedAt: fetchedAt ?? this.fetchedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (username.present) {
+      map['username'] = Variable<String>(username.value);
+    }
+    if (archive.present) {
+      map['archive'] = Variable<String>(archive.value);
+    }
+    if (etag.present) {
+      map['etag'] = Variable<String>(etag.value);
+    }
+    if (lastModified.present) {
+      map['last_modified'] = Variable<String>(lastModified.value);
+    }
+    if (fetchedAt.present) {
+      map['fetched_at'] = Variable<int>(fetchedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('GameArchivesCompanion(')
+          ..write('username: $username, ')
+          ..write('archive: $archive, ')
+          ..write('etag: $etag, ')
+          ..write('lastModified: $lastModified, ')
+          ..write('fetchedAt: $fetchedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $GameReviewsTable extends GameReviews
+    with TableInfo<$GameReviewsTable, DbGameReview> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $GameReviewsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _gameIdMeta = const VerificationMeta('gameId');
+  @override
+  late final GeneratedColumn<String> gameId = GeneratedColumn<String>(
+    'game_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _profileMeta = const VerificationMeta(
+    'profile',
+  );
+  @override
+  late final GeneratedColumn<int> profile = GeneratedColumn<int>(
+    'profile',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _engineMeta = const VerificationMeta('engine');
+  @override
+  late final GeneratedColumn<String> engine = GeneratedColumn<String>(
+    'engine',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _analysedMeta = const VerificationMeta(
+    'analysed',
+  );
+  @override
+  late final GeneratedColumn<int> analysed = GeneratedColumn<int>(
+    'analysed',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _totalMeta = const VerificationMeta('total');
+  @override
+  late final GeneratedColumn<int> total = GeneratedColumn<int>(
+    'total',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _completeMeta = const VerificationMeta(
+    'complete',
+  );
+  @override
+  late final GeneratedColumn<bool> complete = GeneratedColumn<bool>(
+    'complete',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("complete" IN (0, 1))',
+    ),
+  );
+  static const VerificationMeta _whiteAccuracyMeta = const VerificationMeta(
+    'whiteAccuracy',
+  );
+  @override
+  late final GeneratedColumn<double> whiteAccuracy = GeneratedColumn<double>(
+    'white_accuracy',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _blackAccuracyMeta = const VerificationMeta(
+    'blackAccuracy',
+  );
+  @override
+  late final GeneratedColumn<double> blackAccuracy = GeneratedColumn<double>(
+    'black_accuracy',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _whitePerformanceMeta = const VerificationMeta(
+    'whitePerformance',
+  );
+  @override
+  late final GeneratedColumn<int> whitePerformance = GeneratedColumn<int>(
+    'white_performance',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _blackPerformanceMeta = const VerificationMeta(
+    'blackPerformance',
+  );
+  @override
+  late final GeneratedColumn<int> blackPerformance = GeneratedColumn<int>(
+    'black_performance',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<int> updatedAt = GeneratedColumn<int>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    gameId,
+    profile,
+    engine,
+    analysed,
+    total,
+    complete,
+    whiteAccuracy,
+    blackAccuracy,
+    whitePerformance,
+    blackPerformance,
+    updatedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'game_reviews';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<DbGameReview> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('game_id')) {
+      context.handle(
+        _gameIdMeta,
+        gameId.isAcceptableOrUnknown(data['game_id']!, _gameIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_gameIdMeta);
+    }
+    if (data.containsKey('profile')) {
+      context.handle(
+        _profileMeta,
+        profile.isAcceptableOrUnknown(data['profile']!, _profileMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_profileMeta);
+    }
+    if (data.containsKey('engine')) {
+      context.handle(
+        _engineMeta,
+        engine.isAcceptableOrUnknown(data['engine']!, _engineMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_engineMeta);
+    }
+    if (data.containsKey('analysed')) {
+      context.handle(
+        _analysedMeta,
+        analysed.isAcceptableOrUnknown(data['analysed']!, _analysedMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_analysedMeta);
+    }
+    if (data.containsKey('total')) {
+      context.handle(
+        _totalMeta,
+        total.isAcceptableOrUnknown(data['total']!, _totalMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_totalMeta);
+    }
+    if (data.containsKey('complete')) {
+      context.handle(
+        _completeMeta,
+        complete.isAcceptableOrUnknown(data['complete']!, _completeMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_completeMeta);
+    }
+    if (data.containsKey('white_accuracy')) {
+      context.handle(
+        _whiteAccuracyMeta,
+        whiteAccuracy.isAcceptableOrUnknown(
+          data['white_accuracy']!,
+          _whiteAccuracyMeta,
+        ),
+      );
+    }
+    if (data.containsKey('black_accuracy')) {
+      context.handle(
+        _blackAccuracyMeta,
+        blackAccuracy.isAcceptableOrUnknown(
+          data['black_accuracy']!,
+          _blackAccuracyMeta,
+        ),
+      );
+    }
+    if (data.containsKey('white_performance')) {
+      context.handle(
+        _whitePerformanceMeta,
+        whitePerformance.isAcceptableOrUnknown(
+          data['white_performance']!,
+          _whitePerformanceMeta,
+        ),
+      );
+    }
+    if (data.containsKey('black_performance')) {
+      context.handle(
+        _blackPerformanceMeta,
+        blackPerformance.isAcceptableOrUnknown(
+          data['black_performance']!,
+          _blackPerformanceMeta,
+        ),
+      );
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {gameId, profile};
+  @override
+  DbGameReview map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return DbGameReview(
+      gameId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}game_id'],
+      )!,
+      profile: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}profile'],
+      )!,
+      engine: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}engine'],
+      )!,
+      analysed: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}analysed'],
+      )!,
+      total: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}total'],
+      )!,
+      complete: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}complete'],
+      )!,
+      whiteAccuracy: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}white_accuracy'],
+      ),
+      blackAccuracy: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}black_accuracy'],
+      ),
+      whitePerformance: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}white_performance'],
+      ),
+      blackPerformance: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}black_performance'],
+      ),
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}updated_at'],
+      )!,
+    );
+  }
+
+  @override
+  $GameReviewsTable createAlias(String alias) {
+    return $GameReviewsTable(attachedDatabase, alias);
+  }
+}
+
+class DbGameReview extends DataClass implements Insertable<DbGameReview> {
+  final String gameId;
+
+  /// 0 Quick, 1 Standard, 2 Deep.
+  final int profile;
+
+  /// Engine name and version; a different engine invalidates the rows.
+  final String engine;
+
+  /// Positions analysed so far (resume point) and in total.
+  final int analysed;
+  final int total;
+  final bool complete;
+  final double? whiteAccuracy;
+  final double? blackAccuracy;
+  final int? whitePerformance;
+  final int? blackPerformance;
+  final int updatedAt;
+  const DbGameReview({
+    required this.gameId,
+    required this.profile,
+    required this.engine,
+    required this.analysed,
+    required this.total,
+    required this.complete,
+    this.whiteAccuracy,
+    this.blackAccuracy,
+    this.whitePerformance,
+    this.blackPerformance,
+    required this.updatedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['game_id'] = Variable<String>(gameId);
+    map['profile'] = Variable<int>(profile);
+    map['engine'] = Variable<String>(engine);
+    map['analysed'] = Variable<int>(analysed);
+    map['total'] = Variable<int>(total);
+    map['complete'] = Variable<bool>(complete);
+    if (!nullToAbsent || whiteAccuracy != null) {
+      map['white_accuracy'] = Variable<double>(whiteAccuracy);
+    }
+    if (!nullToAbsent || blackAccuracy != null) {
+      map['black_accuracy'] = Variable<double>(blackAccuracy);
+    }
+    if (!nullToAbsent || whitePerformance != null) {
+      map['white_performance'] = Variable<int>(whitePerformance);
+    }
+    if (!nullToAbsent || blackPerformance != null) {
+      map['black_performance'] = Variable<int>(blackPerformance);
+    }
+    map['updated_at'] = Variable<int>(updatedAt);
+    return map;
+  }
+
+  GameReviewsCompanion toCompanion(bool nullToAbsent) {
+    return GameReviewsCompanion(
+      gameId: Value(gameId),
+      profile: Value(profile),
+      engine: Value(engine),
+      analysed: Value(analysed),
+      total: Value(total),
+      complete: Value(complete),
+      whiteAccuracy: whiteAccuracy == null && nullToAbsent
+          ? const Value.absent()
+          : Value(whiteAccuracy),
+      blackAccuracy: blackAccuracy == null && nullToAbsent
+          ? const Value.absent()
+          : Value(blackAccuracy),
+      whitePerformance: whitePerformance == null && nullToAbsent
+          ? const Value.absent()
+          : Value(whitePerformance),
+      blackPerformance: blackPerformance == null && nullToAbsent
+          ? const Value.absent()
+          : Value(blackPerformance),
+      updatedAt: Value(updatedAt),
+    );
+  }
+
+  factory DbGameReview.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return DbGameReview(
+      gameId: serializer.fromJson<String>(json['gameId']),
+      profile: serializer.fromJson<int>(json['profile']),
+      engine: serializer.fromJson<String>(json['engine']),
+      analysed: serializer.fromJson<int>(json['analysed']),
+      total: serializer.fromJson<int>(json['total']),
+      complete: serializer.fromJson<bool>(json['complete']),
+      whiteAccuracy: serializer.fromJson<double?>(json['whiteAccuracy']),
+      blackAccuracy: serializer.fromJson<double?>(json['blackAccuracy']),
+      whitePerformance: serializer.fromJson<int?>(json['whitePerformance']),
+      blackPerformance: serializer.fromJson<int?>(json['blackPerformance']),
+      updatedAt: serializer.fromJson<int>(json['updatedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'gameId': serializer.toJson<String>(gameId),
+      'profile': serializer.toJson<int>(profile),
+      'engine': serializer.toJson<String>(engine),
+      'analysed': serializer.toJson<int>(analysed),
+      'total': serializer.toJson<int>(total),
+      'complete': serializer.toJson<bool>(complete),
+      'whiteAccuracy': serializer.toJson<double?>(whiteAccuracy),
+      'blackAccuracy': serializer.toJson<double?>(blackAccuracy),
+      'whitePerformance': serializer.toJson<int?>(whitePerformance),
+      'blackPerformance': serializer.toJson<int?>(blackPerformance),
+      'updatedAt': serializer.toJson<int>(updatedAt),
+    };
+  }
+
+  DbGameReview copyWith({
+    String? gameId,
+    int? profile,
+    String? engine,
+    int? analysed,
+    int? total,
+    bool? complete,
+    Value<double?> whiteAccuracy = const Value.absent(),
+    Value<double?> blackAccuracy = const Value.absent(),
+    Value<int?> whitePerformance = const Value.absent(),
+    Value<int?> blackPerformance = const Value.absent(),
+    int? updatedAt,
+  }) => DbGameReview(
+    gameId: gameId ?? this.gameId,
+    profile: profile ?? this.profile,
+    engine: engine ?? this.engine,
+    analysed: analysed ?? this.analysed,
+    total: total ?? this.total,
+    complete: complete ?? this.complete,
+    whiteAccuracy: whiteAccuracy.present
+        ? whiteAccuracy.value
+        : this.whiteAccuracy,
+    blackAccuracy: blackAccuracy.present
+        ? blackAccuracy.value
+        : this.blackAccuracy,
+    whitePerformance: whitePerformance.present
+        ? whitePerformance.value
+        : this.whitePerformance,
+    blackPerformance: blackPerformance.present
+        ? blackPerformance.value
+        : this.blackPerformance,
+    updatedAt: updatedAt ?? this.updatedAt,
+  );
+  DbGameReview copyWithCompanion(GameReviewsCompanion data) {
+    return DbGameReview(
+      gameId: data.gameId.present ? data.gameId.value : this.gameId,
+      profile: data.profile.present ? data.profile.value : this.profile,
+      engine: data.engine.present ? data.engine.value : this.engine,
+      analysed: data.analysed.present ? data.analysed.value : this.analysed,
+      total: data.total.present ? data.total.value : this.total,
+      complete: data.complete.present ? data.complete.value : this.complete,
+      whiteAccuracy: data.whiteAccuracy.present
+          ? data.whiteAccuracy.value
+          : this.whiteAccuracy,
+      blackAccuracy: data.blackAccuracy.present
+          ? data.blackAccuracy.value
+          : this.blackAccuracy,
+      whitePerformance: data.whitePerformance.present
+          ? data.whitePerformance.value
+          : this.whitePerformance,
+      blackPerformance: data.blackPerformance.present
+          ? data.blackPerformance.value
+          : this.blackPerformance,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('DbGameReview(')
+          ..write('gameId: $gameId, ')
+          ..write('profile: $profile, ')
+          ..write('engine: $engine, ')
+          ..write('analysed: $analysed, ')
+          ..write('total: $total, ')
+          ..write('complete: $complete, ')
+          ..write('whiteAccuracy: $whiteAccuracy, ')
+          ..write('blackAccuracy: $blackAccuracy, ')
+          ..write('whitePerformance: $whitePerformance, ')
+          ..write('blackPerformance: $blackPerformance, ')
+          ..write('updatedAt: $updatedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    gameId,
+    profile,
+    engine,
+    analysed,
+    total,
+    complete,
+    whiteAccuracy,
+    blackAccuracy,
+    whitePerformance,
+    blackPerformance,
+    updatedAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is DbGameReview &&
+          other.gameId == this.gameId &&
+          other.profile == this.profile &&
+          other.engine == this.engine &&
+          other.analysed == this.analysed &&
+          other.total == this.total &&
+          other.complete == this.complete &&
+          other.whiteAccuracy == this.whiteAccuracy &&
+          other.blackAccuracy == this.blackAccuracy &&
+          other.whitePerformance == this.whitePerformance &&
+          other.blackPerformance == this.blackPerformance &&
+          other.updatedAt == this.updatedAt);
+}
+
+class GameReviewsCompanion extends UpdateCompanion<DbGameReview> {
+  final Value<String> gameId;
+  final Value<int> profile;
+  final Value<String> engine;
+  final Value<int> analysed;
+  final Value<int> total;
+  final Value<bool> complete;
+  final Value<double?> whiteAccuracy;
+  final Value<double?> blackAccuracy;
+  final Value<int?> whitePerformance;
+  final Value<int?> blackPerformance;
+  final Value<int> updatedAt;
+  final Value<int> rowid;
+  const GameReviewsCompanion({
+    this.gameId = const Value.absent(),
+    this.profile = const Value.absent(),
+    this.engine = const Value.absent(),
+    this.analysed = const Value.absent(),
+    this.total = const Value.absent(),
+    this.complete = const Value.absent(),
+    this.whiteAccuracy = const Value.absent(),
+    this.blackAccuracy = const Value.absent(),
+    this.whitePerformance = const Value.absent(),
+    this.blackPerformance = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  GameReviewsCompanion.insert({
+    required String gameId,
+    required int profile,
+    required String engine,
+    required int analysed,
+    required int total,
+    required bool complete,
+    this.whiteAccuracy = const Value.absent(),
+    this.blackAccuracy = const Value.absent(),
+    this.whitePerformance = const Value.absent(),
+    this.blackPerformance = const Value.absent(),
+    required int updatedAt,
+    this.rowid = const Value.absent(),
+  }) : gameId = Value(gameId),
+       profile = Value(profile),
+       engine = Value(engine),
+       analysed = Value(analysed),
+       total = Value(total),
+       complete = Value(complete),
+       updatedAt = Value(updatedAt);
+  static Insertable<DbGameReview> custom({
+    Expression<String>? gameId,
+    Expression<int>? profile,
+    Expression<String>? engine,
+    Expression<int>? analysed,
+    Expression<int>? total,
+    Expression<bool>? complete,
+    Expression<double>? whiteAccuracy,
+    Expression<double>? blackAccuracy,
+    Expression<int>? whitePerformance,
+    Expression<int>? blackPerformance,
+    Expression<int>? updatedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (gameId != null) 'game_id': gameId,
+      if (profile != null) 'profile': profile,
+      if (engine != null) 'engine': engine,
+      if (analysed != null) 'analysed': analysed,
+      if (total != null) 'total': total,
+      if (complete != null) 'complete': complete,
+      if (whiteAccuracy != null) 'white_accuracy': whiteAccuracy,
+      if (blackAccuracy != null) 'black_accuracy': blackAccuracy,
+      if (whitePerformance != null) 'white_performance': whitePerformance,
+      if (blackPerformance != null) 'black_performance': blackPerformance,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  GameReviewsCompanion copyWith({
+    Value<String>? gameId,
+    Value<int>? profile,
+    Value<String>? engine,
+    Value<int>? analysed,
+    Value<int>? total,
+    Value<bool>? complete,
+    Value<double?>? whiteAccuracy,
+    Value<double?>? blackAccuracy,
+    Value<int?>? whitePerformance,
+    Value<int?>? blackPerformance,
+    Value<int>? updatedAt,
+    Value<int>? rowid,
+  }) {
+    return GameReviewsCompanion(
+      gameId: gameId ?? this.gameId,
+      profile: profile ?? this.profile,
+      engine: engine ?? this.engine,
+      analysed: analysed ?? this.analysed,
+      total: total ?? this.total,
+      complete: complete ?? this.complete,
+      whiteAccuracy: whiteAccuracy ?? this.whiteAccuracy,
+      blackAccuracy: blackAccuracy ?? this.blackAccuracy,
+      whitePerformance: whitePerformance ?? this.whitePerformance,
+      blackPerformance: blackPerformance ?? this.blackPerformance,
+      updatedAt: updatedAt ?? this.updatedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (gameId.present) {
+      map['game_id'] = Variable<String>(gameId.value);
+    }
+    if (profile.present) {
+      map['profile'] = Variable<int>(profile.value);
+    }
+    if (engine.present) {
+      map['engine'] = Variable<String>(engine.value);
+    }
+    if (analysed.present) {
+      map['analysed'] = Variable<int>(analysed.value);
+    }
+    if (total.present) {
+      map['total'] = Variable<int>(total.value);
+    }
+    if (complete.present) {
+      map['complete'] = Variable<bool>(complete.value);
+    }
+    if (whiteAccuracy.present) {
+      map['white_accuracy'] = Variable<double>(whiteAccuracy.value);
+    }
+    if (blackAccuracy.present) {
+      map['black_accuracy'] = Variable<double>(blackAccuracy.value);
+    }
+    if (whitePerformance.present) {
+      map['white_performance'] = Variable<int>(whitePerformance.value);
+    }
+    if (blackPerformance.present) {
+      map['black_performance'] = Variable<int>(blackPerformance.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<int>(updatedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('GameReviewsCompanion(')
+          ..write('gameId: $gameId, ')
+          ..write('profile: $profile, ')
+          ..write('engine: $engine, ')
+          ..write('analysed: $analysed, ')
+          ..write('total: $total, ')
+          ..write('complete: $complete, ')
+          ..write('whiteAccuracy: $whiteAccuracy, ')
+          ..write('blackAccuracy: $blackAccuracy, ')
+          ..write('whitePerformance: $whitePerformance, ')
+          ..write('blackPerformance: $blackPerformance, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $GameAnalysisTable extends GameAnalysis
+    with TableInfo<$GameAnalysisTable, DbGameAnalysis> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $GameAnalysisTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _gameIdMeta = const VerificationMeta('gameId');
+  @override
+  late final GeneratedColumn<String> gameId = GeneratedColumn<String>(
+    'game_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _profileMeta = const VerificationMeta(
+    'profile',
+  );
+  @override
+  late final GeneratedColumn<int> profile = GeneratedColumn<int>(
+    'profile',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _plyMeta = const VerificationMeta('ply');
+  @override
+  late final GeneratedColumn<int> ply = GeneratedColumn<int>(
+    'ply',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _cpMeta = const VerificationMeta('cp');
+  @override
+  late final GeneratedColumn<int> cp = GeneratedColumn<int>(
+    'cp',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _mateMeta = const VerificationMeta('mate');
+  @override
+  late final GeneratedColumn<int> mate = GeneratedColumn<int>(
+    'mate',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _pvMeta = const VerificationMeta('pv');
+  @override
+  late final GeneratedColumn<String> pv = GeneratedColumn<String>(
+    'pv',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _depthMeta = const VerificationMeta('depth');
+  @override
+  late final GeneratedColumn<int> depth = GeneratedColumn<int>(
+    'depth',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _cappedMeta = const VerificationMeta('capped');
+  @override
+  late final GeneratedColumn<bool> capped = GeneratedColumn<bool>(
+    'capped',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("capped" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _secondCpMeta = const VerificationMeta(
+    'secondCp',
+  );
+  @override
+  late final GeneratedColumn<int> secondCp = GeneratedColumn<int>(
+    'second_cp',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _secondMateMeta = const VerificationMeta(
+    'secondMate',
+  );
+  @override
+  late final GeneratedColumn<int> secondMate = GeneratedColumn<int>(
+    'second_mate',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _labelMeta = const VerificationMeta('label');
+  @override
+  late final GeneratedColumn<int> label = GeneratedColumn<int>(
+    'label',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    gameId,
+    profile,
+    ply,
+    cp,
+    mate,
+    pv,
+    depth,
+    capped,
+    secondCp,
+    secondMate,
+    label,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'game_analysis';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<DbGameAnalysis> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('game_id')) {
+      context.handle(
+        _gameIdMeta,
+        gameId.isAcceptableOrUnknown(data['game_id']!, _gameIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_gameIdMeta);
+    }
+    if (data.containsKey('profile')) {
+      context.handle(
+        _profileMeta,
+        profile.isAcceptableOrUnknown(data['profile']!, _profileMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_profileMeta);
+    }
+    if (data.containsKey('ply')) {
+      context.handle(
+        _plyMeta,
+        ply.isAcceptableOrUnknown(data['ply']!, _plyMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_plyMeta);
+    }
+    if (data.containsKey('cp')) {
+      context.handle(_cpMeta, cp.isAcceptableOrUnknown(data['cp']!, _cpMeta));
+    }
+    if (data.containsKey('mate')) {
+      context.handle(
+        _mateMeta,
+        mate.isAcceptableOrUnknown(data['mate']!, _mateMeta),
+      );
+    }
+    if (data.containsKey('pv')) {
+      context.handle(_pvMeta, pv.isAcceptableOrUnknown(data['pv']!, _pvMeta));
+    }
+    if (data.containsKey('depth')) {
+      context.handle(
+        _depthMeta,
+        depth.isAcceptableOrUnknown(data['depth']!, _depthMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_depthMeta);
+    }
+    if (data.containsKey('capped')) {
+      context.handle(
+        _cappedMeta,
+        capped.isAcceptableOrUnknown(data['capped']!, _cappedMeta),
+      );
+    }
+    if (data.containsKey('second_cp')) {
+      context.handle(
+        _secondCpMeta,
+        secondCp.isAcceptableOrUnknown(data['second_cp']!, _secondCpMeta),
+      );
+    }
+    if (data.containsKey('second_mate')) {
+      context.handle(
+        _secondMateMeta,
+        secondMate.isAcceptableOrUnknown(data['second_mate']!, _secondMateMeta),
+      );
+    }
+    if (data.containsKey('label')) {
+      context.handle(
+        _labelMeta,
+        label.isAcceptableOrUnknown(data['label']!, _labelMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {gameId, profile, ply};
+  @override
+  DbGameAnalysis map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return DbGameAnalysis(
+      gameId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}game_id'],
+      )!,
+      profile: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}profile'],
+      )!,
+      ply: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}ply'],
+      )!,
+      cp: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}cp'],
+      ),
+      mate: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}mate'],
+      ),
+      pv: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}pv'],
+      ),
+      depth: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}depth'],
+      )!,
+      capped: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}capped'],
+      )!,
+      secondCp: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}second_cp'],
+      ),
+      secondMate: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}second_mate'],
+      ),
+      label: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}label'],
+      ),
+    );
+  }
+
+  @override
+  $GameAnalysisTable createAlias(String alias) {
+    return $GameAnalysisTable(attachedDatabase, alias);
+  }
+}
+
+class DbGameAnalysis extends DataClass implements Insertable<DbGameAnalysis> {
+  final String gameId;
+  final int profile;
+  final int ply;
+
+  /// Best-line score: centipawns, or moves to mate when [mate] is set.
+  final int? cp;
+  final int? mate;
+
+  /// Best move and its line (UCI, space-separated, at most 10 plies).
+  final String? pv;
+  final int depth;
+
+  /// The per-position time cap stopped the search before [depth] was the
+  /// profile's depth.
+  final bool capped;
+
+  /// Second-best move's score (MultiPV pass, candidates only).
+  final int? secondCp;
+  final int? secondMate;
+
+  /// Classification of the move that led here (null for ply 0 and until
+  /// classified); index into chess_core's `MoveLabel`.
+  final int? label;
+  const DbGameAnalysis({
+    required this.gameId,
+    required this.profile,
+    required this.ply,
+    this.cp,
+    this.mate,
+    this.pv,
+    required this.depth,
+    required this.capped,
+    this.secondCp,
+    this.secondMate,
+    this.label,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['game_id'] = Variable<String>(gameId);
+    map['profile'] = Variable<int>(profile);
+    map['ply'] = Variable<int>(ply);
+    if (!nullToAbsent || cp != null) {
+      map['cp'] = Variable<int>(cp);
+    }
+    if (!nullToAbsent || mate != null) {
+      map['mate'] = Variable<int>(mate);
+    }
+    if (!nullToAbsent || pv != null) {
+      map['pv'] = Variable<String>(pv);
+    }
+    map['depth'] = Variable<int>(depth);
+    map['capped'] = Variable<bool>(capped);
+    if (!nullToAbsent || secondCp != null) {
+      map['second_cp'] = Variable<int>(secondCp);
+    }
+    if (!nullToAbsent || secondMate != null) {
+      map['second_mate'] = Variable<int>(secondMate);
+    }
+    if (!nullToAbsent || label != null) {
+      map['label'] = Variable<int>(label);
+    }
+    return map;
+  }
+
+  GameAnalysisCompanion toCompanion(bool nullToAbsent) {
+    return GameAnalysisCompanion(
+      gameId: Value(gameId),
+      profile: Value(profile),
+      ply: Value(ply),
+      cp: cp == null && nullToAbsent ? const Value.absent() : Value(cp),
+      mate: mate == null && nullToAbsent ? const Value.absent() : Value(mate),
+      pv: pv == null && nullToAbsent ? const Value.absent() : Value(pv),
+      depth: Value(depth),
+      capped: Value(capped),
+      secondCp: secondCp == null && nullToAbsent
+          ? const Value.absent()
+          : Value(secondCp),
+      secondMate: secondMate == null && nullToAbsent
+          ? const Value.absent()
+          : Value(secondMate),
+      label: label == null && nullToAbsent
+          ? const Value.absent()
+          : Value(label),
+    );
+  }
+
+  factory DbGameAnalysis.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return DbGameAnalysis(
+      gameId: serializer.fromJson<String>(json['gameId']),
+      profile: serializer.fromJson<int>(json['profile']),
+      ply: serializer.fromJson<int>(json['ply']),
+      cp: serializer.fromJson<int?>(json['cp']),
+      mate: serializer.fromJson<int?>(json['mate']),
+      pv: serializer.fromJson<String?>(json['pv']),
+      depth: serializer.fromJson<int>(json['depth']),
+      capped: serializer.fromJson<bool>(json['capped']),
+      secondCp: serializer.fromJson<int?>(json['secondCp']),
+      secondMate: serializer.fromJson<int?>(json['secondMate']),
+      label: serializer.fromJson<int?>(json['label']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'gameId': serializer.toJson<String>(gameId),
+      'profile': serializer.toJson<int>(profile),
+      'ply': serializer.toJson<int>(ply),
+      'cp': serializer.toJson<int?>(cp),
+      'mate': serializer.toJson<int?>(mate),
+      'pv': serializer.toJson<String?>(pv),
+      'depth': serializer.toJson<int>(depth),
+      'capped': serializer.toJson<bool>(capped),
+      'secondCp': serializer.toJson<int?>(secondCp),
+      'secondMate': serializer.toJson<int?>(secondMate),
+      'label': serializer.toJson<int?>(label),
+    };
+  }
+
+  DbGameAnalysis copyWith({
+    String? gameId,
+    int? profile,
+    int? ply,
+    Value<int?> cp = const Value.absent(),
+    Value<int?> mate = const Value.absent(),
+    Value<String?> pv = const Value.absent(),
+    int? depth,
+    bool? capped,
+    Value<int?> secondCp = const Value.absent(),
+    Value<int?> secondMate = const Value.absent(),
+    Value<int?> label = const Value.absent(),
+  }) => DbGameAnalysis(
+    gameId: gameId ?? this.gameId,
+    profile: profile ?? this.profile,
+    ply: ply ?? this.ply,
+    cp: cp.present ? cp.value : this.cp,
+    mate: mate.present ? mate.value : this.mate,
+    pv: pv.present ? pv.value : this.pv,
+    depth: depth ?? this.depth,
+    capped: capped ?? this.capped,
+    secondCp: secondCp.present ? secondCp.value : this.secondCp,
+    secondMate: secondMate.present ? secondMate.value : this.secondMate,
+    label: label.present ? label.value : this.label,
+  );
+  DbGameAnalysis copyWithCompanion(GameAnalysisCompanion data) {
+    return DbGameAnalysis(
+      gameId: data.gameId.present ? data.gameId.value : this.gameId,
+      profile: data.profile.present ? data.profile.value : this.profile,
+      ply: data.ply.present ? data.ply.value : this.ply,
+      cp: data.cp.present ? data.cp.value : this.cp,
+      mate: data.mate.present ? data.mate.value : this.mate,
+      pv: data.pv.present ? data.pv.value : this.pv,
+      depth: data.depth.present ? data.depth.value : this.depth,
+      capped: data.capped.present ? data.capped.value : this.capped,
+      secondCp: data.secondCp.present ? data.secondCp.value : this.secondCp,
+      secondMate: data.secondMate.present
+          ? data.secondMate.value
+          : this.secondMate,
+      label: data.label.present ? data.label.value : this.label,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('DbGameAnalysis(')
+          ..write('gameId: $gameId, ')
+          ..write('profile: $profile, ')
+          ..write('ply: $ply, ')
+          ..write('cp: $cp, ')
+          ..write('mate: $mate, ')
+          ..write('pv: $pv, ')
+          ..write('depth: $depth, ')
+          ..write('capped: $capped, ')
+          ..write('secondCp: $secondCp, ')
+          ..write('secondMate: $secondMate, ')
+          ..write('label: $label')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    gameId,
+    profile,
+    ply,
+    cp,
+    mate,
+    pv,
+    depth,
+    capped,
+    secondCp,
+    secondMate,
+    label,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is DbGameAnalysis &&
+          other.gameId == this.gameId &&
+          other.profile == this.profile &&
+          other.ply == this.ply &&
+          other.cp == this.cp &&
+          other.mate == this.mate &&
+          other.pv == this.pv &&
+          other.depth == this.depth &&
+          other.capped == this.capped &&
+          other.secondCp == this.secondCp &&
+          other.secondMate == this.secondMate &&
+          other.label == this.label);
+}
+
+class GameAnalysisCompanion extends UpdateCompanion<DbGameAnalysis> {
+  final Value<String> gameId;
+  final Value<int> profile;
+  final Value<int> ply;
+  final Value<int?> cp;
+  final Value<int?> mate;
+  final Value<String?> pv;
+  final Value<int> depth;
+  final Value<bool> capped;
+  final Value<int?> secondCp;
+  final Value<int?> secondMate;
+  final Value<int?> label;
+  final Value<int> rowid;
+  const GameAnalysisCompanion({
+    this.gameId = const Value.absent(),
+    this.profile = const Value.absent(),
+    this.ply = const Value.absent(),
+    this.cp = const Value.absent(),
+    this.mate = const Value.absent(),
+    this.pv = const Value.absent(),
+    this.depth = const Value.absent(),
+    this.capped = const Value.absent(),
+    this.secondCp = const Value.absent(),
+    this.secondMate = const Value.absent(),
+    this.label = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  GameAnalysisCompanion.insert({
+    required String gameId,
+    required int profile,
+    required int ply,
+    this.cp = const Value.absent(),
+    this.mate = const Value.absent(),
+    this.pv = const Value.absent(),
+    required int depth,
+    this.capped = const Value.absent(),
+    this.secondCp = const Value.absent(),
+    this.secondMate = const Value.absent(),
+    this.label = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : gameId = Value(gameId),
+       profile = Value(profile),
+       ply = Value(ply),
+       depth = Value(depth);
+  static Insertable<DbGameAnalysis> custom({
+    Expression<String>? gameId,
+    Expression<int>? profile,
+    Expression<int>? ply,
+    Expression<int>? cp,
+    Expression<int>? mate,
+    Expression<String>? pv,
+    Expression<int>? depth,
+    Expression<bool>? capped,
+    Expression<int>? secondCp,
+    Expression<int>? secondMate,
+    Expression<int>? label,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (gameId != null) 'game_id': gameId,
+      if (profile != null) 'profile': profile,
+      if (ply != null) 'ply': ply,
+      if (cp != null) 'cp': cp,
+      if (mate != null) 'mate': mate,
+      if (pv != null) 'pv': pv,
+      if (depth != null) 'depth': depth,
+      if (capped != null) 'capped': capped,
+      if (secondCp != null) 'second_cp': secondCp,
+      if (secondMate != null) 'second_mate': secondMate,
+      if (label != null) 'label': label,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  GameAnalysisCompanion copyWith({
+    Value<String>? gameId,
+    Value<int>? profile,
+    Value<int>? ply,
+    Value<int?>? cp,
+    Value<int?>? mate,
+    Value<String?>? pv,
+    Value<int>? depth,
+    Value<bool>? capped,
+    Value<int?>? secondCp,
+    Value<int?>? secondMate,
+    Value<int?>? label,
+    Value<int>? rowid,
+  }) {
+    return GameAnalysisCompanion(
+      gameId: gameId ?? this.gameId,
+      profile: profile ?? this.profile,
+      ply: ply ?? this.ply,
+      cp: cp ?? this.cp,
+      mate: mate ?? this.mate,
+      pv: pv ?? this.pv,
+      depth: depth ?? this.depth,
+      capped: capped ?? this.capped,
+      secondCp: secondCp ?? this.secondCp,
+      secondMate: secondMate ?? this.secondMate,
+      label: label ?? this.label,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (gameId.present) {
+      map['game_id'] = Variable<String>(gameId.value);
+    }
+    if (profile.present) {
+      map['profile'] = Variable<int>(profile.value);
+    }
+    if (ply.present) {
+      map['ply'] = Variable<int>(ply.value);
+    }
+    if (cp.present) {
+      map['cp'] = Variable<int>(cp.value);
+    }
+    if (mate.present) {
+      map['mate'] = Variable<int>(mate.value);
+    }
+    if (pv.present) {
+      map['pv'] = Variable<String>(pv.value);
+    }
+    if (depth.present) {
+      map['depth'] = Variable<int>(depth.value);
+    }
+    if (capped.present) {
+      map['capped'] = Variable<bool>(capped.value);
+    }
+    if (secondCp.present) {
+      map['second_cp'] = Variable<int>(secondCp.value);
+    }
+    if (secondMate.present) {
+      map['second_mate'] = Variable<int>(secondMate.value);
+    }
+    if (label.present) {
+      map['label'] = Variable<int>(label.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('GameAnalysisCompanion(')
+          ..write('gameId: $gameId, ')
+          ..write('profile: $profile, ')
+          ..write('ply: $ply, ')
+          ..write('cp: $cp, ')
+          ..write('mate: $mate, ')
+          ..write('pv: $pv, ')
+          ..write('depth: $depth, ')
+          ..write('capped: $capped, ')
+          ..write('secondCp: $secondCp, ')
+          ..write('secondMate: $secondMate, ')
+          ..write('label: $label, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -6287,6 +9178,10 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $SettingsTable settings = $SettingsTable(this);
   late final $SyncStateTable syncState = $SyncStateTable(this);
   late final $AppMetaTable appMeta = $AppMetaTable(this);
+  late final $ImportedGamesTable importedGames = $ImportedGamesTable(this);
+  late final $GameArchivesTable gameArchives = $GameArchivesTable(this);
+  late final $GameReviewsTable gameReviews = $GameReviewsTable(this);
+  late final $GameAnalysisTable gameAnalysis = $GameAnalysisTable(this);
   late final Index linesByOrdinal = Index(
     'lines_by_ordinal',
     'CREATE INDEX lines_by_ordinal ON lines (repertoire_id, ordinal)',
@@ -6311,6 +9206,10 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     'runs_key_ucis',
     'CREATE INDEX runs_key_ucis ON runs (repertoire_id, line_key, ucis)',
   );
+  late final Index gamesByUser = Index(
+    'games_by_user',
+    'CREATE INDEX games_by_user ON imported_games (username, end_time)',
+  );
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -6327,12 +9226,17 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     settings,
     syncState,
     appMeta,
+    importedGames,
+    gameArchives,
+    gameReviews,
+    gameAnalysis,
     linesByOrdinal,
     runsByLine,
     runsByDay,
     runsBySynced,
     runsDailyStats,
     runsKeyUcis,
+    gamesByUser,
   ];
 }
 
@@ -9463,6 +12367,1394 @@ typedef $$AppMetaTableProcessedTableManager =
       DbAppMeta,
       PrefetchHooks Function()
     >;
+typedef $$ImportedGamesTableCreateCompanionBuilder =
+    ImportedGamesCompanion Function({
+      required String id,
+      required String username,
+      required String url,
+      required int endTime,
+      required String timeClass,
+      required String timeControl,
+      required bool rated,
+      required bool userWhite,
+      required String result,
+      required String resultDetail,
+      required String whiteName,
+      required String blackName,
+      required int whiteRating,
+      required int blackRating,
+      Value<String?> eco,
+      Value<String?> opening,
+      required String ucis,
+      required String sans,
+      Value<String?> clocks,
+      required String pgn,
+      required int fetchedAt,
+      Value<int> rowid,
+    });
+typedef $$ImportedGamesTableUpdateCompanionBuilder =
+    ImportedGamesCompanion Function({
+      Value<String> id,
+      Value<String> username,
+      Value<String> url,
+      Value<int> endTime,
+      Value<String> timeClass,
+      Value<String> timeControl,
+      Value<bool> rated,
+      Value<bool> userWhite,
+      Value<String> result,
+      Value<String> resultDetail,
+      Value<String> whiteName,
+      Value<String> blackName,
+      Value<int> whiteRating,
+      Value<int> blackRating,
+      Value<String?> eco,
+      Value<String?> opening,
+      Value<String> ucis,
+      Value<String> sans,
+      Value<String?> clocks,
+      Value<String> pgn,
+      Value<int> fetchedAt,
+      Value<int> rowid,
+    });
+
+class $$ImportedGamesTableFilterComposer
+    extends Composer<_$AppDatabase, $ImportedGamesTable> {
+  $$ImportedGamesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get username => $composableBuilder(
+    column: $table.username,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get url => $composableBuilder(
+    column: $table.url,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get endTime => $composableBuilder(
+    column: $table.endTime,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get timeClass => $composableBuilder(
+    column: $table.timeClass,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get timeControl => $composableBuilder(
+    column: $table.timeControl,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get rated => $composableBuilder(
+    column: $table.rated,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get userWhite => $composableBuilder(
+    column: $table.userWhite,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get result => $composableBuilder(
+    column: $table.result,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get resultDetail => $composableBuilder(
+    column: $table.resultDetail,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get whiteName => $composableBuilder(
+    column: $table.whiteName,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get blackName => $composableBuilder(
+    column: $table.blackName,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get whiteRating => $composableBuilder(
+    column: $table.whiteRating,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get blackRating => $composableBuilder(
+    column: $table.blackRating,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get eco => $composableBuilder(
+    column: $table.eco,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get opening => $composableBuilder(
+    column: $table.opening,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get ucis => $composableBuilder(
+    column: $table.ucis,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get sans => $composableBuilder(
+    column: $table.sans,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get clocks => $composableBuilder(
+    column: $table.clocks,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get pgn => $composableBuilder(
+    column: $table.pgn,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get fetchedAt => $composableBuilder(
+    column: $table.fetchedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$ImportedGamesTableOrderingComposer
+    extends Composer<_$AppDatabase, $ImportedGamesTable> {
+  $$ImportedGamesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get username => $composableBuilder(
+    column: $table.username,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get url => $composableBuilder(
+    column: $table.url,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get endTime => $composableBuilder(
+    column: $table.endTime,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get timeClass => $composableBuilder(
+    column: $table.timeClass,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get timeControl => $composableBuilder(
+    column: $table.timeControl,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get rated => $composableBuilder(
+    column: $table.rated,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get userWhite => $composableBuilder(
+    column: $table.userWhite,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get result => $composableBuilder(
+    column: $table.result,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get resultDetail => $composableBuilder(
+    column: $table.resultDetail,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get whiteName => $composableBuilder(
+    column: $table.whiteName,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get blackName => $composableBuilder(
+    column: $table.blackName,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get whiteRating => $composableBuilder(
+    column: $table.whiteRating,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get blackRating => $composableBuilder(
+    column: $table.blackRating,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get eco => $composableBuilder(
+    column: $table.eco,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get opening => $composableBuilder(
+    column: $table.opening,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get ucis => $composableBuilder(
+    column: $table.ucis,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get sans => $composableBuilder(
+    column: $table.sans,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get clocks => $composableBuilder(
+    column: $table.clocks,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get pgn => $composableBuilder(
+    column: $table.pgn,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get fetchedAt => $composableBuilder(
+    column: $table.fetchedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$ImportedGamesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $ImportedGamesTable> {
+  $$ImportedGamesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get username =>
+      $composableBuilder(column: $table.username, builder: (column) => column);
+
+  GeneratedColumn<String> get url =>
+      $composableBuilder(column: $table.url, builder: (column) => column);
+
+  GeneratedColumn<int> get endTime =>
+      $composableBuilder(column: $table.endTime, builder: (column) => column);
+
+  GeneratedColumn<String> get timeClass =>
+      $composableBuilder(column: $table.timeClass, builder: (column) => column);
+
+  GeneratedColumn<String> get timeControl => $composableBuilder(
+    column: $table.timeControl,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get rated =>
+      $composableBuilder(column: $table.rated, builder: (column) => column);
+
+  GeneratedColumn<bool> get userWhite =>
+      $composableBuilder(column: $table.userWhite, builder: (column) => column);
+
+  GeneratedColumn<String> get result =>
+      $composableBuilder(column: $table.result, builder: (column) => column);
+
+  GeneratedColumn<String> get resultDetail => $composableBuilder(
+    column: $table.resultDetail,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get whiteName =>
+      $composableBuilder(column: $table.whiteName, builder: (column) => column);
+
+  GeneratedColumn<String> get blackName =>
+      $composableBuilder(column: $table.blackName, builder: (column) => column);
+
+  GeneratedColumn<int> get whiteRating => $composableBuilder(
+    column: $table.whiteRating,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get blackRating => $composableBuilder(
+    column: $table.blackRating,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get eco =>
+      $composableBuilder(column: $table.eco, builder: (column) => column);
+
+  GeneratedColumn<String> get opening =>
+      $composableBuilder(column: $table.opening, builder: (column) => column);
+
+  GeneratedColumn<String> get ucis =>
+      $composableBuilder(column: $table.ucis, builder: (column) => column);
+
+  GeneratedColumn<String> get sans =>
+      $composableBuilder(column: $table.sans, builder: (column) => column);
+
+  GeneratedColumn<String> get clocks =>
+      $composableBuilder(column: $table.clocks, builder: (column) => column);
+
+  GeneratedColumn<String> get pgn =>
+      $composableBuilder(column: $table.pgn, builder: (column) => column);
+
+  GeneratedColumn<int> get fetchedAt =>
+      $composableBuilder(column: $table.fetchedAt, builder: (column) => column);
+}
+
+class $$ImportedGamesTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $ImportedGamesTable,
+          DbImportedGame,
+          $$ImportedGamesTableFilterComposer,
+          $$ImportedGamesTableOrderingComposer,
+          $$ImportedGamesTableAnnotationComposer,
+          $$ImportedGamesTableCreateCompanionBuilder,
+          $$ImportedGamesTableUpdateCompanionBuilder,
+          (
+            DbImportedGame,
+            BaseReferences<_$AppDatabase, $ImportedGamesTable, DbImportedGame>,
+          ),
+          DbImportedGame,
+          PrefetchHooks Function()
+        > {
+  $$ImportedGamesTableTableManager(_$AppDatabase db, $ImportedGamesTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$ImportedGamesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$ImportedGamesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$ImportedGamesTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> username = const Value.absent(),
+                Value<String> url = const Value.absent(),
+                Value<int> endTime = const Value.absent(),
+                Value<String> timeClass = const Value.absent(),
+                Value<String> timeControl = const Value.absent(),
+                Value<bool> rated = const Value.absent(),
+                Value<bool> userWhite = const Value.absent(),
+                Value<String> result = const Value.absent(),
+                Value<String> resultDetail = const Value.absent(),
+                Value<String> whiteName = const Value.absent(),
+                Value<String> blackName = const Value.absent(),
+                Value<int> whiteRating = const Value.absent(),
+                Value<int> blackRating = const Value.absent(),
+                Value<String?> eco = const Value.absent(),
+                Value<String?> opening = const Value.absent(),
+                Value<String> ucis = const Value.absent(),
+                Value<String> sans = const Value.absent(),
+                Value<String?> clocks = const Value.absent(),
+                Value<String> pgn = const Value.absent(),
+                Value<int> fetchedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => ImportedGamesCompanion(
+                id: id,
+                username: username,
+                url: url,
+                endTime: endTime,
+                timeClass: timeClass,
+                timeControl: timeControl,
+                rated: rated,
+                userWhite: userWhite,
+                result: result,
+                resultDetail: resultDetail,
+                whiteName: whiteName,
+                blackName: blackName,
+                whiteRating: whiteRating,
+                blackRating: blackRating,
+                eco: eco,
+                opening: opening,
+                ucis: ucis,
+                sans: sans,
+                clocks: clocks,
+                pgn: pgn,
+                fetchedAt: fetchedAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String username,
+                required String url,
+                required int endTime,
+                required String timeClass,
+                required String timeControl,
+                required bool rated,
+                required bool userWhite,
+                required String result,
+                required String resultDetail,
+                required String whiteName,
+                required String blackName,
+                required int whiteRating,
+                required int blackRating,
+                Value<String?> eco = const Value.absent(),
+                Value<String?> opening = const Value.absent(),
+                required String ucis,
+                required String sans,
+                Value<String?> clocks = const Value.absent(),
+                required String pgn,
+                required int fetchedAt,
+                Value<int> rowid = const Value.absent(),
+              }) => ImportedGamesCompanion.insert(
+                id: id,
+                username: username,
+                url: url,
+                endTime: endTime,
+                timeClass: timeClass,
+                timeControl: timeControl,
+                rated: rated,
+                userWhite: userWhite,
+                result: result,
+                resultDetail: resultDetail,
+                whiteName: whiteName,
+                blackName: blackName,
+                whiteRating: whiteRating,
+                blackRating: blackRating,
+                eco: eco,
+                opening: opening,
+                ucis: ucis,
+                sans: sans,
+                clocks: clocks,
+                pgn: pgn,
+                fetchedAt: fetchedAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$ImportedGamesTable, DbImportedGame>(table),
+                  BaseReferences<
+                    _$AppDatabase,
+                    $ImportedGamesTable,
+                    DbImportedGame
+                  >(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$ImportedGamesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $ImportedGamesTable,
+      DbImportedGame,
+      $$ImportedGamesTableFilterComposer,
+      $$ImportedGamesTableOrderingComposer,
+      $$ImportedGamesTableAnnotationComposer,
+      $$ImportedGamesTableCreateCompanionBuilder,
+      $$ImportedGamesTableUpdateCompanionBuilder,
+      (
+        DbImportedGame,
+        BaseReferences<_$AppDatabase, $ImportedGamesTable, DbImportedGame>,
+      ),
+      DbImportedGame,
+      PrefetchHooks Function()
+    >;
+typedef $$GameArchivesTableCreateCompanionBuilder =
+    GameArchivesCompanion Function({
+      required String username,
+      required String archive,
+      Value<String?> etag,
+      Value<String?> lastModified,
+      required int fetchedAt,
+      Value<int> rowid,
+    });
+typedef $$GameArchivesTableUpdateCompanionBuilder =
+    GameArchivesCompanion Function({
+      Value<String> username,
+      Value<String> archive,
+      Value<String?> etag,
+      Value<String?> lastModified,
+      Value<int> fetchedAt,
+      Value<int> rowid,
+    });
+
+class $$GameArchivesTableFilterComposer
+    extends Composer<_$AppDatabase, $GameArchivesTable> {
+  $$GameArchivesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get username => $composableBuilder(
+    column: $table.username,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get archive => $composableBuilder(
+    column: $table.archive,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get etag => $composableBuilder(
+    column: $table.etag,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get lastModified => $composableBuilder(
+    column: $table.lastModified,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get fetchedAt => $composableBuilder(
+    column: $table.fetchedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$GameArchivesTableOrderingComposer
+    extends Composer<_$AppDatabase, $GameArchivesTable> {
+  $$GameArchivesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get username => $composableBuilder(
+    column: $table.username,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get archive => $composableBuilder(
+    column: $table.archive,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get etag => $composableBuilder(
+    column: $table.etag,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get lastModified => $composableBuilder(
+    column: $table.lastModified,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get fetchedAt => $composableBuilder(
+    column: $table.fetchedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$GameArchivesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $GameArchivesTable> {
+  $$GameArchivesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get username =>
+      $composableBuilder(column: $table.username, builder: (column) => column);
+
+  GeneratedColumn<String> get archive =>
+      $composableBuilder(column: $table.archive, builder: (column) => column);
+
+  GeneratedColumn<String> get etag =>
+      $composableBuilder(column: $table.etag, builder: (column) => column);
+
+  GeneratedColumn<String> get lastModified => $composableBuilder(
+    column: $table.lastModified,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get fetchedAt =>
+      $composableBuilder(column: $table.fetchedAt, builder: (column) => column);
+}
+
+class $$GameArchivesTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $GameArchivesTable,
+          DbGameArchive,
+          $$GameArchivesTableFilterComposer,
+          $$GameArchivesTableOrderingComposer,
+          $$GameArchivesTableAnnotationComposer,
+          $$GameArchivesTableCreateCompanionBuilder,
+          $$GameArchivesTableUpdateCompanionBuilder,
+          (
+            DbGameArchive,
+            BaseReferences<_$AppDatabase, $GameArchivesTable, DbGameArchive>,
+          ),
+          DbGameArchive,
+          PrefetchHooks Function()
+        > {
+  $$GameArchivesTableTableManager(_$AppDatabase db, $GameArchivesTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$GameArchivesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$GameArchivesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$GameArchivesTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> username = const Value.absent(),
+                Value<String> archive = const Value.absent(),
+                Value<String?> etag = const Value.absent(),
+                Value<String?> lastModified = const Value.absent(),
+                Value<int> fetchedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => GameArchivesCompanion(
+                username: username,
+                archive: archive,
+                etag: etag,
+                lastModified: lastModified,
+                fetchedAt: fetchedAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String username,
+                required String archive,
+                Value<String?> etag = const Value.absent(),
+                Value<String?> lastModified = const Value.absent(),
+                required int fetchedAt,
+                Value<int> rowid = const Value.absent(),
+              }) => GameArchivesCompanion.insert(
+                username: username,
+                archive: archive,
+                etag: etag,
+                lastModified: lastModified,
+                fetchedAt: fetchedAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$GameArchivesTable, DbGameArchive>(table),
+                  BaseReferences<
+                    _$AppDatabase,
+                    $GameArchivesTable,
+                    DbGameArchive
+                  >(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$GameArchivesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $GameArchivesTable,
+      DbGameArchive,
+      $$GameArchivesTableFilterComposer,
+      $$GameArchivesTableOrderingComposer,
+      $$GameArchivesTableAnnotationComposer,
+      $$GameArchivesTableCreateCompanionBuilder,
+      $$GameArchivesTableUpdateCompanionBuilder,
+      (
+        DbGameArchive,
+        BaseReferences<_$AppDatabase, $GameArchivesTable, DbGameArchive>,
+      ),
+      DbGameArchive,
+      PrefetchHooks Function()
+    >;
+typedef $$GameReviewsTableCreateCompanionBuilder =
+    GameReviewsCompanion Function({
+      required String gameId,
+      required int profile,
+      required String engine,
+      required int analysed,
+      required int total,
+      required bool complete,
+      Value<double?> whiteAccuracy,
+      Value<double?> blackAccuracy,
+      Value<int?> whitePerformance,
+      Value<int?> blackPerformance,
+      required int updatedAt,
+      Value<int> rowid,
+    });
+typedef $$GameReviewsTableUpdateCompanionBuilder =
+    GameReviewsCompanion Function({
+      Value<String> gameId,
+      Value<int> profile,
+      Value<String> engine,
+      Value<int> analysed,
+      Value<int> total,
+      Value<bool> complete,
+      Value<double?> whiteAccuracy,
+      Value<double?> blackAccuracy,
+      Value<int?> whitePerformance,
+      Value<int?> blackPerformance,
+      Value<int> updatedAt,
+      Value<int> rowid,
+    });
+
+class $$GameReviewsTableFilterComposer
+    extends Composer<_$AppDatabase, $GameReviewsTable> {
+  $$GameReviewsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get gameId => $composableBuilder(
+    column: $table.gameId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get profile => $composableBuilder(
+    column: $table.profile,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get engine => $composableBuilder(
+    column: $table.engine,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get analysed => $composableBuilder(
+    column: $table.analysed,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get total => $composableBuilder(
+    column: $table.total,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get complete => $composableBuilder(
+    column: $table.complete,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get whiteAccuracy => $composableBuilder(
+    column: $table.whiteAccuracy,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get blackAccuracy => $composableBuilder(
+    column: $table.blackAccuracy,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get whitePerformance => $composableBuilder(
+    column: $table.whitePerformance,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get blackPerformance => $composableBuilder(
+    column: $table.blackPerformance,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$GameReviewsTableOrderingComposer
+    extends Composer<_$AppDatabase, $GameReviewsTable> {
+  $$GameReviewsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get gameId => $composableBuilder(
+    column: $table.gameId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get profile => $composableBuilder(
+    column: $table.profile,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get engine => $composableBuilder(
+    column: $table.engine,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get analysed => $composableBuilder(
+    column: $table.analysed,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get total => $composableBuilder(
+    column: $table.total,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get complete => $composableBuilder(
+    column: $table.complete,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get whiteAccuracy => $composableBuilder(
+    column: $table.whiteAccuracy,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get blackAccuracy => $composableBuilder(
+    column: $table.blackAccuracy,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get whitePerformance => $composableBuilder(
+    column: $table.whitePerformance,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get blackPerformance => $composableBuilder(
+    column: $table.blackPerformance,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$GameReviewsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $GameReviewsTable> {
+  $$GameReviewsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get gameId =>
+      $composableBuilder(column: $table.gameId, builder: (column) => column);
+
+  GeneratedColumn<int> get profile =>
+      $composableBuilder(column: $table.profile, builder: (column) => column);
+
+  GeneratedColumn<String> get engine =>
+      $composableBuilder(column: $table.engine, builder: (column) => column);
+
+  GeneratedColumn<int> get analysed =>
+      $composableBuilder(column: $table.analysed, builder: (column) => column);
+
+  GeneratedColumn<int> get total =>
+      $composableBuilder(column: $table.total, builder: (column) => column);
+
+  GeneratedColumn<bool> get complete =>
+      $composableBuilder(column: $table.complete, builder: (column) => column);
+
+  GeneratedColumn<double> get whiteAccuracy => $composableBuilder(
+    column: $table.whiteAccuracy,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<double> get blackAccuracy => $composableBuilder(
+    column: $table.blackAccuracy,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get whitePerformance => $composableBuilder(
+    column: $table.whitePerformance,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get blackPerformance => $composableBuilder(
+    column: $table.blackPerformance,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+}
+
+class $$GameReviewsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $GameReviewsTable,
+          DbGameReview,
+          $$GameReviewsTableFilterComposer,
+          $$GameReviewsTableOrderingComposer,
+          $$GameReviewsTableAnnotationComposer,
+          $$GameReviewsTableCreateCompanionBuilder,
+          $$GameReviewsTableUpdateCompanionBuilder,
+          (
+            DbGameReview,
+            BaseReferences<_$AppDatabase, $GameReviewsTable, DbGameReview>,
+          ),
+          DbGameReview,
+          PrefetchHooks Function()
+        > {
+  $$GameReviewsTableTableManager(_$AppDatabase db, $GameReviewsTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$GameReviewsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$GameReviewsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$GameReviewsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> gameId = const Value.absent(),
+                Value<int> profile = const Value.absent(),
+                Value<String> engine = const Value.absent(),
+                Value<int> analysed = const Value.absent(),
+                Value<int> total = const Value.absent(),
+                Value<bool> complete = const Value.absent(),
+                Value<double?> whiteAccuracy = const Value.absent(),
+                Value<double?> blackAccuracy = const Value.absent(),
+                Value<int?> whitePerformance = const Value.absent(),
+                Value<int?> blackPerformance = const Value.absent(),
+                Value<int> updatedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => GameReviewsCompanion(
+                gameId: gameId,
+                profile: profile,
+                engine: engine,
+                analysed: analysed,
+                total: total,
+                complete: complete,
+                whiteAccuracy: whiteAccuracy,
+                blackAccuracy: blackAccuracy,
+                whitePerformance: whitePerformance,
+                blackPerformance: blackPerformance,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String gameId,
+                required int profile,
+                required String engine,
+                required int analysed,
+                required int total,
+                required bool complete,
+                Value<double?> whiteAccuracy = const Value.absent(),
+                Value<double?> blackAccuracy = const Value.absent(),
+                Value<int?> whitePerformance = const Value.absent(),
+                Value<int?> blackPerformance = const Value.absent(),
+                required int updatedAt,
+                Value<int> rowid = const Value.absent(),
+              }) => GameReviewsCompanion.insert(
+                gameId: gameId,
+                profile: profile,
+                engine: engine,
+                analysed: analysed,
+                total: total,
+                complete: complete,
+                whiteAccuracy: whiteAccuracy,
+                blackAccuracy: blackAccuracy,
+                whitePerformance: whitePerformance,
+                blackPerformance: blackPerformance,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$GameReviewsTable, DbGameReview>(table),
+                  BaseReferences<
+                    _$AppDatabase,
+                    $GameReviewsTable,
+                    DbGameReview
+                  >(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$GameReviewsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $GameReviewsTable,
+      DbGameReview,
+      $$GameReviewsTableFilterComposer,
+      $$GameReviewsTableOrderingComposer,
+      $$GameReviewsTableAnnotationComposer,
+      $$GameReviewsTableCreateCompanionBuilder,
+      $$GameReviewsTableUpdateCompanionBuilder,
+      (
+        DbGameReview,
+        BaseReferences<_$AppDatabase, $GameReviewsTable, DbGameReview>,
+      ),
+      DbGameReview,
+      PrefetchHooks Function()
+    >;
+typedef $$GameAnalysisTableCreateCompanionBuilder =
+    GameAnalysisCompanion Function({
+      required String gameId,
+      required int profile,
+      required int ply,
+      Value<int?> cp,
+      Value<int?> mate,
+      Value<String?> pv,
+      required int depth,
+      Value<bool> capped,
+      Value<int?> secondCp,
+      Value<int?> secondMate,
+      Value<int?> label,
+      Value<int> rowid,
+    });
+typedef $$GameAnalysisTableUpdateCompanionBuilder =
+    GameAnalysisCompanion Function({
+      Value<String> gameId,
+      Value<int> profile,
+      Value<int> ply,
+      Value<int?> cp,
+      Value<int?> mate,
+      Value<String?> pv,
+      Value<int> depth,
+      Value<bool> capped,
+      Value<int?> secondCp,
+      Value<int?> secondMate,
+      Value<int?> label,
+      Value<int> rowid,
+    });
+
+class $$GameAnalysisTableFilterComposer
+    extends Composer<_$AppDatabase, $GameAnalysisTable> {
+  $$GameAnalysisTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get gameId => $composableBuilder(
+    column: $table.gameId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get profile => $composableBuilder(
+    column: $table.profile,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get ply => $composableBuilder(
+    column: $table.ply,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get cp => $composableBuilder(
+    column: $table.cp,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get mate => $composableBuilder(
+    column: $table.mate,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get pv => $composableBuilder(
+    column: $table.pv,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get depth => $composableBuilder(
+    column: $table.depth,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get capped => $composableBuilder(
+    column: $table.capped,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get secondCp => $composableBuilder(
+    column: $table.secondCp,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get secondMate => $composableBuilder(
+    column: $table.secondMate,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get label => $composableBuilder(
+    column: $table.label,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$GameAnalysisTableOrderingComposer
+    extends Composer<_$AppDatabase, $GameAnalysisTable> {
+  $$GameAnalysisTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get gameId => $composableBuilder(
+    column: $table.gameId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get profile => $composableBuilder(
+    column: $table.profile,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get ply => $composableBuilder(
+    column: $table.ply,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get cp => $composableBuilder(
+    column: $table.cp,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get mate => $composableBuilder(
+    column: $table.mate,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get pv => $composableBuilder(
+    column: $table.pv,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get depth => $composableBuilder(
+    column: $table.depth,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get capped => $composableBuilder(
+    column: $table.capped,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get secondCp => $composableBuilder(
+    column: $table.secondCp,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get secondMate => $composableBuilder(
+    column: $table.secondMate,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get label => $composableBuilder(
+    column: $table.label,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$GameAnalysisTableAnnotationComposer
+    extends Composer<_$AppDatabase, $GameAnalysisTable> {
+  $$GameAnalysisTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get gameId =>
+      $composableBuilder(column: $table.gameId, builder: (column) => column);
+
+  GeneratedColumn<int> get profile =>
+      $composableBuilder(column: $table.profile, builder: (column) => column);
+
+  GeneratedColumn<int> get ply =>
+      $composableBuilder(column: $table.ply, builder: (column) => column);
+
+  GeneratedColumn<int> get cp =>
+      $composableBuilder(column: $table.cp, builder: (column) => column);
+
+  GeneratedColumn<int> get mate =>
+      $composableBuilder(column: $table.mate, builder: (column) => column);
+
+  GeneratedColumn<String> get pv =>
+      $composableBuilder(column: $table.pv, builder: (column) => column);
+
+  GeneratedColumn<int> get depth =>
+      $composableBuilder(column: $table.depth, builder: (column) => column);
+
+  GeneratedColumn<bool> get capped =>
+      $composableBuilder(column: $table.capped, builder: (column) => column);
+
+  GeneratedColumn<int> get secondCp =>
+      $composableBuilder(column: $table.secondCp, builder: (column) => column);
+
+  GeneratedColumn<int> get secondMate => $composableBuilder(
+    column: $table.secondMate,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get label =>
+      $composableBuilder(column: $table.label, builder: (column) => column);
+}
+
+class $$GameAnalysisTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $GameAnalysisTable,
+          DbGameAnalysis,
+          $$GameAnalysisTableFilterComposer,
+          $$GameAnalysisTableOrderingComposer,
+          $$GameAnalysisTableAnnotationComposer,
+          $$GameAnalysisTableCreateCompanionBuilder,
+          $$GameAnalysisTableUpdateCompanionBuilder,
+          (
+            DbGameAnalysis,
+            BaseReferences<_$AppDatabase, $GameAnalysisTable, DbGameAnalysis>,
+          ),
+          DbGameAnalysis,
+          PrefetchHooks Function()
+        > {
+  $$GameAnalysisTableTableManager(_$AppDatabase db, $GameAnalysisTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$GameAnalysisTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$GameAnalysisTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$GameAnalysisTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> gameId = const Value.absent(),
+                Value<int> profile = const Value.absent(),
+                Value<int> ply = const Value.absent(),
+                Value<int?> cp = const Value.absent(),
+                Value<int?> mate = const Value.absent(),
+                Value<String?> pv = const Value.absent(),
+                Value<int> depth = const Value.absent(),
+                Value<bool> capped = const Value.absent(),
+                Value<int?> secondCp = const Value.absent(),
+                Value<int?> secondMate = const Value.absent(),
+                Value<int?> label = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => GameAnalysisCompanion(
+                gameId: gameId,
+                profile: profile,
+                ply: ply,
+                cp: cp,
+                mate: mate,
+                pv: pv,
+                depth: depth,
+                capped: capped,
+                secondCp: secondCp,
+                secondMate: secondMate,
+                label: label,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String gameId,
+                required int profile,
+                required int ply,
+                Value<int?> cp = const Value.absent(),
+                Value<int?> mate = const Value.absent(),
+                Value<String?> pv = const Value.absent(),
+                required int depth,
+                Value<bool> capped = const Value.absent(),
+                Value<int?> secondCp = const Value.absent(),
+                Value<int?> secondMate = const Value.absent(),
+                Value<int?> label = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => GameAnalysisCompanion.insert(
+                gameId: gameId,
+                profile: profile,
+                ply: ply,
+                cp: cp,
+                mate: mate,
+                pv: pv,
+                depth: depth,
+                capped: capped,
+                secondCp: secondCp,
+                secondMate: secondMate,
+                label: label,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$GameAnalysisTable, DbGameAnalysis>(table),
+                  BaseReferences<
+                    _$AppDatabase,
+                    $GameAnalysisTable,
+                    DbGameAnalysis
+                  >(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$GameAnalysisTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $GameAnalysisTable,
+      DbGameAnalysis,
+      $$GameAnalysisTableFilterComposer,
+      $$GameAnalysisTableOrderingComposer,
+      $$GameAnalysisTableAnnotationComposer,
+      $$GameAnalysisTableCreateCompanionBuilder,
+      $$GameAnalysisTableUpdateCompanionBuilder,
+      (
+        DbGameAnalysis,
+        BaseReferences<_$AppDatabase, $GameAnalysisTable, DbGameAnalysis>,
+      ),
+      DbGameAnalysis,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -9488,4 +13780,12 @@ class $AppDatabaseManager {
       $$SyncStateTableTableManager(_db, _db.syncState);
   $$AppMetaTableTableManager get appMeta =>
       $$AppMetaTableTableManager(_db, _db.appMeta);
+  $$ImportedGamesTableTableManager get importedGames =>
+      $$ImportedGamesTableTableManager(_db, _db.importedGames);
+  $$GameArchivesTableTableManager get gameArchives =>
+      $$GameArchivesTableTableManager(_db, _db.gameArchives);
+  $$GameReviewsTableTableManager get gameReviews =>
+      $$GameReviewsTableTableManager(_db, _db.gameReviews);
+  $$GameAnalysisTableTableManager get gameAnalysis =>
+      $$GameAnalysisTableTableManager(_db, _db.gameAnalysis);
 }

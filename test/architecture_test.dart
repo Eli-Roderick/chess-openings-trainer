@@ -91,6 +91,22 @@ void main() {
     expect(violations, isEmpty);
   });
 
+  test('network clients only in core/sync and features/games (D-119)', () {
+    const allowed = ['lib/core/sync/', 'lib/features/games/'];
+    final violations = <String>[];
+    for (final f in _dartFiles('lib')) {
+      final path = p.posix.joinAll(p.split(p.relative(f.path)));
+      if (allowed.any(path.startsWith)) continue;
+      for (final (file, line, uri) in _imports(f)) {
+        if (uri.startsWith('package:http/') ||
+            uri.startsWith('package:googleapis')) {
+          violations.add('${_where(file, line)} imports $uri');
+        }
+      }
+    }
+    expect(violations, isEmpty);
+  });
+
   test('no print( in lib or packages', () {
     final printRe = RegExp(r'(^|[^\w.])print\(');
     final violations = <String>[];
