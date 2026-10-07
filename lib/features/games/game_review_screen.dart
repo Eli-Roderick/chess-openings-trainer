@@ -15,6 +15,7 @@ import 'package:repertoire_trainer/features/board/repertoire_board.dart';
 import 'package:repertoire_trainer/features/games/eval_graph.dart';
 import 'package:repertoire_trainer/features/games/game_review.dart';
 import 'package:repertoire_trainer/features/games/move_marks.dart';
+import 'package:repertoire_trainer/features/games/repertoire_link_panel.dart';
 import 'package:repertoire_trainer/features/games/review_model.dart';
 import 'package:repertoire_trainer/l10n/gen/app_localizations.dart';
 import 'package:uci_engine/uci_engine.dart' show EngineScore;
@@ -187,6 +188,16 @@ class _GameReviewScreenState extends ConsumerState<GameReviewScreen> {
               overflow: TextOverflow.ellipsis,
             ),
             actions: [
+              IconButton(
+                key: const Key('open-repertoire-link'),
+                tooltip: l10n.repertoireLink,
+                icon: const Icon(Icons.account_tree_outlined),
+                onPressed: () => showModalBottomSheet<void>(
+                  context: context,
+                  isScrollControlled: true,
+                  builder: (_) => RepertoireLinkPanel(gameId: widget.gameId),
+                ),
+              ),
               IconButton(
                 key: const Key('review-flip'),
                 tooltip: l10n.flipBoard,

@@ -1252,5 +1252,77 @@
     }
   },
   "retryExit": "Back to review",
-  "gameNotFound": "This game is no longer stored."
+  "gameNotFound": "This game is no longer stored.",
+  "repertoireLink": "Repertoire",
+  "linkNoRepertoire": "No repertoire for this colour.",
+  "linkUserLeft": "You left the repertoire at {move} {san}. The repertoire plays {book}.",
+  "@linkUserLeft": {
+    "placeholders": {
+      "move": {
+        "type": "String"
+      },
+      "san": {
+        "type": "String"
+      },
+      "book": {
+        "type": "String"
+      }
+    }
+  },
+  "linkOpponentLeft": "Your opponent left the repertoire at {move} {san}. Not covered yet.",
+  "@linkOpponentLeft": {
+    "placeholders": {
+      "move": {
+        "type": "String"
+      },
+      "san": {
+        "type": "String"
+      }
+    }
+  },
+  "linkRepertoireEnd": "The game followed the repertoire to its end; {move} {san} came after it.",
+  "@linkRepertoireEnd": {
+    "placeholders": {
+      "move": {
+        "type": "String"
+      },
+      "san": {
+        "type": "String"
+      }
+    }
+  },
+  "linkGameEnd": "The game ended inside the repertoire.",
+  "linkRecord": "Your games reaching this position: {wins} W, {draws} D, {losses} L",
+  "@linkRecord": {
+    "placeholders": {
+      "wins": {
+        "type": "int"
+      },
+      "draws": {
+        "type": "int"
+      },
+      "losses": {
+        "type": "int"
+      }
+    }
+  },
+  "addToRepertoire": "Add to repertoire",
+  "uncoveredReplies": "Uncovered opponent replies in your games",
+  "uncoveredReply": "{move} {san} after {path}: {count, plural, =1{1 game} other{{count} games}}",
+  "@uncoveredReply": {
+    "placeholders": {
+      "move": {
+        "type": "String"
+      },
+      "san": {
+        "type": "String"
+      },
+      "path": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  }
 }

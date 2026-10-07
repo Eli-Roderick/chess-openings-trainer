@@ -429,7 +429,11 @@ void main() {
       }
     }
 
-    Future<AppHarness> open(WidgetTester tester, {bool analysed = true}) async {
+    Future<AppHarness> open(
+      WidgetTester tester, {
+      bool analysed = true,
+      String? repertoire,
+    }) async {
       final h = await AppHarness.pump(
         tester,
         overrides: [
@@ -445,6 +449,7 @@ void main() {
           ),
         ],
       );
+      if (repertoire != null) await h.create('Rep', repertoire);
       final repo = h.container.read(gamesRepositoryProvider);
       await repo.upsertGames(
         parseMonth((body: _month([_game('a')]), username: 'eli', fetchedAt: 1)),
@@ -557,6 +562,56 @@ void main() {
       await spin(tester, 3);
       expect(find.byKey(const Key('review-progress')), findsNothing);
       expect(find.textContaining('Accuracy -'), findsNothing);
+    });
+
+    Future<String> location(AppHarness h) async =>
+        h.container.read(routerProvider).state.uri.path;
+
+    testWidgets('repertoire link: you left, record, drill this line', (
+      tester,
+    ) async {
+      final h = await open(tester, repertoire: '1. e4 e5 2. Nc3 Nf6 3. Bc4 *');
+      await tester.tap(find.byKey(const Key('open-repertoire-link')));
+      await spin(tester, 20);
+      expect(
+        find.text(
+          'You left the repertoire at 3. Qh5. The repertoire plays Bc4.',
+        ),
+        findsOneWidget,
+      );
+      expect(
+        find.text('Your games reaching this position: 1 W, 0 D, 0 L'),
+        findsOneWidget,
+      );
+      expect(find.byKey(const Key('link-add')), findsNothing);
+      await tester.tap(find.byKey(const Key('link-drill')));
+      await spin(tester, 10);
+      expect(await location(h), endsWith('/train'));
+    });
+
+    testWidgets('repertoire link: uncovered opponent reply opens Browse', (
+      tester,
+    ) async {
+      final h = await open(tester, repertoire: '1. e4 c5 2. Nf3 *');
+      await tester.tap(find.byKey(const Key('open-repertoire-link')));
+      await spin(tester, 20);
+      expect(
+        find.text(
+          'Your opponent left the repertoire at 1... e5. Not covered yet.',
+        ),
+        findsOneWidget,
+      );
+      expect(find.text('1... e5 after 1.e4: 1 game'), findsOneWidget);
+      await tester.tap(find.byKey(const Key('link-add')));
+      await spin(tester, 10);
+      expect(await location(h), endsWith('/browse'));
+    });
+
+    testWidgets('repertoire link without a repertoire', (tester) async {
+      await open(tester);
+      await tester.tap(find.byKey(const Key('open-repertoire-link')));
+      await spin(tester, 10);
+      expect(find.byKey(const Key('link-none')), findsOneWidget);
     });
   });
 }
