@@ -194,8 +194,8 @@ void main() {
       expect(r.losses[2], 0);
       expect(r.whiteAccuracy, greaterThan(99));
       expect(r.blackAccuracy, lessThan(r.whiteAccuracy!));
-      expect(r.whitePerformance, 3000);
-      expect(r.blackPerformance, lessThan(3000));
+      expect(r.whitePerformance, greaterThan(2900));
+      expect(r.blackPerformance, lessThan(r.whitePerformance!));
     });
 
     test('Good and Blunder bands; unanalysed plies stay null', () {
@@ -364,5 +364,19 @@ void main() {
       ]);
       expect(r.labels.last, MoveLabel.best);
     });
+  });
+
+  test('ratingFromAccuracy follows the anchors and rises with accuracy', () {
+    expect(ratingFromAccuracy(63), 800);
+    expect(ratingFromAccuracy(90), 2250);
+    expect(ratingFromAccuracy(100), 3200);
+    expect(ratingFromAccuracy(0), 100);
+    expect(ratingFromAccuracy(72), inInclusiveRange(1000, 1300));
+    var last = 0;
+    for (var a = 0.0; a <= 100; a += 2.5) {
+      final r = ratingFromAccuracy(a);
+      expect(r, greaterThanOrEqualTo(last));
+      last = r;
+    }
   });
 }

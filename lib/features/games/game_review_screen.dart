@@ -19,7 +19,9 @@ import 'package:repertoire_trainer/l10n/gen/app_localizations.dart';
 import 'package:uci_engine/uci_engine.dart' show EngineScore;
 
 const double _barWidth = 14;
-const double _chipExtent = 72;
+const double _chipExtent = 92;
+const double _coachHeight = 140;
+const double _arrowSize = 56;
 
 /// Retrying a key move: the position before it, the user to move.
 final class _Retry {
@@ -251,7 +253,6 @@ class _GameReviewScreenState extends ConsumerState<GameReviewScreen> {
             child: AdaptiveLayout(
               phone: Column(
                 children: [
-                  coach,
                   // The board takes the width, or less on a short screen.
                   Expanded(
                     child: LayoutBuilder(
@@ -263,6 +264,7 @@ class _GameReviewScreenState extends ConsumerState<GameReviewScreen> {
                       ),
                     ),
                   ),
+                  coach,
                   strip,
                   actions,
                 ],
@@ -457,76 +459,87 @@ class _CoachCard extends StatelessWidget {
     final spent = retry == null && ply > 0
         ? secondsSpent(data.clocks, data.game.timeControl, ply)
         : null;
-    return Card(
-      key: const Key('coach-card'),
-      margin: const EdgeInsets.fromLTRB(
-        AdaptiveLayout.gutter,
-        8,
-        AdaptiveLayout.gutter,
-        8,
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                if (label != null) ...[
-                  MoveMark(label, size: 28),
-                  const SizedBox(width: 10),
-                ],
-                Expanded(
-                  child: Text(
-                    title,
-                    key: const Key('review-move-info'),
-                    style: theme.textTheme.titleMedium,
-                  ),
-                ),
-                if (spent != null)
-                  Padding(
-                    padding: const EdgeInsets.only(right: 8),
+    // A fixed height: the board must not move as the text changes.
+    return SizedBox(
+      height: _coachHeight,
+      child: Card(
+        key: const Key('coach-card'),
+        margin: const EdgeInsets.fromLTRB(
+          AdaptiveLayout.gutter,
+          8,
+          AdaptiveLayout.gutter,
+          8,
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(12),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  if (label != null) ...[
+                    MoveMark(label, size: 28),
+                    const SizedBox(width: 10),
+                  ],
+                  Expanded(
                     child: Text(
-                      l10n.reviewTimeSpent(spent.toStringAsFixed(1)),
-                      key: const Key('review-time'),
-                      style: theme.textTheme.bodySmall,
+                      title,
+                      key: const Key('review-move-info'),
+                      style: theme.textTheme.titleMedium,
                     ),
                   ),
-                if (score != null)
-                  DecoratedBox(
-                    decoration: BoxDecoration(
-                      color: theme.colorScheme.surfaceContainerHighest,
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 10,
-                        vertical: 4,
-                      ),
+                  if (spent != null)
+                    Padding(
+                      padding: const EdgeInsets.only(right: 8),
                       child: Text(
-                        evalLabel(engineScore(score)),
-                        key: const Key('review-eval'),
-                        style: theme.textTheme.titleSmall,
+                        l10n.reviewTimeSpent(spent.toStringAsFixed(1)),
+                        key: const Key('review-time'),
+                        style: theme.textTheme.bodySmall,
                       ),
                     ),
+                  if (score != null)
+                    DecoratedBox(
+                      decoration: BoxDecoration(
+                        color: theme.colorScheme.surfaceContainerHighest,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 4,
+                        ),
+                        child: Text(
+                          evalLabel(engineScore(score)),
+                          key: const Key('review-eval'),
+                          style: theme.textTheme.titleSmall,
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+              if (detail != null)
+                Padding(
+                  padding: const EdgeInsets.only(top: 6),
+                  child: Text(
+                    detail,
+                    key: const Key('review-detail'),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
-              ],
-            ),
-            if (detail != null)
-              Padding(
-                padding: const EdgeInsets.only(top: 6),
-                child: Text(detail, key: const Key('review-detail')),
-              ),
-            if (line != null)
-              Padding(
-                padding: const EdgeInsets.only(top: 6),
-                child: Text(
-                  line,
-                  key: const Key('review-line'),
-                  style: theme.textTheme.bodySmall,
                 ),
-              ),
-          ],
+              if (line != null)
+                Padding(
+                  padding: const EdgeInsets.only(top: 6),
+                  child: Text(
+                    line,
+                    key: const Key('review-line'),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: theme.textTheme.bodySmall,
+                  ),
+                ),
+            ],
+          ),
         ),
       ),
     );
@@ -556,12 +569,16 @@ class _MoveStrip extends StatelessWidget {
     final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
     return SizedBox(
-      height: 48,
+      height: _arrowSize,
       child: Row(
         children: [
           IconButton(
             key: const Key('nav-back'),
             tooltip: l10n.browseBack,
+            iconSize: 36,
+            style: IconButton.styleFrom(
+              minimumSize: const Size.square(_arrowSize),
+            ),
             icon: const Icon(Icons.chevron_left),
             onPressed: ply > 0 ? () => onSelect(ply - 1) : null,
           ),
@@ -590,27 +607,28 @@ class _MoveStrip extends StatelessWidget {
                         ),
                       ),
                     ),
-                    child: Stack(
-                      alignment: Alignment.center,
-                      children: [
-                        Text(
-                          p.isOdd ? '${(p + 1) ~/ 2}. ${sans[i]}' : sans[i],
-                          style: theme.textTheme.titleMedium?.copyWith(
-                            fontWeight: selected ? FontWeight.w800 : null,
-                            color: p > ply
-                                ? theme.colorScheme.onSurface.withValues(
-                                    alpha: 0.6,
-                                  )
-                                : null,
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            p.isOdd ? '${(p + 1) ~/ 2}. ${sans[i]}' : sans[i],
+                            style: theme.textTheme.titleMedium?.copyWith(
+                              fontWeight: selected ? FontWeight.w800 : null,
+                              color: p > ply
+                                  ? theme.colorScheme.onSurface.withValues(
+                                      alpha: 0.6,
+                                    )
+                                  : null,
+                            ),
                           ),
-                        ),
-                        if (i < labels.length && labels[i] != null)
-                          Positioned(
-                            top: 1,
-                            right: 2,
-                            child: MoveMark(labels[i]!, size: 14),
-                          ),
-                      ],
+                          if (i < labels.length && labels[i] != null) ...[
+                            const SizedBox(width: 4),
+                            MoveMark(labels[i]!, size: 18),
+                          ],
+                        ],
+                      ),
                     ),
                   ),
                 );
@@ -620,6 +638,10 @@ class _MoveStrip extends StatelessWidget {
           IconButton(
             key: const Key('nav-forward'),
             tooltip: l10n.browseForward,
+            iconSize: 36,
+            style: IconButton.styleFrom(
+              minimumSize: const Size.square(_arrowSize),
+            ),
             icon: const Icon(Icons.chevron_right),
             onPressed: ply < sans.length ? () => onSelect(ply + 1) : null,
           ),

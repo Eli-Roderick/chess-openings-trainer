@@ -66,6 +66,10 @@ Device checklist (Eli), still open: record the Diagnostics numbers on the phone 
 
 **D-128.** Stepping onto a move whose preceding position was not analysed (book moves, analysis still running) no longer crashes the board page. Label marks also appear in the move strip.
 
+## G3d (Game Review: layout, rating)
+
+**D-129.** Coach card below a steady board, bigger arrows, marks beside the notation, rating estimate from accuracy.
+
 ## G4 (Game Review: repertoire link)
 
 **D-125.** Review screen "Repertoire" sheet: where the game left the user's repertoire (user, opponent, line end, game end) and the repertoire's moves there, the record of stored games through that position, Drill this line, Add to repertoire (Browse with the reply), and the most frequent uncovered opponent replies across stored games.

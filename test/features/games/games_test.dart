@@ -595,6 +595,8 @@ void main() {
         ..devicePixelRatio = 3;
       addTearDown(tester.view.reset);
       await open(tester, board: true);
+      final boardAt = tester.getTopLeft(find.byType(RepertoireBoard));
+      final boardSize = tester.getSize(find.byType(RepertoireBoard));
       for (var i = 0; i < 8; i++) {
         for (final k in ['review-best', 'review-show']) {
           final f = find.byKey(Key(k));
@@ -610,6 +612,9 @@ void main() {
         await tester.tap(find.byKey(const Key('nav-back')));
         await tester.pump();
       }
+      // The board never moves or resizes as the coach text changes.
+      expect(tester.getTopLeft(find.byType(RepertoireBoard)), boardAt);
+      expect(tester.getSize(find.byType(RepertoireBoard)), boardSize);
       await tester.sendKeyEvent(LogicalKeyboardKey.arrowRight);
       await tester.pump();
       // The stepped-to move carries its label mark on the coach card, the
