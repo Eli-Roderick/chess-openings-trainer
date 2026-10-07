@@ -65,7 +65,7 @@ final class ReviewConfig {
     this.alreadyLostCp = -600,
     this.candidateLow = 0.03,
     this.candidateHigh = 0.97,
-    this.accuracyDecay = 0.055,
+    this.accuracyDecay = 0.025,
   });
 
   /// Band upper limits of loss.
@@ -129,6 +129,8 @@ final class ReviewConfig {
   final double candidateHigh;
 
   /// Per-move accuracy decay: `103.17 * e^(-k * win% lost) - 3.17`.
+  /// Lichess uses 0.04354; chess.com reads clearly more forgiving (75 where
+  /// 0.055 gave 49), so the default is lower. Fitted by hand to one game.
   final double accuracyDecay;
 }
 
