@@ -7,6 +7,9 @@ import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 import 'package:repertoire_trainer/app/router.dart';
 import 'package:repertoire_trainer/app/routes.dart';
+import 'package:repertoire_trainer/core/analysis/analysis_host.dart';
+import 'package:repertoire_trainer/core/analysis/analysis_providers.dart';
+import 'package:repertoire_trainer/core/analysis/game_analyzer.dart';
 import 'package:repertoire_trainer/core/db/app_database.dart';
 import 'package:repertoire_trainer/core/db/providers.dart';
 import 'package:repertoire_trainer/core/db/repositories/games_repository.dart';
@@ -17,12 +20,29 @@ import 'package:repertoire_trainer/features/games/games_service.dart';
 import 'package:repertoire_trainer/l10n/gen/app_localizations_en.dart';
 
 import '../../app_harness.dart';
+import '../../core/engine/fake_engine.dart';
 
 const _pgn =
     '[Event "Live Chess"]\n[ECO "C25"]\n'
     '[ECOUrl "https://www.chess.com/openings/Vienna-Game-2...Nf6"]\n\n'
     '1. e4 {[%clk 0:03:00]} 1... e5 {[%clk 0:02:59]} 2. Nc3 {[%clk 0:02:58]} '
-    '2... Nf6 {[%clk 0:02:57]} 1-0';
+    '2... Nf6 {[%clk 0:02:57]} 3. Qh5 {[%clk 0:02:56]} '
+    '3... Nxh5 {[%clk 0:02:55]} 1-0';
+
+final class _FakeHost implements AnalysisHost {
+  final shown = <String>[];
+  int stopped = 0;
+  bool low = false;
+
+  @override
+  Future<void> show(String text) async => shown.add(text);
+
+  @override
+  Future<void> stop() async => stopped++;
+
+  @override
+  Future<bool> batteryLow() async => low;
+}
 
 Map<String, Object?> _game(
   String id, {
@@ -190,8 +210,8 @@ void main() {
     expect(a.userWhite.value, isTrue);
     expect(a.result.value, 'win');
     expect(a.resultDetail.value, 'resigned');
-    expect(a.ucis.value, 'e2e4 e7e5 b1c3 g8f6');
-    expect(a.clocks.value, '1800,1790,1780,1770');
+    expect(a.ucis.value, 'e2e4 e7e5 b1c3 g8f6 d1h5 f6h5');
+    expect(a.clocks.value, '1800,1790,1780,1770,1760,1750');
     expect(a.opening.value, 'Vienna Game');
     expect(rows[1].result.value, 'draw');
     expect(rows[1].userWhite.value, isFalse);
@@ -301,6 +321,62 @@ void main() {
       expect(find.text('vs opp (1480)'), findsNWidgets(2));
       expect(find.textContaining('Blitz 3+2'), findsNWidgets(3));
       expect(h.container.read(settingsProvider).value!.chessComUsername, 'Eli');
+    });
+
+    testWidgets('Analyse recent games: notification, accuracy on the tile, '
+        'low battery stops', (tester) async {
+      final host = _FakeHost();
+      final engine = FakeEngine(step: const Duration(milliseconds: 1));
+      final h = await AppHarness.pump(
+        tester,
+        engine: engine,
+        overrides: [
+          chessComReachableProvider.overrideWith((ref) async => true),
+          chessComHttpProvider.overrideWithValue(_FakeChessCom().client),
+          analysisHostProvider.overrideWithValue(host),
+          gameAnalyzerProvider.overrideWith(
+            (ref) => GameAnalyzer(
+              launch: () =>
+                  FakeEngine(step: const Duration(milliseconds: 1))
+                      .launch('sf'),
+              store: ref.watch(gamesRepositoryProvider),
+              workers: 1,
+              clock: FakeClock(DateTime(2026, 10, 7)),
+            ),
+          ),
+        ],
+      );
+      h.container.read(routerProvider).go(Routes.games);
+      await h.settle();
+      await tester.enterText(find.byKey(const Key('chesscom-username')), 'eli');
+      await tester.tap(find.byKey(const Key('fetch-games')));
+      Future<void> spin(int n) async {
+        for (var i = 0; i < n; i++) {
+          await tester.runAsync(
+            () => Future<void>.delayed(const Duration(milliseconds: 20)),
+          );
+          await tester.pump(const Duration(milliseconds: 20));
+        }
+      }
+
+      await spin(10);
+      expect(find.byType(GameTile), findsNWidgets(3));
+      host.low = true;
+      await tester.tap(find.byKey(const Key('analyse-recent')));
+      await spin(5);
+      expect(find.text('Analysis stopped: battery low.'), findsOneWidget);
+      expect(host.shown, isEmpty);
+      host.low = false;
+      await tester.tap(find.byKey(const Key('analyse-recent')));
+      await spin(3);
+      expect(find.byKey(const Key('batch-bar')), findsOneWidget);
+      for (var i = 0; i < 300 && host.stopped < 2; i++) {
+        await spin(1);
+      }
+      await spin(5);
+      expect(host.shown, ['1 / 3', '2 / 3', '3 / 3']);
+      expect(find.byKey(const Key('batch-bar')), findsNothing);
+      expect(find.byKey(const ValueKey('accuracy-chesscom:a')), findsOneWidget);
     });
   });
 }

@@ -7,6 +7,7 @@ import 'package:repertoire_trainer/app/theme/colors.dart';
 import 'package:repertoire_trainer/core/db/app_database.dart';
 import 'package:repertoire_trainer/core/db/providers.dart';
 import 'package:repertoire_trainer/features/games/chess_com_client.dart';
+import 'package:repertoire_trainer/features/games/game_analysis.dart';
 import 'package:repertoire_trainer/features/games/games_service.dart';
 import 'package:repertoire_trainer/l10n/gen/app_localizations.dart';
 
@@ -103,8 +104,26 @@ class _GamesScreenState extends ConsumerState<GamesScreen> {
         ? const <DbImportedGame>[]
         : ref.watch(gamesProvider(u)).value ?? const <DbImportedGame>[];
     final canFetch = online && !_busy;
+    final batch = ref.watch(batchProvider);
+    final accuracy = ref.watch(gameAccuracyProvider).value ?? const {};
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.gameReview)),
+      appBar: AppBar(
+        title: Text(l10n.gameReview),
+        actions: [
+          IconButton(
+            key: const Key('analyse-recent'),
+            tooltip: l10n.analyseRecentGames,
+            icon: const Icon(Icons.insights),
+            onPressed: games.isEmpty || batch.running
+                ? null
+                : () => unawaited(
+                    ref
+                        .read(batchProvider.notifier)
+                        .start(games.take(10).toList()),
+                  ),
+          ),
+        ],
+      ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -165,6 +184,13 @@ class _GamesScreenState extends ConsumerState<GamesScreen> {
           ),
           const SizedBox(height: 4),
           if (_busy) const LinearProgressIndicator() else const Divider(),
+          if (batch.running)
+            _BatchBar(state: batch)
+          else if (batch.stoppedForBattery)
+            Padding(
+              padding: const EdgeInsets.all(12),
+              child: Text(l10n.analysisStoppedBattery),
+            ),
           Expanded(
             child: games.isEmpty
                 ? Center(
@@ -196,6 +222,7 @@ class _GamesScreenState extends ConsumerState<GamesScreen> {
                       final g = games[i];
                       return GameTile(
                         game: g,
+                        accuracy: accuracy[g.id],
                         onTap: widget.onOpen == null
                             ? null
                             : () => widget.onOpen!(g),
@@ -212,10 +239,13 @@ class _GamesScreenState extends ConsumerState<GamesScreen> {
 /// One stored game: result, opponent, time control, date, opening.
 class GameTile extends StatelessWidget {
   /// Creates the tile.
-  const new({required this.game, super.key, this.onTap});
+  const new({required this.game, super.key, this.onTap, this.accuracy});
 
   /// The game.
   final DbImportedGame game;
+
+  /// The user's accuracy once analysed.
+  final double? accuracy;
 
   /// Opens it.
   final VoidCallback? onTap;
@@ -264,17 +294,72 @@ class GameTile extends StatelessWidget {
       ),
       title: Text(l10n.gameOpponent(opponent, rating)),
       subtitle: Text(details, maxLines: 2, overflow: TextOverflow.ellipsis),
-      trailing: Tooltip(
-        message: g.userWhite ? l10n.playedWhite : l10n.playedBlack,
-        child: Container(
-          width: 14,
-          height: 14,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: g.userWhite ? AppColors.whiteSide : AppColors.blackSide,
-            border: Border.all(color: AppColors.info),
+      trailing: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (accuracy case final a?)
+            Padding(
+              padding: const EdgeInsets.only(right: 10),
+              child: Tooltip(
+                message: l10n.gameAccuracy(a.toStringAsFixed(1)),
+                child: Text(
+                  a.toStringAsFixed(1),
+                  key: ValueKey('accuracy-${g.id}'),
+                  style: Theme.of(context).textTheme.titleSmall,
+                ),
+              ),
+            ),
+          Tooltip(
+            message: g.userWhite ? l10n.playedWhite : l10n.playedBlack,
+            child: Container(
+              width: 14,
+              height: 14,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: g.userWhite ? AppColors.whiteSide : AppColors.blackSide,
+                border: Border.all(color: AppColors.info),
+              ),
+            ),
           ),
-        ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Batch progress with a Stop button.
+class _BatchBar extends ConsumerWidget {
+  const new({required this.state});
+
+  final BatchState state;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
+    final p = state.progress;
+    return Padding(
+      key: const Key('batch-bar'),
+      padding: const EdgeInsets.fromLTRB(16, 8, 8, 8),
+      child: Row(
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(l10n.analysingGame(state.index + 1, state.total)),
+                const SizedBox(height: 6),
+                LinearProgressIndicator(
+                  value: p == null || p.total == 0 ? null : p.done / p.total,
+                ),
+              ],
+            ),
+          ),
+          TextButton(
+            key: const Key('stop-batch'),
+            onPressed: () => unawaited(ref.read(batchProvider.notifier).stop()),
+            child: Text(l10n.stopAnalysis),
+          ),
+        ],
       ),
     );
   }

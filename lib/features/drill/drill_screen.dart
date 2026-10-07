@@ -10,6 +10,7 @@ import 'package:repertoire_trainer/app/layout/adaptive_layout.dart';
 import 'package:repertoire_trainer/app/routes.dart';
 import 'package:repertoire_trainer/app/shortcuts.dart';
 import 'package:repertoire_trainer/app/theme/colors.dart';
+import 'package:repertoire_trainer/core/analysis/analysis_providers.dart';
 import 'package:repertoire_trainer/core/audio/sound_service.dart';
 import 'package:repertoire_trainer/core/db/providers.dart';
 import 'package:repertoire_trainer/core/db/repositories/repertoire_repository.dart';
@@ -129,9 +130,13 @@ class _DrillScreenState extends ConsumerState<DrillScreen> {
   SyncGate? _gate;
   StreamSubscription<SyncChange>? _syncChanges;
 
+  /// Game analysis pauses while a drill is open (D-121).
+  late final void Function() _releaseAnalysis;
+
   @override
   void initState() {
     super.initState();
+    _releaseAnalysis = ref.read(gameAnalyzerProvider).hold();
     unawaited(_init());
   }
 
@@ -235,6 +240,7 @@ class _DrillScreenState extends ConsumerState<DrillScreen> {
   @override
   void dispose() {
     unawaited(_syncChanges?.cancel());
+    _releaseAnalysis();
     if (_gate case final gate?) gate.busy = false;
     // A run in progress is stored as abandoned (01 §7.10).
     _controller?.dispose();

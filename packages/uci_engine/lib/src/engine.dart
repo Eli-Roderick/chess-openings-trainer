@@ -35,6 +35,16 @@ final class Infinite extends SearchLimit {
   const new();
 }
 
+/// `go depth <plies>`: a fixed-depth search (reproducible with one thread
+/// and a cleared hash; Game Review).
+final class Depth extends SearchLimit {
+  /// Searches to [plies].
+  const new(this.plies);
+
+  /// Depth in plies.
+  final int plies;
+}
+
 /// One search to run.
 final class SearchRequest {
   /// Creates the request.
@@ -65,6 +75,8 @@ final class SearchRequest {
         parts.addAll(['movetime', '${duration.inMilliseconds}']);
       case Infinite():
         parts.add('infinite');
+      case Depth(:final plies):
+        parts.addAll(['depth', '$plies']);
     }
     if (searchMoves.isNotEmpty) parts.addAll(['searchmoves', ...searchMoves]);
     return parts.join(' ');

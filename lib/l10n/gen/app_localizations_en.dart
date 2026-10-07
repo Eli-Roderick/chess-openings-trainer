@@ -1672,4 +1672,23 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get playedBlack => 'You played Black';
+
+  @override
+  String get analyseRecentGames => 'Analyse recent games';
+
+  @override
+  String analysingGame(int index, int total) {
+    return 'Analysing game $index of $total';
+  }
+
+  @override
+  String get stopAnalysis => 'Stop';
+
+  @override
+  String get analysisStoppedBattery => 'Analysis stopped: battery low.';
+
+  @override
+  String gameAccuracy(String value) {
+    return 'Accuracy $value';
+  }
 }

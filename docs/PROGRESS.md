@@ -49,3 +49,7 @@ Device checklist (Eli), still open: record the Diagnostics numbers on the phone 
 ## G1 (Game Review: fetch and store)
 
 **D-119, D-120.** Game Review screen (home app bar): chess.com username, Fetch, stored games with result, opponent, time control, date and opening, older months on demand, clear offline state. Schema v3 with migration tests.
+
+## G2 (Game Review: analysis)
+
+**D-121 to D-123.** Parallel fixed-depth analysis (Quick, Standard, Deep) with resume and caching, classification, accuracy and performance estimate in chess_core, opening table, batch analysis with the Android foreground notification and low-battery stop, drill pause.
