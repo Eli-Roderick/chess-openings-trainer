@@ -111,7 +111,12 @@ jobs:
               echo "::error::$apk does not contain lib/$abi/libstockfish.so."
               exit 1
             fi
-            certs="$("$apksigner" verify --print-certs "$apk")"
+            if ! certs="$("$apksigner" verify --print-certs "$apk" 2>&1)"; then
+              printf '%s\n' "$certs"
+              echo "::error::apksigner could not verify $apk."
+              exit 1
+            fi
+            printf '%s\n' "$certs"
             if printf '%s' "$certs" | grep -q 'CN=Android Debug'; then
               echo "::error::$apk is signed with the debug key."
               exit 1
@@ -119,8 +124,8 @@ jobs:
             {
               echo "### $abi"
               echo '```'
-              unzip -l "$apk" | grep " lib/$abi/"
-              printf '%s\n' "$certs" | grep -E 'Signer #1 certificate (DN|SHA-256)'
+              unzip -l "$apk" | grep " lib/$abi/" || true
+              printf '%s\n' "$certs" | grep -E 'certificate (DN|SHA-256)' || true
               echo '```'
             } >> "$GITHUB_STEP_SUMMARY"
           done
