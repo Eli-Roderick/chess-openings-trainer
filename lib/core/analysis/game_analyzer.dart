@@ -212,7 +212,7 @@ final class GameAnalyzer {
     }
     final rows = {for (final r in await store.positions(id, p)) r.ply: r};
     final analyses = List<PositionAnalysis?>.filled(game.length + 1, null);
-    rows.forEach((ply, r) => analyses[ply] = _fromRow(r));
+    rows.forEach((ply, r) => analyses[ply] = analysisFromRow(r));
     // Game-ending positions are scored from the board.
     for (var i = 0; i <= game.length; i++) {
       if (game.isTerminal(i) && analyses[i] == null) {
@@ -420,7 +420,8 @@ EvalScore _white(EngineScore s, bool whiteToMove) {
   return EvalScore(cp: whiteToMove ? s.cp : -s.cp!);
 }
 
-PositionAnalysis? _fromRow(DbGameAnalysis r) {
+/// A stored position row as an analysis (null until scored).
+PositionAnalysis? analysisFromRow(DbGameAnalysis r) {
   if (r.cp == null && r.mate == null) return null;
   final second = r.secondCp != null || r.secondMate != null
       ? EvalScore(cp: r.secondCp, mate: r.secondMate)

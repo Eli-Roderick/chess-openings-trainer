@@ -6,6 +6,8 @@
 // - P13: across 20 drilled lines, < 1 % of frames over the build budget.
 // - P10: the stats screen opens in < 300 ms with 20k runs.
 // - P11: a backup of 20k runs exports in < 3 s and imports in < 5 s.
+// - G3: an analysed 120-ply game review opens in < 150 ms; stepping
+//   through every move has no frame over the build budget.
 // CI runs this file with
 // `xvfb-run flutter drive --profile -d linux
 //   --driver=test_driver/integration_test.dart
@@ -13,11 +15,14 @@
 // under `flutter test` (debug, JIT) only loose bounds are checked.
 import 'dart:developer' show Timeline;
 import 'dart:io';
+import 'dart:math' as math;
 import 'dart:ui' show FramePhase, FrameTiming;
 
 import 'package:chess_core/chess_core.dart';
 import 'package:chessground/chessground.dart' show PlayerSide;
-import 'package:dartchess/dartchess.dart' show Side;
+import 'package:dartchess/dartchess.dart'
+    show Chess, NormalMove, Position, Side;
+import 'package:drift/drift.dart' show Value;
 import 'package:drift/native.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -29,10 +34,12 @@ import 'package:path/path.dart' as p;
 import 'package:repertoire_trainer/app/bootstrap.dart';
 import 'package:repertoire_trainer/app/router.dart';
 import 'package:repertoire_trainer/app/routes.dart';
+import 'package:repertoire_trainer/core/analysis/game_analyzer.dart';
 import 'package:repertoire_trainer/core/db/app_database.dart';
 import 'package:repertoire_trainer/core/db/backup_queries.dart';
 import 'package:repertoire_trainer/core/db/merge_applier.dart';
 import 'package:repertoire_trainer/core/db/providers.dart';
+import 'package:repertoire_trainer/core/db/repositories/games_repository.dart';
 import 'package:repertoire_trainer/core/db/repositories/repertoire_repository.dart';
 import 'package:repertoire_trainer/core/db/repositories/run_repository.dart';
 import 'package:repertoire_trainer/core/db/repositories/settings_repository.dart';
@@ -417,6 +424,127 @@ void main() {
       expect(import.elapsed, lessThan(const Duration(seconds: 5)));
     }
   });
+  testWidgets('game review opens in < 150 ms; stepping through 120 plies '
+      'stays within the frame budget', (tester) async {
+    final dbFile = await _seedReviewedGame(120);
+    await bootstrap(
+      overrides: [
+        databaseProvider.overrideWith((ref) {
+          final db = AppDatabase(NativeDatabase.createInBackground(dbFile));
+          ref.onDispose(db.close);
+          return db;
+        }),
+      ],
+    );
+    final home = find.byKey(const Key('open-games'));
+    final watch = Stopwatch()..start();
+    while (home.evaluate().isEmpty && watch.elapsed.inSeconds < 30) {
+      await tester.pump(const Duration(milliseconds: 20));
+    }
+    final container = ProviderScope.containerOf(tester.element(home));
+    final loaded = find.byKey(const Key('review-summary'));
+    final open = Stopwatch()..start();
+    container.read(routerProvider).go(Routes.gameReview('g'));
+    while (loaded.evaluate().isEmpty && open.elapsed.inSeconds < 30) {
+      await tester.pump(const Duration(milliseconds: 5));
+    }
+    open.stop();
+    expect(loaded, findsOneWidget);
+    // Warm-up step, then the measured walk through the game.
+    await tester.tap(find.byKey(const Key('nav-forward')));
+    await tester.pump(const Duration(milliseconds: 300));
+    final frames = FrameStats.instance..reset();
+    for (var i = 1; i < 120; i++) {
+      await tester.tap(find.byKey(const Key('nav-forward')));
+      await tester.pump(const Duration(milliseconds: 16));
+      await tester.pump(const Duration(milliseconds: 16));
+    }
+    // The timing log for the acceptance criterion.
+    // ignore: avoid_print
+    print(
+      'Game review (${kDebugMode ? 'debug' : 'AOT'}): open '
+      '${open.elapsedMilliseconds} ms; ${frames.count} frames, over '
+      '${frames.budget.inMicroseconds / 1000} ms: ${frames.slowBuilds} '
+      'builds; worst build ${frames.worstBuild.inMicroseconds / 1000} ms',
+    );
+    if (!kDebugMode) {
+      expect(open.elapsed, lessThan(const Duration(milliseconds: 150)));
+      expect(frames.slowBuilds, lessThanOrEqualTo(1));
+    }
+  });
+}
+
+/// A database file holding one fully analysed (Standard) game of [plies]
+/// random legal moves, id `g`.
+Future<File> _seedReviewedGame(int plies) async {
+  final dir = await Directory.systemTemp.createTemp('rt_review_');
+  final dbFile = File(p.join(dir.path, 'repertoire.sqlite'));
+  final seed = AppDatabase(NativeDatabase(dbFile));
+  final rng = math.Random(3);
+  Position pos = Chess.initial;
+  final ucis = <String>[];
+  final sans = <String>[];
+  while (ucis.length < plies) {
+    final moves = [
+      for (final MapEntry(key: from, value: tos) in pos.legalMoves.entries)
+        for (final to in tos.squares) NormalMove(from: from, to: to),
+    ];
+    if (moves.isEmpty) break;
+    final m = moves[rng.nextInt(moves.length)];
+    final (after, san) = pos.makeSan(m);
+    ucis.add(m.uci);
+    sans.add(san);
+    pos = after;
+  }
+  final games = GamesRepository(seed);
+  await games.upsertGames([
+    ImportedGamesCompanion.insert(
+      id: 'g',
+      username: 'eli',
+      url: '',
+      endTime: 0,
+      timeClass: 'blitz',
+      timeControl: '180+2',
+      rated: true,
+      userWhite: true,
+      result: 'win',
+      resultDetail: 'resigned',
+      whiteName: 'Eli',
+      blackName: 'opp',
+      whiteRating: 1500,
+      blackRating: 1500,
+      ucis: ucis.join(' '),
+      sans: sans.join(' '),
+      pgn: '',
+      fetchedAt: 0,
+    ),
+  ]);
+  for (var ply = 0; ply <= ucis.length; ply++) {
+    await games.savePosition(
+      GameAnalysisCompanion.insert(
+        gameId: 'g',
+        profile: AnalysisProfile.standard.index,
+        ply: ply,
+        cp: Value(rng.nextInt(600) - 300),
+        pv: Value(ply < ucis.length ? ucis[ply] : ''),
+        depth: 18,
+      ),
+    );
+  }
+  await games.completeReview(
+    GameReviewsCompanion.insert(
+      gameId: 'g',
+      profile: AnalysisProfile.standard.index,
+      engine: 'sf',
+      analysed: ucis.length + 1,
+      total: ucis.length + 1,
+      complete: true,
+      updatedAt: 0,
+    ),
+    List<int?>.filled(ucis.length, null),
+  );
+  await seed.close();
+  return dbFile;
 }
 
 /// A database file holding one repertoire (12 lines) with [total] runs and

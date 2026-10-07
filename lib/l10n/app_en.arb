@@ -1135,5 +1135,122 @@
         "type": "String"
       }
     }
-  }
+  },
+  "gameReviewTitle": "{white} vs {black}",
+  "@gameReviewTitle": {
+    "placeholders": {
+      "white": {
+        "type": "String"
+      },
+      "black": {
+        "type": "String"
+      }
+    }
+  },
+  "moveLabelBook": "Book",
+  "moveLabelForced": "Forced",
+  "moveLabelBrilliant": "Brilliant",
+  "moveLabelGreat": "Great",
+  "moveLabelBest": "Best",
+  "moveLabelExcellent": "Excellent",
+  "moveLabelGood": "Good",
+  "moveLabelInaccuracy": "Inaccuracy",
+  "moveLabelMistake": "Mistake",
+  "moveLabelBlunder": "Blunder",
+  "moveLabelMiss": "Miss",
+  "analysisQuick": "Quick",
+  "analysisStandard": "Standard",
+  "reviewAnalysing": "Analysing ({profile}) {done} / {total}",
+  "@reviewAnalysing": {
+    "placeholders": {
+      "profile": {
+        "type": "String"
+      },
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "reviewCleanGame": "No mistakes or blunders in your moves.",
+  "reviewTurningPoint": "Turning point: {move} {san} ({label}). Best was {best}.",
+  "@reviewTurningPoint": {
+    "placeholders": {
+      "move": {
+        "type": "String"
+      },
+      "san": {
+        "type": "String"
+      },
+      "label": {
+        "type": "String"
+      },
+      "best": {
+        "type": "String"
+      }
+    }
+  },
+  "reviewMoveLabel": "{move} {san}: {label}",
+  "@reviewMoveLabel": {
+    "placeholders": {
+      "move": {
+        "type": "String"
+      },
+      "san": {
+        "type": "String"
+      },
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "reviewBestWas": "Best was {best}",
+  "@reviewBestWas": {
+    "placeholders": {
+      "best": {
+        "type": "String"
+      }
+    }
+  },
+  "reviewTimeSpent": "{seconds} s",
+  "@reviewTimeSpent": {
+    "placeholders": {
+      "seconds": {
+        "type": "String"
+      }
+    }
+  },
+  "reviewPerformance": "Performance {value}",
+  "@reviewPerformance": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "reviewStart": "Start position",
+  "nextKeyMove": "Next key move",
+  "previousKeyMove": "Previous key move",
+  "retryMove": "Retry this move",
+  "retryPrompt": "Find a better move than {san}.",
+  "@retryPrompt": {
+    "placeholders": {
+      "san": {
+        "type": "String"
+      }
+    }
+  },
+  "retryWrong": "Not the best move. Try again.",
+  "retryCorrect": "Correct: {san} was best.",
+  "@retryCorrect": {
+    "placeholders": {
+      "san": {
+        "type": "String"
+      }
+    }
+  },
+  "retryExit": "Back to review",
+  "gameNotFound": "This game is no longer stored."
 }

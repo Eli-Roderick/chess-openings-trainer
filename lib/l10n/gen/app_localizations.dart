@@ -2841,6 +2841,186 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Accuracy {value}'**
   String gameAccuracy(String value);
+
+  /// No description provided for @gameReviewTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'{white} vs {black}'**
+  String gameReviewTitle(String white, String black);
+
+  /// No description provided for @moveLabelBook.
+  ///
+  /// In en, this message translates to:
+  /// **'Book'**
+  String get moveLabelBook;
+
+  /// No description provided for @moveLabelForced.
+  ///
+  /// In en, this message translates to:
+  /// **'Forced'**
+  String get moveLabelForced;
+
+  /// No description provided for @moveLabelBrilliant.
+  ///
+  /// In en, this message translates to:
+  /// **'Brilliant'**
+  String get moveLabelBrilliant;
+
+  /// No description provided for @moveLabelGreat.
+  ///
+  /// In en, this message translates to:
+  /// **'Great'**
+  String get moveLabelGreat;
+
+  /// No description provided for @moveLabelBest.
+  ///
+  /// In en, this message translates to:
+  /// **'Best'**
+  String get moveLabelBest;
+
+  /// No description provided for @moveLabelExcellent.
+  ///
+  /// In en, this message translates to:
+  /// **'Excellent'**
+  String get moveLabelExcellent;
+
+  /// No description provided for @moveLabelGood.
+  ///
+  /// In en, this message translates to:
+  /// **'Good'**
+  String get moveLabelGood;
+
+  /// No description provided for @moveLabelInaccuracy.
+  ///
+  /// In en, this message translates to:
+  /// **'Inaccuracy'**
+  String get moveLabelInaccuracy;
+
+  /// No description provided for @moveLabelMistake.
+  ///
+  /// In en, this message translates to:
+  /// **'Mistake'**
+  String get moveLabelMistake;
+
+  /// No description provided for @moveLabelBlunder.
+  ///
+  /// In en, this message translates to:
+  /// **'Blunder'**
+  String get moveLabelBlunder;
+
+  /// No description provided for @moveLabelMiss.
+  ///
+  /// In en, this message translates to:
+  /// **'Miss'**
+  String get moveLabelMiss;
+
+  /// No description provided for @analysisQuick.
+  ///
+  /// In en, this message translates to:
+  /// **'Quick'**
+  String get analysisQuick;
+
+  /// No description provided for @analysisStandard.
+  ///
+  /// In en, this message translates to:
+  /// **'Standard'**
+  String get analysisStandard;
+
+  /// No description provided for @reviewAnalysing.
+  ///
+  /// In en, this message translates to:
+  /// **'Analysing ({profile}) {done} / {total}'**
+  String reviewAnalysing(String profile, int done, int total);
+
+  /// No description provided for @reviewCleanGame.
+  ///
+  /// In en, this message translates to:
+  /// **'No mistakes or blunders in your moves.'**
+  String get reviewCleanGame;
+
+  /// No description provided for @reviewTurningPoint.
+  ///
+  /// In en, this message translates to:
+  /// **'Turning point: {move} {san} ({label}). Best was {best}.'**
+  String reviewTurningPoint(String move, String san, String label, String best);
+
+  /// No description provided for @reviewMoveLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'{move} {san}: {label}'**
+  String reviewMoveLabel(String move, String san, String label);
+
+  /// No description provided for @reviewBestWas.
+  ///
+  /// In en, this message translates to:
+  /// **'Best was {best}'**
+  String reviewBestWas(String best);
+
+  /// No description provided for @reviewTimeSpent.
+  ///
+  /// In en, this message translates to:
+  /// **'{seconds} s'**
+  String reviewTimeSpent(String seconds);
+
+  /// No description provided for @reviewPerformance.
+  ///
+  /// In en, this message translates to:
+  /// **'Performance {value}'**
+  String reviewPerformance(String value);
+
+  /// No description provided for @reviewStart.
+  ///
+  /// In en, this message translates to:
+  /// **'Start position'**
+  String get reviewStart;
+
+  /// No description provided for @nextKeyMove.
+  ///
+  /// In en, this message translates to:
+  /// **'Next key move'**
+  String get nextKeyMove;
+
+  /// No description provided for @previousKeyMove.
+  ///
+  /// In en, this message translates to:
+  /// **'Previous key move'**
+  String get previousKeyMove;
+
+  /// No description provided for @retryMove.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry this move'**
+  String get retryMove;
+
+  /// No description provided for @retryPrompt.
+  ///
+  /// In en, this message translates to:
+  /// **'Find a better move than {san}.'**
+  String retryPrompt(String san);
+
+  /// No description provided for @retryWrong.
+  ///
+  /// In en, this message translates to:
+  /// **'Not the best move. Try again.'**
+  String get retryWrong;
+
+  /// No description provided for @retryCorrect.
+  ///
+  /// In en, this message translates to:
+  /// **'Correct: {san} was best.'**
+  String retryCorrect(String san);
+
+  /// No description provided for @retryExit.
+  ///
+  /// In en, this message translates to:
+  /// **'Back to review'**
+  String get retryExit;
+
+  /// No description provided for @gameNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'This game is no longer stored.'**
+  String get gameNotFound;
 }
 
 class _AppLocalizationsDelegate

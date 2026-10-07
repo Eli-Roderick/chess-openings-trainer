@@ -73,6 +73,9 @@ abstract final class Routes {
   /// Game Review: chess.com games.
   static const games = '/games';
 
+  /// One game's review.
+  static String gameReview(String id) => '/games/${Uri.encodeComponent(id)}';
+
   /// Hidden diagnostics.
   static const diagnostics = '/diagnostics';
 }

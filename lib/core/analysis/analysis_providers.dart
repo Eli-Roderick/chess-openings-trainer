@@ -10,9 +10,13 @@ import 'package:repertoire_trainer/core/db/providers.dart';
 import 'package:repertoire_trainer/core/engine/engine_providers.dart';
 import 'package:uci_engine/uci_engine.dart';
 
-/// The lichess opening table, parsed in an isolate once.
+/// The lichess opening table, parsed in an isolate once. The bundle does
+/// not cache the text: the parsed table is what is kept.
 final openingBookProvider = FutureProvider<OpeningBook>((ref) async {
-  final tsv = await rootBundle.loadString('assets/openings/openings.tsv');
+  final tsv = await rootBundle.loadString(
+    'assets/openings/openings.tsv',
+    cache: false,
+  );
   return await Isolate.run(() => OpeningBook.parse(tsv));
 });
 
