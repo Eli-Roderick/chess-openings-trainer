@@ -27,7 +27,8 @@ export 'src/pgn/pgn_reader.dart';
 export 'src/pgn/report.dart';
 export 'src/pgn/synthetic_pgn.dart';
 export 'src/review/book.dart';
-export 'src/review/move_facts.dart' show MoveFacts, material, pvSacrifice, see;
+export 'src/review/move_facts.dart'
+    show MoveFacts, bestCapture, material, pvSacrifice, see;
 export 'src/review/review.dart';
 export 'src/review/win_chance.dart';
 export 'src/sync/codec.dart';

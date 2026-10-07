@@ -12,6 +12,7 @@ class EvalGraph extends StatelessWidget {
     required this.onSelect,
     super.key,
     this.marks = const {},
+    this.dragSelect = true,
   });
 
   /// White's win chance (0..1) per position; null = not analysed yet.
@@ -26,6 +27,9 @@ class EvalGraph extends StatelessWidget {
   /// Called with the position under the finger.
   final ValueChanged<int> onSelect;
 
+  /// Dragging also selects (off where a selection navigates away).
+  final bool dragSelect;
+
   int _at(double dx, double width) {
     final n = values.length - 1;
     if (n <= 0 || width <= 0) return 0;
@@ -39,8 +43,9 @@ class EvalGraph extends StatelessWidget {
       builder: (context, c) => GestureDetector(
         behavior: HitTestBehavior.opaque,
         onTapDown: (d) => onSelect(_at(d.localPosition.dx, c.maxWidth)),
-        onHorizontalDragUpdate: (d) =>
-            onSelect(_at(d.localPosition.dx, c.maxWidth)),
+        onHorizontalDragUpdate: dragSelect
+            ? (d) => onSelect(_at(d.localPosition.dx, c.maxWidth))
+            : null,
         child: RepaintBoundary(
           child: CustomPaint(
             size: Size(c.maxWidth, c.maxHeight),

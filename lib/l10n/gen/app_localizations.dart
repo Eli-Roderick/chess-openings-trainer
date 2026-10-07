@@ -2842,12 +2842,6 @@ abstract class AppLocalizations {
   /// **'Accuracy {value}'**
   String gameAccuracy(String value);
 
-  /// No description provided for @gameReviewTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'{white} vs {black}'**
-  String gameReviewTitle(String white, String black);
-
   /// No description provided for @moveLabelBook.
   ///
   /// In en, this message translates to:
@@ -2926,30 +2920,6 @@ abstract class AppLocalizations {
   /// **'Standard'**
   String get analysisStandard;
 
-  /// No description provided for @reviewAnalysing.
-  ///
-  /// In en, this message translates to:
-  /// **'Analysing ({profile}) {done} / {total}'**
-  String reviewAnalysing(String profile, int done, int total);
-
-  /// No description provided for @reviewCleanGame.
-  ///
-  /// In en, this message translates to:
-  /// **'No mistakes or blunders in your moves.'**
-  String get reviewCleanGame;
-
-  /// No description provided for @reviewTurningPoint.
-  ///
-  /// In en, this message translates to:
-  /// **'Turning point: {move} {san} ({label}). Best was {best}.'**
-  String reviewTurningPoint(String move, String san, String label, String best);
-
-  /// No description provided for @reviewMoveLabel.
-  ///
-  /// In en, this message translates to:
-  /// **'{move} {san}: {label}'**
-  String reviewMoveLabel(String move, String san, String label);
-
   /// No description provided for @reviewBestWas.
   ///
   /// In en, this message translates to:
@@ -2962,35 +2932,11 @@ abstract class AppLocalizations {
   /// **'{seconds} s'**
   String reviewTimeSpent(String seconds);
 
-  /// No description provided for @reviewPerformance.
-  ///
-  /// In en, this message translates to:
-  /// **'Performance {value}'**
-  String reviewPerformance(String value);
-
   /// No description provided for @reviewStart.
   ///
   /// In en, this message translates to:
   /// **'Start position'**
   String get reviewStart;
-
-  /// No description provided for @nextKeyMove.
-  ///
-  /// In en, this message translates to:
-  /// **'Next key move'**
-  String get nextKeyMove;
-
-  /// No description provided for @previousKeyMove.
-  ///
-  /// In en, this message translates to:
-  /// **'Previous key move'**
-  String get previousKeyMove;
-
-  /// No description provided for @retryMove.
-  ///
-  /// In en, this message translates to:
-  /// **'Retry this move'**
-  String get retryMove;
 
   /// No description provided for @retryPrompt.
   ///
@@ -3081,6 +3027,150 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{move} {san} after {path}: {count, plural, =1{1 game} other{{count} games}}'**
   String uncoveredReply(String move, String san, String path, int count);
+
+  /// No description provided for @summaryIntro.
+  ///
+  /// In en, this message translates to:
+  /// **'Let\'s review some key moments from your game.'**
+  String get summaryIntro;
+
+  /// No description provided for @summaryPlayers.
+  ///
+  /// In en, this message translates to:
+  /// **'Players'**
+  String get summaryPlayers;
+
+  /// No description provided for @summaryAccuracy.
+  ///
+  /// In en, this message translates to:
+  /// **'Accuracy'**
+  String get summaryAccuracy;
+
+  /// No description provided for @summaryRating.
+  ///
+  /// In en, this message translates to:
+  /// **'Game rating (estimate)'**
+  String get summaryRating;
+
+  /// No description provided for @continueReview.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue review'**
+  String get continueReview;
+
+  /// No description provided for @reviewNext.
+  ///
+  /// In en, this message translates to:
+  /// **'Next'**
+  String get reviewNext;
+
+  /// No description provided for @reviewShow.
+  ///
+  /// In en, this message translates to:
+  /// **'Show'**
+  String get reviewShow;
+
+  /// No description provided for @reviewBest.
+  ///
+  /// In en, this message translates to:
+  /// **'Best'**
+  String get reviewBest;
+
+  /// No description provided for @reviewRetry.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry'**
+  String get reviewRetry;
+
+  /// No description provided for @backToSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'Summary'**
+  String get backToSummary;
+
+  /// No description provided for @reviewOpening.
+  ///
+  /// In en, this message translates to:
+  /// **'Opening: {name}'**
+  String reviewOpening(String name);
+
+  /// No description provided for @reviewLine.
+  ///
+  /// In en, this message translates to:
+  /// **'Engine line: {line}'**
+  String reviewLine(String line);
+
+  /// No description provided for @moveTitleBook.
+  ///
+  /// In en, this message translates to:
+  /// **'{san} is a book move'**
+  String moveTitleBook(String san);
+
+  /// No description provided for @moveTitleForced.
+  ///
+  /// In en, this message translates to:
+  /// **'{san} was forced'**
+  String moveTitleForced(String san);
+
+  /// No description provided for @moveTitleBrilliant.
+  ///
+  /// In en, this message translates to:
+  /// **'{san} is brilliant'**
+  String moveTitleBrilliant(String san);
+
+  /// No description provided for @moveTitleGreat.
+  ///
+  /// In en, this message translates to:
+  /// **'{san} is a great move'**
+  String moveTitleGreat(String san);
+
+  /// No description provided for @moveTitleBest.
+  ///
+  /// In en, this message translates to:
+  /// **'{san} is the best move'**
+  String moveTitleBest(String san);
+
+  /// No description provided for @moveTitleExcellent.
+  ///
+  /// In en, this message translates to:
+  /// **'{san} is excellent'**
+  String moveTitleExcellent(String san);
+
+  /// No description provided for @moveTitleGood.
+  ///
+  /// In en, this message translates to:
+  /// **'{san} is good'**
+  String moveTitleGood(String san);
+
+  /// No description provided for @moveTitleInaccuracy.
+  ///
+  /// In en, this message translates to:
+  /// **'{san} is an inaccuracy'**
+  String moveTitleInaccuracy(String san);
+
+  /// No description provided for @moveTitleMistake.
+  ///
+  /// In en, this message translates to:
+  /// **'{san} is a mistake'**
+  String moveTitleMistake(String san);
+
+  /// No description provided for @moveTitleBlunder.
+  ///
+  /// In en, this message translates to:
+  /// **'{san} is a blunder'**
+  String moveTitleBlunder(String san);
+
+  /// No description provided for @moveTitleMiss.
+  ///
+  /// In en, this message translates to:
+  /// **'{san} is a miss'**
+  String moveTitleMiss(String san);
+
+  /// No description provided for @reviewAnalysing.
+  ///
+  /// In en, this message translates to:
+  /// **'Analysing ({profile}) {done} / {total}'**
+  String reviewAnalysing(String profile, int done, int total);
 }
 
 class _AppLocalizationsDelegate

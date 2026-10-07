@@ -58,6 +58,10 @@ Device checklist (Eli), still open: record the Diagnostics numbers on the phone 
 
 **D-124.** Review screen (`/games/:id`): board with eval bar, win-chance graph, move list with the app's own classification marks, coach line, accuracy and performance for both sides, key-move navigation, retry at a key move with a hint, time per move, flip. Fills in live while the game is analysed. Profile budget added: open < 150 ms, no slow frames stepping through 120 plies.
 
+## G3b (Game Review: summary page, board page, Brilliant fix)
+
+**D-126, D-127.** A game opens on a summary page (graph with key moments, accuracy, label counts, estimated rating, Continue review) before the board page (coach card with the move's title, evaluation and best move, mark on the move's square, move strip, Show / Best / Retry / Next). Brilliant no longer fires on moves that ignore an already hanging piece or on exchanges the engine line has not settled.
+
 ## G4 (Game Review: repertoire link)
 
 **D-125.** Review screen "Repertoire" sheet: where the game left the user's repertoire (user, opponent, line end, game end) and the repertoire's moves there, the record of stored games through that position, Drill this line, Add to repertoire (Browse with the reply), and the most frequent uncovered opponent replies across stored games.
