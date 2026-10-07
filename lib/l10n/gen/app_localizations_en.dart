@@ -1691,4 +1691,117 @@ class AppLocalizationsEn extends AppLocalizations {
   String gameAccuracy(String value) {
     return 'Accuracy $value';
   }
+
+  @override
+  String gameReviewTitle(String white, String black) {
+    return '$white vs $black';
+  }
+
+  @override
+  String get moveLabelBook => 'Book';
+
+  @override
+  String get moveLabelForced => 'Forced';
+
+  @override
+  String get moveLabelBrilliant => 'Brilliant';
+
+  @override
+  String get moveLabelGreat => 'Great';
+
+  @override
+  String get moveLabelBest => 'Best';
+
+  @override
+  String get moveLabelExcellent => 'Excellent';
+
+  @override
+  String get moveLabelGood => 'Good';
+
+  @override
+  String get moveLabelInaccuracy => 'Inaccuracy';
+
+  @override
+  String get moveLabelMistake => 'Mistake';
+
+  @override
+  String get moveLabelBlunder => 'Blunder';
+
+  @override
+  String get moveLabelMiss => 'Miss';
+
+  @override
+  String get analysisQuick => 'Quick';
+
+  @override
+  String get analysisStandard => 'Standard';
+
+  @override
+  String reviewAnalysing(String profile, int done, int total) {
+    return 'Analysing ($profile) $done / $total';
+  }
+
+  @override
+  String get reviewCleanGame => 'No mistakes or blunders in your moves.';
+
+  @override
+  String reviewTurningPoint(
+    String move,
+    String san,
+    String label,
+    String best,
+  ) {
+    return 'Turning point: $move $san ($label). Best was $best.';
+  }
+
+  @override
+  String reviewMoveLabel(String move, String san, String label) {
+    return '$move $san: $label';
+  }
+
+  @override
+  String reviewBestWas(String best) {
+    return 'Best was $best';
+  }
+
+  @override
+  String reviewTimeSpent(String seconds) {
+    return '$seconds s';
+  }
+
+  @override
+  String reviewPerformance(String value) {
+    return 'Performance $value';
+  }
+
+  @override
+  String get reviewStart => 'Start position';
+
+  @override
+  String get nextKeyMove => 'Next key move';
+
+  @override
+  String get previousKeyMove => 'Previous key move';
+
+  @override
+  String get retryMove => 'Retry this move';
+
+  @override
+  String retryPrompt(String san) {
+    return 'Find a better move than $san.';
+  }
+
+  @override
+  String get retryWrong => 'Not the best move. Try again.';
+
+  @override
+  String retryCorrect(String san) {
+    return 'Correct: $san was best.';
+  }
+
+  @override
+  String get retryExit => 'Back to review';
+
+  @override
+  String get gameNotFound => 'This game is no longer stored.';
 }

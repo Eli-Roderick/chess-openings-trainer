@@ -53,3 +53,7 @@ Device checklist (Eli), still open: record the Diagnostics numbers on the phone 
 ## G2 (Game Review: analysis)
 
 **D-121 to D-123.** Parallel fixed-depth analysis (Quick, Standard, Deep) with resume and caching, classification, accuracy and performance estimate in chess_core, opening table, batch analysis with the Android foreground notification and low-battery stop, drill pause.
+
+## G3 (Game Review: review screen)
+
+**D-124.** Review screen (`/games/:id`): board with eval bar, win-chance graph, move list with the app's own classification marks, coach line, accuracy and performance for both sides, key-move navigation, retry at a key move with a hint, time per move, flip. Fills in live while the game is analysed. Profile budget added: open < 150 ms, no slow frames stepping through 120 plies.

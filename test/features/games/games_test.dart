@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:chess_core/chess_core.dart';
+import 'package:drift/drift.dart' show Value;
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
@@ -13,10 +14,12 @@ import 'package:repertoire_trainer/core/analysis/game_analyzer.dart';
 import 'package:repertoire_trainer/core/db/app_database.dart';
 import 'package:repertoire_trainer/core/db/providers.dart';
 import 'package:repertoire_trainer/core/db/repositories/games_repository.dart';
+import 'package:repertoire_trainer/features/board/repertoire_board.dart';
 import 'package:repertoire_trainer/features/games/chess_com_client.dart';
 import 'package:repertoire_trainer/features/games/chess_com_parser.dart';
 import 'package:repertoire_trainer/features/games/games_screen.dart';
 import 'package:repertoire_trainer/features/games/games_service.dart';
+import 'package:repertoire_trainer/features/games/review_model.dart';
 import 'package:repertoire_trainer/l10n/gen/app_localizations_en.dart';
 
 import '../../app_harness.dart';
@@ -377,6 +380,183 @@ void main() {
       expect(host.shown, ['1 / 3', '2 / 3', '3 / 3']);
       expect(find.byKey(const Key('batch-bar')), findsNothing);
       expect(find.byKey(const ValueKey('accuracy-chesscom:a')), findsOneWidget);
+    });
+  });
+
+  group('review model', () {
+    test('time spent from clocks and increment', () {
+      final clocks = parseClocks('1800,1795,1790,1700');
+      expect(secondsSpent(clocks, '180+2', 1), 2.0);
+      expect(secondsSpent(clocks, '180+2', 3), 3.0);
+      expect(secondsSpent(clocks, '180+2', 4), 11.5);
+      expect(secondsSpent(clocks, '1/86400', 1), isNull);
+      expect(secondsSpent(null, '180', 1), isNull);
+      expect(secondsSpent(clocks, '180', 5), isNull);
+      expect(parseClocks(''), isNull);
+    });
+
+    test('key moves, move numbers, counts', () {
+      const labels = [
+        MoveLabel.book,
+        MoveLabel.best,
+        MoveLabel.blunder,
+        null,
+        MoveLabel.great,
+      ];
+      final keys = keyPlies(labels);
+      expect(keys, [3, 5]);
+      expect(nextKey(keys, 0), 3);
+      expect(nextKey(keys, 5), isNull);
+      expect(previousKey(keys, 5), 3);
+      expect(previousKey(keys, 3), isNull);
+      expect(moveNumber(1), '1.');
+      expect(moveNumber(4), '2...');
+      expect(labelCounts(labels, white: true), {
+        MoveLabel.book: 1,
+        MoveLabel.blunder: 1,
+        MoveLabel.great: 1,
+      });
+    });
+  });
+
+  group('GameReviewScreen', () {
+    Future<void> spin(WidgetTester tester, int n) async {
+      for (var i = 0; i < n; i++) {
+        await tester.runAsync(
+          () => Future<void>.delayed(const Duration(milliseconds: 20)),
+        );
+        await tester.pump(const Duration(milliseconds: 20));
+      }
+    }
+
+    Future<AppHarness> open(WidgetTester tester, {bool analysed = true}) async {
+      final h = await AppHarness.pump(
+        tester,
+        overrides: [
+          gameAnalyzerProvider.overrideWith(
+            (ref) => GameAnalyzer(
+              launch: () =>
+                  FakeEngine(step: const Duration(milliseconds: 1))
+                      .launch('sf'),
+              store: ref.watch(gamesRepositoryProvider),
+              workers: 1,
+              clock: FakeClock(DateTime(2026, 10, 7)),
+            ),
+          ),
+        ],
+      );
+      final repo = h.container.read(gamesRepositoryProvider);
+      await repo.upsertGames(
+        parseMonth((body: _month([_game('a')]), username: 'eli', fetchedAt: 1)),
+      );
+      if (!analysed) {
+        h.container.read(routerProvider).go(Routes.gameReview('chesscom:a'));
+        await spin(tester, 80);
+        return h;
+      }
+      const standard = AnalysisProfile.standard;
+      for (final (ply, cp, pv) in [
+        (0, 20, 'e2e4'),
+        (1, 20, 'g1f3'),
+        (2, 20, 'b1c3'),
+        (3, 20, 'g8f6'),
+        (4, 30, 'g1f3 b8c6'),
+        (5, -900, 'f6h5'),
+        (6, -900, 'g2g3'),
+      ]) {
+        await repo.savePosition(
+          GameAnalysisCompanion.insert(
+            gameId: 'chesscom:a',
+            profile: standard.index,
+            ply: ply,
+            cp: Value(cp),
+            pv: Value(pv),
+            depth: 18,
+          ),
+        );
+      }
+      final book = MoveLabel.book.index;
+      await repo.completeReview(
+        GameReviewsCompanion.insert(
+          gameId: 'chesscom:a',
+          profile: standard.index,
+          engine: 'sf',
+          analysed: 7,
+          total: 7,
+          complete: true,
+          updatedAt: 1,
+        ),
+        [book, book, book, book, null, null],
+      );
+      h.container.read(routerProvider).go(Routes.gameReview('chesscom:a'));
+      await spin(tester, 80);
+      return h;
+    }
+
+    testWidgets('summary, key-move navigation and retry with hint', (
+      tester,
+    ) async {
+      final h = await open(tester);
+      expect(find.byKey(const Key('review-summary')), findsOneWidget);
+      expect(find.byKey(const Key('review-progress')), findsNothing);
+      expect(find.byKey(const Key('eval-graph')), findsOneWidget);
+      expect(
+        find.text('Turning point: 3. Qh5 (Blunder). Best was Nf3.'),
+        findsOneWidget,
+      );
+      expect(find.text('Start position'), findsOneWidget);
+      await tester.tap(find.byKey(const Key('nav-next-key')));
+      await tester.pump();
+      expect(find.text('3. Qh5: Blunder. Best was Nf3'), findsOneWidget);
+      expect(find.text('4.0 s'), findsOneWidget);
+      await tester.tap(find.byKey(const Key('nav-forward')));
+      await tester.pump();
+      expect(find.textContaining('3... Nxh5: Best'), findsOneWidget);
+      await tester.tap(find.byKey(const Key('nav-back')));
+      await tester.pump();
+
+      await tester.tap(find.byKey(const Key('retry-move')));
+      await tester.pump();
+      expect(find.text('Find a better move than Qh5.'), findsOneWidget);
+      final board = h.container.read(activeBoardProvider)!;
+      expect(board.debugPlayUserMove('a2a3'), isTrue);
+      await tester.pump(const Duration(milliseconds: 400));
+      expect(find.text('Not the best move. Try again.'), findsOneWidget);
+      expect(board.debugPlayUserMove('g1f3'), isTrue);
+      await tester.pump();
+      expect(find.text('Correct: Nf3 was best.'), findsOneWidget);
+      await tester.tap(find.byKey(const Key('retry-exit')));
+      await tester.pump();
+      expect(find.text('3. Qh5: Blunder. Best was Nf3'), findsOneWidget);
+
+      await tester.tap(find.byKey(const Key('review-move-1')));
+      await tester.pump();
+      expect(find.textContaining('1. e4: Book'), findsOneWidget);
+      await tester.tap(find.byKey(const Key('nav-last')));
+      await tester.pump();
+      await tester.tap(find.byKey(const Key('nav-first')));
+      await tester.pump();
+      expect(find.text('Start position'), findsOneWidget);
+      await tester.tap(find.byKey(const Key('review-flip')));
+      await tester.pump();
+    });
+
+    testWidgets('opening an unanalysed game analyses it and fills in', (
+      tester,
+    ) async {
+      final h = await open(tester, analysed: false);
+      expect(find.byKey(const Key('review-summary')), findsOneWidget);
+      final repo = h.container.read(gamesRepositoryProvider);
+      for (var i = 0; i < 300; i++) {
+        final r = await tester.runAsync(
+          () => repo.review('chesscom:a', AnalysisProfile.standard.index),
+        );
+        if (r?.complete ?? false) break;
+        await spin(tester, 1);
+      }
+      await spin(tester, 3);
+      expect(find.byKey(const Key('review-progress')), findsNothing);
+      expect(find.textContaining('Accuracy -'), findsNothing);
     });
   });
 }
