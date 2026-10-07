@@ -134,6 +134,29 @@ final StreamProviderFamily<ReviewData, String> reviewDataProvider =
             book: book,
             secondPass: profile.secondPass,
           );
+          // A complete review stores its scores; keep them current when the
+          // formula changed (the games list reads the stored ones).
+          final stored = reviews
+              .where((r) => r.profile == profile.index && r.complete)
+              .firstOrNull;
+          final changed =
+              stored != null &&
+              (!_sameScore(stored.whiteAccuracy, review.whiteAccuracy) ||
+                  !_sameScore(stored.blackAccuracy, review.blackAccuracy) ||
+                  stored.whitePerformance != review.whitePerformance ||
+                  stored.blackPerformance != review.blackPerformance);
+          if (changed) {
+            unawaited(
+              repo.updateScores(
+                id,
+                profile.index,
+                whiteAccuracy: review.whiteAccuracy,
+                blackAccuracy: review.blackAccuracy,
+                whitePerformance: review.whitePerformance,
+                blackPerformance: review.blackPerformance,
+              ),
+            );
+          }
           out.add(
             ReviewData(
               game: game,
@@ -187,6 +210,9 @@ final StreamProviderFamily<ReviewData, String> reviewDataProvider =
       unawaited(start().catchError(out.addError));
       return out.stream;
     });
+
+bool _sameScore(double? a, double? b) =>
+    a == b || a != null && b != null && (a - b).abs() < 0.05;
 
 // Top level: the closure must not capture the provider's state.
 Future<ReviewedGame> _replay(List<String> ucis) =>

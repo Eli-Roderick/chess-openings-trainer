@@ -3171,6 +3171,60 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Analysing ({profile}) {done} / {total}'**
   String reviewAnalysing(String profile, int done, int total);
+
+  /// No description provided for @selectedCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} selected'**
+  String selectedCount(int count);
+
+  /// No description provided for @selectAllGames.
+  ///
+  /// In en, this message translates to:
+  /// **'Select all'**
+  String get selectAllGames;
+
+  /// No description provided for @reviewSelected.
+  ///
+  /// In en, this message translates to:
+  /// **'Review selected games'**
+  String get reviewSelected;
+
+  /// No description provided for @rerunSelected.
+  ///
+  /// In en, this message translates to:
+  /// **'Re-run selected reviews'**
+  String get rerunSelected;
+
+  /// No description provided for @clearSelection.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear selection'**
+  String get clearSelection;
+
+  /// No description provided for @rerunReview.
+  ///
+  /// In en, this message translates to:
+  /// **'Re-run review'**
+  String get rerunReview;
+
+  /// No description provided for @rerunReviewTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Re-run this review?'**
+  String get rerunReviewTitle;
+
+  /// No description provided for @rerunReviewBody.
+  ///
+  /// In en, this message translates to:
+  /// **'The stored analysis of this game is replaced by a new one. It takes a minute or two.'**
+  String get rerunReviewBody;
+
+  /// No description provided for @rerunConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Re-run'**
+  String get rerunConfirm;
 }
 
 class _AppLocalizationsDelegate

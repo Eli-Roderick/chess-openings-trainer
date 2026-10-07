@@ -70,6 +70,10 @@ Device checklist (Eli), still open: record the Diagnostics numbers on the phone 
 
 **D-129.** Coach card below a steady board, bigger arrows, marks beside the notation, rating estimate from accuracy.
 
+## G3e (Game Review: calibration, re-run, selection)
+
+**D-131, D-132.** Accuracy, rating, Best, Great, Miss, Brilliant tuned from chess.com pairs; Re-run review on the summary page; scores refresh in the games list; long-press multi-select with Review / Re-run.
+
 ## G4 (Game Review: repertoire link)
 
 **D-125.** Review screen "Repertoire" sheet: where the game left the user's repertoire (user, opponent, line end, game end) and the repertoire's moves there, the record of stored games through that position, Drill this line, Add to repertoire (Browse with the reply), and the most frequent uncovered opponent replies across stored games.

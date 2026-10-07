@@ -72,14 +72,15 @@ final class BatchController extends Notifier<BatchState> {
   }
 
   /// Analyses [games] (newest first) that have no complete Standard
-  /// review yet.
-  Future<void> start(List<DbImportedGame> games) async {
+  /// review yet; with [rerun] every one of them, its stored results
+  /// replaced just before its turn.
+  Future<void> start(List<DbImportedGame> games, {bool rerun = false}) async {
     if (state.running) return;
     final repo = ref.read(gamesRepositoryProvider);
     final todo = <DbImportedGame>[];
     for (final g in games) {
       final r = await repo.review(g.id, AnalysisProfile.standard.index);
-      if (!(r?.complete ?? false)) todo.add(g);
+      if (rerun || !(r?.complete ?? false)) todo.add(g);
     }
     if (todo.isEmpty) return;
     _cancelled = false;
@@ -94,6 +95,7 @@ final class BatchController extends Notifier<BatchState> {
         }
         state = BatchState(total: todo.length, index: i, running: true);
         await host.show('${i + 1} / ${todo.length}');
+        if (rerun) await repo.clearGame(todo[i].id);
         final request = await requestFor(ref, todo[i]);
         final done = Completer<void>();
         _sub = ref

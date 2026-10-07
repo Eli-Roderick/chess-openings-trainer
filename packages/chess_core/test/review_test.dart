@@ -185,7 +185,8 @@ void main() {
         MoveLabel.book,
         MoveLabel.best,
         MoveLabel.excellent,
-        MoveLabel.best,
+        // Not the engine's move and no loss: Excellent, never Best.
+        MoveLabel.excellent,
         MoveLabel.inaccuracy,
         MoveLabel.best,
         MoveLabel.mistake,
@@ -203,7 +204,7 @@ void main() {
       final r = g.review([a(0), a(-40), a(-40), a(-800), null]);
       expect(r.labels, [
         MoveLabel.good,
-        MoveLabel.best, // equal or better than the line: loss 0
+        MoveLabel.excellent, // equal or better than the line, not the engine's
         MoveLabel.blunder,
         null,
       ]);
@@ -366,12 +367,14 @@ void main() {
     });
   });
 
-  test('ratingFromAccuracy follows the anchors and rises with accuracy', () {
-    expect(ratingFromAccuracy(63), 800);
-    expect(ratingFromAccuracy(90), 2250);
+  test('ratingFromAccuracy follows chess.com pairs, in steps of 50', () {
+    expect(ratingFromAccuracy(47.5), 350);
+    expect(ratingFromAccuracy(62.6), 700);
+    expect(ratingFromAccuracy(74.3), 1350);
+    expect(ratingFromAccuracy(80.5), 1650);
     expect(ratingFromAccuracy(100), 3200);
     expect(ratingFromAccuracy(0), 100);
-    expect(ratingFromAccuracy(72), inInclusiveRange(1000, 1300));
+    expect(ratingFromAccuracy(72) % 50, 0);
     var last = 0;
     for (var a = 0.0; a <= 100; a += 2.5) {
       final r = ratingFromAccuracy(a);

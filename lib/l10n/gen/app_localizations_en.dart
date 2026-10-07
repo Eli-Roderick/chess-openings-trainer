@@ -1908,4 +1908,34 @@ class AppLocalizationsEn extends AppLocalizations {
   String reviewAnalysing(String profile, int done, int total) {
     return 'Analysing ($profile) $done / $total';
   }
+
+  @override
+  String selectedCount(int count) {
+    return '$count selected';
+  }
+
+  @override
+  String get selectAllGames => 'Select all';
+
+  @override
+  String get reviewSelected => 'Review selected games';
+
+  @override
+  String get rerunSelected => 'Re-run selected reviews';
+
+  @override
+  String get clearSelection => 'Clear selection';
+
+  @override
+  String get rerunReview => 'Re-run review';
+
+  @override
+  String get rerunReviewTitle => 'Re-run this review?';
+
+  @override
+  String get rerunReviewBody =>
+      'The stored analysis of this game is replaced by a new one. It takes a minute or two.';
+
+  @override
+  String get rerunConfirm => 'Re-run';
 }

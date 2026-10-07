@@ -1384,5 +1384,21 @@
         "type": "int"
       }
     }
-  }
+  },
+  "selectedCount": "{count} selected",
+  "@selectedCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "selectAllGames": "Select all",
+  "reviewSelected": "Review selected games",
+  "rerunSelected": "Re-run selected reviews",
+  "clearSelection": "Clear selection",
+  "rerunReview": "Re-run review",
+  "rerunReviewTitle": "Re-run this review?",
+  "rerunReviewBody": "The stored analysis of this game is replaced by a new one. It takes a minute or two.",
+  "rerunConfirm": "Re-run"
 }

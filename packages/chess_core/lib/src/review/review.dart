@@ -52,20 +52,22 @@ final class ReviewConfig {
     this.mistake = 0.20,
     this.nearBest = 0.02,
     this.brilliantMinAfter = 0.45,
+    this.brilliantMaxBefore = 0.70,
+    this.minLoss = 0.001,
     this.overwhelming = 0.97,
     this.sacrificePawns = 2,
     this.sacrificePlies = 8,
-    this.greatGap = 0.10,
-    this.greatCpGap = 300,
+    this.greatGap = 0.07,
+    this.greatCpGap = 200,
     this.greatSwing = false,
-    this.missOpponentDrop = 0.10,
+    this.missOpponentDrop = 0.07,
     this.missGiveBack = 0.10,
-    this.missTolerance = 0.05,
+    this.missTolerance = 0.08,
     this.quickMate = 2,
     this.alreadyLostCp = -600,
     this.candidateLow = 0.03,
     this.candidateHigh = 0.97,
-    this.accuracyDecay = 0.025,
+    this.accuracyDecay = 0.045,
   });
 
   /// Band upper limits of loss.
@@ -85,6 +87,14 @@ final class ReviewConfig {
 
   /// Brilliant: the mover's expected points after the move, at least.
   final double brilliantMinAfter;
+
+  /// A Brilliant needs the mover at or under this before the move (not
+  /// already clearly winning).
+  final double brilliantMaxBefore;
+
+  /// Smallest loss of a move that is not the engine's: eval noise must not
+  /// read as a perfect move.
+  final double minLoss;
 
   /// The alternative is already winning this much: no Brilliant / Great.
   final double overwhelming;
@@ -129,8 +139,8 @@ final class ReviewConfig {
   final double candidateHigh;
 
   /// Per-move accuracy decay: `103.17 * e^(-k * win% lost) - 3.17`.
-  /// Lichess uses 0.04354; chess.com reads clearly more forgiving (75 where
-  /// 0.055 gave 49), so the default is lower. Fitted by hand to one game.
+  /// Lichess uses 0.04354; 0.045 fits 12 of Eli's player-games against
+  /// chess.com best (D-131).
   final double accuracyDecay;
 }
 
@@ -344,7 +354,6 @@ final class ReviewedGame {
     }
     final labels = List<MoveLabel?>.filled(length, null);
     final losses = List<double?>.filled(length, null);
-    final cpLosses = List<int?>.filled(length, null);
     for (var ply = 1; ply <= length; ply++) {
       final f = facts[ply - 1];
       if (book.contains(ply)) {
@@ -362,19 +371,17 @@ final class ReviewedGame {
       final engineMove = _isEngineMove(ply, before);
       final epBefore = before.score.forSide(forWhite: white);
       final epAfter = after.score.forSide(forWhite: white);
-      final loss = engineMove ? 0.0 : math.max(0, epBefore - epAfter);
-      losses[ply - 1] = loss.toDouble();
-      int moverCp(EvalScore s) => white ? s.cappedCp : -s.cappedCp;
-      cpLosses[ply - 1] = engineMove
-          ? 0
-          : math.max(0, moverCp(before.score) - moverCp(after.score));
+      final loss = engineMove
+          ? 0.0
+          : math.max(config.minLoss, epBefore - epAfter);
+      losses[ply - 1] = loss;
       labels[ply - 1] = _label(
         ply,
         before,
         after,
         analyses,
         losses,
-        loss.toDouble(),
+        loss,
         engineMove: engineMove,
         config: config,
         secondPass: secondPass,
@@ -418,6 +425,7 @@ final class ReviewedGame {
     final alternative = engineMove ? (epSecond ?? epBefore) : epBefore;
     if (loss <= config.nearBest &&
         epAfter >= config.brilliantMinAfter &&
+        epBefore <= config.brilliantMaxBefore &&
         alternative < config.overwhelming &&
         !f.recapture &&
         (!engineMove || second != null || !secondPass) &&
@@ -481,7 +489,7 @@ final class ReviewedGame {
         return MoveLabel.miss;
       }
     }
-    if (engineMove || loss <= 0) return MoveLabel.best;
+    if (engineMove) return MoveLabel.best;
     if (loss <= config.excellent) return MoveLabel.excellent;
     if (loss <= config.good) return MoveLabel.good;
     if (loss <= config.inaccuracy) return MoveLabel.inaccuracy;
@@ -551,20 +559,25 @@ double _volatility(List<double> xs) {
   return math.sqrt(sq / xs.length).clamp(0.5, 12);
 }
 
-/// Accuracy (percent) to estimated rating anchors, rising together.
-/// chess.com does not publish its Game Rating; it says the rating compares
-/// the quality of the moves with what a player of each level is expected to
-/// play. These anchors are our own reading of typical accuracy by level
-/// (about 63% at 800, 69% at 1000, 80% at 1600, 90% at 2250), so the number
-/// is an estimate, not a copy of chess.com's.
+/// Accuracy (percent) to estimated rating anchors, rising together. From
+/// 12 of Eli's player-games: chess.com's own Game Rating against its own
+/// accuracy (47.5 = 350 ... 80.5 = 1650, correlation 0.98); above 80 the
+/// slope of about 50 points per point is continued. chess.com does not
+/// publish the formula, so the number stays an estimate.
 const List<(double, int)> _accuracyRatings = [
   (0, 100),
-  (40, 250),
-  (55, 500),
-  (63, 800),
-  (69, 1000),
-  (75, 1300),
-  (80, 1600),
+  (20, 100),
+  (47.5, 350),
+  (51, 400),
+  (55.1, 500),
+  (60.6, 600),
+  (62.6, 700),
+  (66.8, 900),
+  (68.1, 1000),
+  (74.3, 1350),
+  (75.6, 1400),
+  (76.3, 1450),
+  (80.5, 1650),
   (85, 1900),
   (90, 2250),
   (94, 2600),
@@ -572,14 +585,16 @@ const List<(double, int)> _accuracyRatings = [
   (100, 3200),
 ];
 
-/// Estimated rating of a player whose moves score [accuracy] percent.
+/// Estimated rating of a player whose moves score [accuracy] percent,
+/// in steps of 50 like chess.com's.
 int ratingFromAccuracy(double accuracy) {
   final a = accuracy.clamp(0.0, 100.0);
   for (var i = 1; i < _accuracyRatings.length; i++) {
     final (x1, y1) = _accuracyRatings[i];
     if (a <= x1) {
       final (x0, y0) = _accuracyRatings[i - 1];
-      return (y0 + (y1 - y0) * (a - x0) / (x1 - x0)).round();
+      final r = y0 + (y1 - y0) * (a - x0) / (x1 - x0);
+      return (r / 50).round() * 50;
     }
   }
   return _accuracyRatings.last.$2;

@@ -176,6 +176,37 @@ final class GamesRepository {
     },
   );
 
+  /// Removes every stored result of [gameId], every profile (re-run).
+  Future<void> clearGame(String gameId) => _db.transaction(() async {
+    await (_db.delete(
+      _db.gameAnalysis,
+    )..where((a) => a.gameId.equals(gameId))).go();
+    await (_db.delete(
+      _db.gameReviews,
+    )..where((r) => r.gameId.equals(gameId))).go();
+  });
+
+  /// Rewrites the stored scores of a complete summary (the formula changed
+  /// since it was stored).
+  Future<void> updateScores(
+    String gameId,
+    int profile, {
+    double? whiteAccuracy,
+    double? blackAccuracy,
+    int? whitePerformance,
+    int? blackPerformance,
+  }) =>
+      (_db.update(_db.gameReviews)
+            ..where((r) => r.gameId.equals(gameId) & r.profile.equals(profile)))
+          .write(
+            GameReviewsCompanion(
+              whiteAccuracy: Value(whiteAccuracy),
+              blackAccuracy: Value(blackAccuracy),
+              whitePerformance: Value(whitePerformance),
+              blackPerformance: Value(blackPerformance),
+            ),
+          );
+
   /// The user's accuracy per game id from complete Quick or Standard
   /// reviews (Standard wins).
   Stream<Map<String, double>> watchUserAccuracies() => _db
