@@ -302,15 +302,24 @@ final class ReviewedGame {
     return out;
   }
 
-  bool _sacrifice(int ply, PositionAnalysis after, ReviewConfig config) =>
-      facts[ply - 1].sacrificesPiece(minPawns: config.sacrificePawns) ||
-      pvSacrifice(
-        positions[ply - 1],
-        positions[ply],
-        after.pv,
-        minPawns: config.sacrificePawns,
-        plies: config.sacrificePlies,
-      );
+  /// A real sacrifice: the engine's line after the move settles material
+  /// down, and either a piece now newly hangs or the move itself gave up
+  /// an exchange by capturing. A piece that merely looks en prise (a
+  /// tactic keeps it) does not count. Without a line the static exchange
+  /// on the board decides.
+  bool _sacrifice(int ply, PositionAnalysis after, ReviewConfig config) {
+    final f = facts[ply - 1];
+    final stat = f.sacrificesPiece(minPawns: config.sacrificePawns);
+    if (after.pv.isEmpty) return stat;
+    return (stat || f.capture) &&
+        pvSacrifice(
+          positions[ply - 1],
+          positions[ply],
+          after.pv,
+          minPawns: config.sacrificePawns,
+          plies: config.sacrificePlies,
+        );
+  }
 
   /// Classifies every analysed move and scores both sides. [analyses]
   /// has one entry per position (length `length + 1`, null = not yet

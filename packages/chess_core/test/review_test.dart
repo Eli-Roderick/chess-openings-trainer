@@ -114,6 +114,44 @@ void main() {
       expect(pvSacrifice(g.positions[2], g.positions[3], ['g8f6']), isFalse);
       expect(pvSacrifice(g.positions[2], g.positions[3], ['zz']), isFalse);
     });
+
+    test('a piece that was already attacked is not newly given up', () {
+      // 3.Nc3 attacks the queen on d5; 3...Nf6 defends it but ignores the
+      // threat: the queen is not a sacrifice made by Nf6.
+      final g = ReviewedGame.of([
+        'e2e4', 'd7d5', 'e4d5', 'd8d5', 'b1c3', 'g8f6', //
+      ]);
+      expect(g.facts[5].hangingValue, 0);
+      expect(g.facts[5].sacrificesPiece(), isFalse);
+    });
+
+    test('engine lines are settled by exchange at both ends', () {
+      final g = ReviewedGame.of(['e2e4', 'e7e5', 'f1a6']);
+      // The line stops right after Black took the bishop and a pawn is
+      // not enough: bishop (3) for nothing is down 3 and counts...
+      expect(pvSacrifice(g.positions[2], g.positions[3], ['b7a6']), isTrue);
+      // ...but when White can win it straight back it does not.
+      final h = ReviewedGame.of(['e2e4', 'd7d5', 'e4d5', 'g8f6', 'd5d6']);
+      // 5.d6 hangs the pawn only; the exchange that follows keeps the
+      // material even, and the pv ends mid-capture.
+      expect(
+        pvSacrifice(h.positions[4], h.positions[5], ['c7d6', 'd1d6']),
+        isFalse,
+      );
+    });
+
+    test('lines with castling are followed', () {
+      final g = ReviewedGame.of([
+        'e2e4', 'e7e5', 'g1f3', 'b8c6', 'f1c4', 'g8f6', 'e1g1', //
+      ]);
+      // Black takes e4; White castled earlier in the line shape: the pv
+      // plays e1g1 as the engine prints it.
+      expect(
+        pvSacrifice(g.positions[6], g.positions[7], ['f6e4', 'f1e1']),
+        isFalse,
+      );
+      expect(bestCapture(g.positions[7].board, Side.black), 1);
+    });
   });
 
   group('classification', () {

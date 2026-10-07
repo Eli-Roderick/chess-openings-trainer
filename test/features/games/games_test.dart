@@ -420,6 +420,9 @@ void main() {
   });
 
   group('GameReviewScreen', () {
+    Future<String> location(AppHarness h) async =>
+        h.container.read(routerProvider).state.uri.path;
+
     Future<void> spin(WidgetTester tester, int n) async {
       for (var i = 0; i < n; i++) {
         await tester.runAsync(
@@ -432,6 +435,7 @@ void main() {
     Future<AppHarness> open(
       WidgetTester tester, {
       bool analysed = true,
+      bool board = false,
       String? repertoire,
     }) async {
       final h = await AppHarness.pump(
@@ -493,30 +497,60 @@ void main() {
         ),
         [book, book, book, book, null, null],
       );
-      h.container.read(routerProvider).go(Routes.gameReview('chesscom:a'));
+      final target = board
+          ? Routes.gameBoard('chesscom:a')
+          : Routes.gameReview('chesscom:a');
+      h.container.read(routerProvider).go(target);
       await spin(tester, 80);
       return h;
     }
 
-    testWidgets('summary, key-move navigation and retry with hint', (
-      tester,
-    ) async {
+    testWidgets('summary page: graph, accuracy, label counts, rating, '
+        'Continue review opens the board', (tester) async {
       final h = await open(tester);
-      expect(find.byKey(const Key('review-summary')), findsOneWidget);
+      expect(find.byKey(const Key('summary-intro')), findsOneWidget);
       expect(find.byKey(const Key('review-progress')), findsNothing);
       expect(find.byKey(const Key('eval-graph')), findsOneWidget);
-      expect(
-        find.text('Turning point: 3. Qh5 (Blunder). Best was Nf3.'),
-        findsOneWidget,
+      expect(find.byKey(const Key('summary-accuracy')), findsOneWidget);
+      await tester.scrollUntilVisible(
+        find.byKey(const Key('summary-rating')),
+        200,
+        scrollable: find.byType(Scrollable).first,
       );
+      expect(find.byKey(const Key('summary-rating')), findsOneWidget);
+      // Eli (White): one Blunder; Black: Nf6 is the engine's move, Nxh5 too.
+      String count(String label, String side) =>
+          tester.widget<Text>(find.byKey(Key('summary-$label-$side'))).data!;
+      expect(count('blunder', 'w'), '1');
+      expect(count('blunder', 'b'), '0');
+      expect(count('book', 'w'), '2');
+      expect(count('book', 'b'), '2');
+      expect(find.text('Brilliant'), findsOneWidget);
+      await tester.tap(find.byKey(const Key('continue-review')));
+      await spin(tester, 10);
+      expect(await location(h), endsWith('/board'));
+      expect(find.byKey(const Key('coach-card')), findsOneWidget);
+    });
+
+    testWidgets('board page: key moments, retry with hint, strip', (
+      tester,
+    ) async {
+      final h = await open(tester, board: true);
       expect(find.text('Start position'), findsOneWidget);
-      await tester.tap(find.byKey(const Key('nav-next-key')));
+      await tester.tap(find.byKey(const Key('review-next')));
       await tester.pump();
-      expect(find.text('3. Qh5: Blunder. Best was Nf3'), findsOneWidget);
+      expect(find.text('Qh5 is a blunder'), findsOneWidget);
+      expect(find.text('Best was Nf3'), findsOneWidget);
+      expect(find.byKey(const Key('review-eval')), findsOneWidget);
       expect(find.text('4.0 s'), findsOneWidget);
+      await tester.tap(find.byKey(const Key('review-show')));
+      await tester.pump();
+      expect(find.textContaining('Engine line: Nf3'), findsOneWidget);
+      await tester.tap(find.byKey(const Key('review-best')));
+      await tester.pump();
       await tester.tap(find.byKey(const Key('nav-forward')));
       await tester.pump();
-      expect(find.textContaining('3... Nxh5: Best'), findsOneWidget);
+      expect(find.text('Nxh5 is the best move'), findsOneWidget);
       await tester.tap(find.byKey(const Key('nav-back')));
       await tester.pump();
 
@@ -532,16 +566,19 @@ void main() {
       expect(find.text('Correct: Nf3 was best.'), findsOneWidget);
       await tester.tap(find.byKey(const Key('retry-exit')));
       await tester.pump();
-      expect(find.text('3. Qh5: Blunder. Best was Nf3'), findsOneWidget);
+      expect(find.text('Qh5 is a blunder'), findsOneWidget);
 
-      await tester.tap(find.byKey(const Key('review-move-1')));
+      for (var i = 0; i < 4; i++) {
+        await tester.tap(find.byKey(const Key('nav-back')));
+        await tester.pump();
+      }
+      expect(find.text('e4 is a book move'), findsOneWidget);
+      expect(find.text('Opening: Vienna Game'), findsOneWidget);
+      // No key moment left after the blunder: Next goes back to the summary.
+      await tester.tap(find.byKey(const Key('review-next')));
       await tester.pump();
-      expect(find.textContaining('1. e4: Book'), findsOneWidget);
-      await tester.tap(find.byKey(const Key('nav-last')));
-      await tester.pump();
-      await tester.tap(find.byKey(const Key('nav-first')));
-      await tester.pump();
-      expect(find.text('Start position'), findsOneWidget);
+      expect(find.text('Qh5 is a blunder'), findsOneWidget);
+      expect(find.text('Summary'), findsOneWidget);
       await tester.tap(find.byKey(const Key('review-flip')));
       await tester.pump();
     });
@@ -550,7 +587,7 @@ void main() {
       tester,
     ) async {
       final h = await open(tester, analysed: false);
-      expect(find.byKey(const Key('review-summary')), findsOneWidget);
+      expect(find.byKey(const Key('summary-intro')), findsOneWidget);
       final repo = h.container.read(gamesRepositoryProvider);
       for (var i = 0; i < 300; i++) {
         final r = await tester.runAsync(
@@ -563,9 +600,6 @@ void main() {
       expect(find.byKey(const Key('review-progress')), findsNothing);
       expect(find.textContaining('Accuracy -'), findsNothing);
     });
-
-    Future<String> location(AppHarness h) async =>
-        h.container.read(routerProvider).state.uri.path;
 
     testWidgets('repertoire link: you left, record, drill this line', (
       tester,

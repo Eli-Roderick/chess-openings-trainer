@@ -442,9 +442,9 @@ void main() {
       await tester.pump(const Duration(milliseconds: 20));
     }
     final container = ProviderScope.containerOf(tester.element(home));
-    final loaded = find.byKey(const Key('review-summary'));
+    final loaded = find.byKey(const Key('coach-card'));
     final open = Stopwatch()..start();
-    container.read(routerProvider).go(Routes.gameReview('g'));
+    container.read(routerProvider).go(Routes.gameBoard('g'));
     while (loaded.evaluate().isEmpty && open.elapsed.inSeconds < 30) {
       await tester.pump(const Duration(milliseconds: 5));
     }

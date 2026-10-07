@@ -49,7 +49,9 @@ final class MoveFacts {
   final int capturedValue;
 
   /// Afterwards, the most the opponent wins by static exchange on one of
-  /// the mover's pieces (knight or bigger); 0 when none hangs.
+  /// the mover's pieces (knight or bigger) that was not already attacked
+  /// as badly before the move; 0 when none newly hangs. A check or a
+  /// retreat that leaves an earlier threat standing is not a sacrifice.
   final int hangingValue;
 
   /// The move leaves a piece hanging for more than it took, by at least
@@ -100,16 +102,21 @@ MoveFacts moveFacts(
     easyCapture: easy,
     fleesCheaperAttacker: flees,
     capturedValue: capture ? pieceValue(captured?.role ?? Role.pawn) : 0,
-    hangingValue: _hanging(after.board, mover),
+    hangingValue: _newlyHanging(board, after.board, mover, move),
   );
 }
 
-int _hanging(Board board, Side mover) {
+int _newlyHanging(Board before, Board after, Side mover, NormalMove move) {
   var worst = 0;
-  for (final s in board.bySide(mover).squares) {
-    final role = board.roleAt(s)!;
+  for (final s in after.bySide(mover).squares) {
+    final role = after.roleAt(s)!;
     if (role == Role.pawn || role == Role.king) continue;
-    worst = math.max(worst, see(board, s, mover.opposite));
+    final now = see(after, s, mover.opposite);
+    if (now <= worst) continue;
+    // Another piece that was already attacked as badly is not newly given
+    // up; the moved piece always is (it could have gone elsewhere).
+    final was = s == move.to ? 0 : see(before, s, mover.opposite);
+    worst = math.max(worst, now - math.max(0, was));
   }
   return worst;
 }
@@ -170,10 +177,24 @@ int material(Board board, Side side, {bool piecesOnly = false}) {
   return total;
 }
 
+/// The most [side] wins by static exchange on any enemy piece but the
+/// king; 0 when nothing is attacked profitably.
+int bestCapture(Board board, Side side) {
+  var best = 0;
+  for (final s in board.bySide(side.opposite).squares) {
+    if (board.roleAt(s) == Role.king) continue;
+    best = math.max(best, see(board, s, side));
+  }
+  return best;
+}
+
 /// Whether the engine line [pv] (UCI, from [after], the position after the
-/// mover's move) settles with the mover at least [minPawns] down against
-/// [before] and with less piece material relative to the opponent: a real
-/// sacrifice, not a pawn grab. At most [plies] plies are played.
+/// mover's move) settles with the mover at least [minPawns] down and with
+/// less piece material relative to the opponent: a real sacrifice, not a
+/// pawn grab. At most [plies] plies are played. Both ends are settled by
+/// static exchange, so an exchange the line stops in the middle of does
+/// not count, and neither does material a check made the mover lose
+/// anyway.
 bool pvSacrifice(
   Position before,
   Position after,
@@ -187,10 +208,22 @@ bool pvSacrifice(
       material(b, mover.opposite, piecesOnly: pieces);
   var p = after;
   for (final uci in pv.take(plies)) {
-    final m = Move.parse(uci);
-    if (m == null || !p.isLegal(m)) break;
+    final parsed = Move.parse(uci);
+    if (parsed is! NormalMove) break;
+    final m = p.normalizeMove(parsed) as NormalMove;
+    if (!p.isLegal(m)) break;
     p = p.play(m);
   }
-  return balance(before.board) - balance(p.board) >= minPawns &&
+  // Answering a check cannot save a piece that was already lost; any
+  // other move could have, so giving it up is a choice.
+  final start =
+      balance(before.board) -
+      (before.isCheck ? bestCapture(before.board, mover.opposite) : 0);
+  final end =
+      balance(p.board) +
+      (p.turn == mover
+          ? bestCapture(p.board, mover)
+          : -bestCapture(p.board, mover.opposite));
+  return start - end >= minPawns &&
       balance(p.board, pieces: true) < balance(before.board, pieces: true);
 }

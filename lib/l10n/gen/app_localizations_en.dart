@@ -1693,11 +1693,6 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String gameReviewTitle(String white, String black) {
-    return '$white vs $black';
-  }
-
-  @override
   String get moveLabelBook => 'Book';
 
   @override
@@ -1737,29 +1732,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get analysisStandard => 'Standard';
 
   @override
-  String reviewAnalysing(String profile, int done, int total) {
-    return 'Analysing ($profile) $done / $total';
-  }
-
-  @override
-  String get reviewCleanGame => 'No mistakes or blunders in your moves.';
-
-  @override
-  String reviewTurningPoint(
-    String move,
-    String san,
-    String label,
-    String best,
-  ) {
-    return 'Turning point: $move $san ($label). Best was $best.';
-  }
-
-  @override
-  String reviewMoveLabel(String move, String san, String label) {
-    return '$move $san: $label';
-  }
-
-  @override
   String reviewBestWas(String best) {
     return 'Best was $best';
   }
@@ -1770,21 +1742,7 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String reviewPerformance(String value) {
-    return 'Performance $value';
-  }
-
-  @override
   String get reviewStart => 'Start position';
-
-  @override
-  String get nextKeyMove => 'Next key move';
-
-  @override
-  String get previousKeyMove => 'Previous key move';
-
-  @override
-  String get retryMove => 'Retry this move';
 
   @override
   String retryPrompt(String san) {
@@ -1849,5 +1807,105 @@ class AppLocalizationsEn extends AppLocalizations {
       one: '1 game',
     );
     return '$move $san after $path: $_temp0';
+  }
+
+  @override
+  String get summaryIntro => 'Let\'s review some key moments from your game.';
+
+  @override
+  String get summaryPlayers => 'Players';
+
+  @override
+  String get summaryAccuracy => 'Accuracy';
+
+  @override
+  String get summaryRating => 'Game rating (estimate)';
+
+  @override
+  String get continueReview => 'Continue review';
+
+  @override
+  String get reviewNext => 'Next';
+
+  @override
+  String get reviewShow => 'Show';
+
+  @override
+  String get reviewBest => 'Best';
+
+  @override
+  String get reviewRetry => 'Retry';
+
+  @override
+  String get backToSummary => 'Summary';
+
+  @override
+  String reviewOpening(String name) {
+    return 'Opening: $name';
+  }
+
+  @override
+  String reviewLine(String line) {
+    return 'Engine line: $line';
+  }
+
+  @override
+  String moveTitleBook(String san) {
+    return '$san is a book move';
+  }
+
+  @override
+  String moveTitleForced(String san) {
+    return '$san was forced';
+  }
+
+  @override
+  String moveTitleBrilliant(String san) {
+    return '$san is brilliant';
+  }
+
+  @override
+  String moveTitleGreat(String san) {
+    return '$san is a great move';
+  }
+
+  @override
+  String moveTitleBest(String san) {
+    return '$san is the best move';
+  }
+
+  @override
+  String moveTitleExcellent(String san) {
+    return '$san is excellent';
+  }
+
+  @override
+  String moveTitleGood(String san) {
+    return '$san is good';
+  }
+
+  @override
+  String moveTitleInaccuracy(String san) {
+    return '$san is an inaccuracy';
+  }
+
+  @override
+  String moveTitleMistake(String san) {
+    return '$san is a mistake';
+  }
+
+  @override
+  String moveTitleBlunder(String san) {
+    return '$san is a blunder';
+  }
+
+  @override
+  String moveTitleMiss(String san) {
+    return '$san is a miss';
+  }
+
+  @override
+  String reviewAnalysing(String profile, int done, int total) {
+    return 'Analysing ($profile) $done / $total';
   }
 }

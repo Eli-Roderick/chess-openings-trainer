@@ -73,8 +73,13 @@ abstract final class Routes {
   /// Game Review: chess.com games.
   static const games = '/games';
 
-  /// One game's review.
+  /// One game's review: the summary page.
   static String gameReview(String id) => '/games/${Uri.encodeComponent(id)}';
+
+  /// The review's board page, at [ply] (0 = the start).
+  static String gameBoard(String id, {int ply = 0}) =>
+      '/games/${Uri.encodeComponent(id)}/board'
+      '${ply == 0 ? '' : '?ply=$ply'}';
 
   /// Hidden diagnostics.
   static const diagnostics = '/diagnostics';

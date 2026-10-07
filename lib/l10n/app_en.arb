@@ -1136,17 +1136,6 @@
       }
     }
   },
-  "gameReviewTitle": "{white} vs {black}",
-  "@gameReviewTitle": {
-    "placeholders": {
-      "white": {
-        "type": "String"
-      },
-      "black": {
-        "type": "String"
-      }
-    }
-  },
   "moveLabelBook": "Book",
   "moveLabelForced": "Forced",
   "moveLabelBrilliant": "Brilliant",
@@ -1160,52 +1149,6 @@
   "moveLabelMiss": "Miss",
   "analysisQuick": "Quick",
   "analysisStandard": "Standard",
-  "reviewAnalysing": "Analysing ({profile}) {done} / {total}",
-  "@reviewAnalysing": {
-    "placeholders": {
-      "profile": {
-        "type": "String"
-      },
-      "done": {
-        "type": "int"
-      },
-      "total": {
-        "type": "int"
-      }
-    }
-  },
-  "reviewCleanGame": "No mistakes or blunders in your moves.",
-  "reviewTurningPoint": "Turning point: {move} {san} ({label}). Best was {best}.",
-  "@reviewTurningPoint": {
-    "placeholders": {
-      "move": {
-        "type": "String"
-      },
-      "san": {
-        "type": "String"
-      },
-      "label": {
-        "type": "String"
-      },
-      "best": {
-        "type": "String"
-      }
-    }
-  },
-  "reviewMoveLabel": "{move} {san}: {label}",
-  "@reviewMoveLabel": {
-    "placeholders": {
-      "move": {
-        "type": "String"
-      },
-      "san": {
-        "type": "String"
-      },
-      "label": {
-        "type": "String"
-      }
-    }
-  },
   "reviewBestWas": "Best was {best}",
   "@reviewBestWas": {
     "placeholders": {
@@ -1222,18 +1165,7 @@
       }
     }
   },
-  "reviewPerformance": "Performance {value}",
-  "@reviewPerformance": {
-    "placeholders": {
-      "value": {
-        "type": "String"
-      }
-    }
-  },
   "reviewStart": "Start position",
-  "nextKeyMove": "Next key move",
-  "previousKeyMove": "Previous key move",
-  "retryMove": "Retry this move",
   "retryPrompt": "Find a better move than {san}.",
   "@retryPrompt": {
     "placeholders": {
@@ -1321,6 +1253,134 @@
         "type": "String"
       },
       "count": {
+        "type": "int"
+      }
+    }
+  },
+  "summaryIntro": "Let's review some key moments from your game.",
+  "summaryPlayers": "Players",
+  "summaryAccuracy": "Accuracy",
+  "summaryRating": "Game rating (estimate)",
+  "continueReview": "Continue review",
+  "reviewNext": "Next",
+  "reviewShow": "Show",
+  "reviewBest": "Best",
+  "reviewRetry": "Retry",
+  "backToSummary": "Summary",
+  "reviewOpening": "Opening: {name}",
+  "@reviewOpening": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "reviewLine": "Engine line: {line}",
+  "@reviewLine": {
+    "placeholders": {
+      "line": {
+        "type": "String"
+      }
+    }
+  },
+  "moveTitleBook": "{san} is a book move",
+  "@moveTitleBook": {
+    "placeholders": {
+      "san": {
+        "type": "String"
+      }
+    }
+  },
+  "moveTitleForced": "{san} was forced",
+  "@moveTitleForced": {
+    "placeholders": {
+      "san": {
+        "type": "String"
+      }
+    }
+  },
+  "moveTitleBrilliant": "{san} is brilliant",
+  "@moveTitleBrilliant": {
+    "placeholders": {
+      "san": {
+        "type": "String"
+      }
+    }
+  },
+  "moveTitleGreat": "{san} is a great move",
+  "@moveTitleGreat": {
+    "placeholders": {
+      "san": {
+        "type": "String"
+      }
+    }
+  },
+  "moveTitleBest": "{san} is the best move",
+  "@moveTitleBest": {
+    "placeholders": {
+      "san": {
+        "type": "String"
+      }
+    }
+  },
+  "moveTitleExcellent": "{san} is excellent",
+  "@moveTitleExcellent": {
+    "placeholders": {
+      "san": {
+        "type": "String"
+      }
+    }
+  },
+  "moveTitleGood": "{san} is good",
+  "@moveTitleGood": {
+    "placeholders": {
+      "san": {
+        "type": "String"
+      }
+    }
+  },
+  "moveTitleInaccuracy": "{san} is an inaccuracy",
+  "@moveTitleInaccuracy": {
+    "placeholders": {
+      "san": {
+        "type": "String"
+      }
+    }
+  },
+  "moveTitleMistake": "{san} is a mistake",
+  "@moveTitleMistake": {
+    "placeholders": {
+      "san": {
+        "type": "String"
+      }
+    }
+  },
+  "moveTitleBlunder": "{san} is a blunder",
+  "@moveTitleBlunder": {
+    "placeholders": {
+      "san": {
+        "type": "String"
+      }
+    }
+  },
+  "moveTitleMiss": "{san} is a miss",
+  "@moveTitleMiss": {
+    "placeholders": {
+      "san": {
+        "type": "String"
+      }
+    }
+  },
+  "reviewAnalysing": "Analysing ({profile}) {done} / {total}",
+  "@reviewAnalysing": {
+    "placeholders": {
+      "profile": {
+        "type": "String"
+      },
+      "done": {
+        "type": "int"
+      },
+      "total": {
         "type": "int"
       }
     }
