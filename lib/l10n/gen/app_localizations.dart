@@ -2811,6 +2811,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'You played Black'**
   String get playedBlack;
+
+  /// No description provided for @analyseRecentGames.
+  ///
+  /// In en, this message translates to:
+  /// **'Analyse recent games'**
+  String get analyseRecentGames;
+
+  /// No description provided for @analysingGame.
+  ///
+  /// In en, this message translates to:
+  /// **'Analysing game {index} of {total}'**
+  String analysingGame(int index, int total);
+
+  /// No description provided for @stopAnalysis.
+  ///
+  /// In en, this message translates to:
+  /// **'Stop'**
+  String get stopAnalysis;
+
+  /// No description provided for @analysisStoppedBattery.
+  ///
+  /// In en, this message translates to:
+  /// **'Analysis stopped: battery low.'**
+  String get analysisStoppedBattery;
+
+  /// No description provided for @gameAccuracy.
+  ///
+  /// In en, this message translates to:
+  /// **'Accuracy {value}'**
+  String gameAccuracy(String value);
 }
 
 class _AppLocalizationsDelegate

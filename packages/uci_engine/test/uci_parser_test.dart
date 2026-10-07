@@ -66,6 +66,10 @@ void main() {
       ).goCommand,
       'go movetime 800',
     );
+    expect(
+      const SearchRequest(fen: 'x', limit: Depth(18), multiPv: 2).goCommand,
+      'go depth 18',
+    );
   });
 
   test('side to move from FEN', () {

@@ -9,6 +9,7 @@ Repertoire Trainer is licensed under the GNU General Public License v3.0 or late
 | chessground | Board widget, board themes and the piece sets it ships | GPL-3.0 (piece sets: see the chessground repository for each set's licence) | https://github.com/lichess-org/flutter-chessground |
 | Inter font 4.1 | UI font, bundled in `assets/fonts/` (licence text `Inter-LICENSE.txt`) | SIL Open Font License 1.1 | https://github.com/rsms/inter |
 | DejaVu Sans | The knight glyph (U+265E) in the app icon and Android splash (`assets/icon/*.png`, rendered images; the font itself is not bundled) | Bitstream Vera Fonts licence; DejaVu changes public domain | https://dejavu-fonts.github.io/License.html |
+| lichess opening table | `assets/openings/openings.tsv` (names and moves of 3,865 openings, converted by `tool/gen_openings.dart`): book moves and opening names in Game Review | CC0-1.0 | https://github.com/lichess-org/chess-openings |
 | Sounds | `assets/sounds/*.ogg`: lichess "standard" set (`Move`, `Capture`, `Error`, `Confirmation` as line complete, `GenericNotify` as deviation, `Select` as hint), unmodified | AGPL-3.0-or-later (lila's default licence; not among lila's exceptions). Combined with this GPL-3.0 app under GPL-3.0 §13 | https://github.com/lichess-org/lila/tree/master/public/sound/standard |
 | Piece sets | Every set chessground ships is bundled (the package declares them as assets); licences as listed in lila's `COPYING.md` | See below | https://github.com/lichess-org/lila/blob/master/COPYING.md |
 

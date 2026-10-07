@@ -48,6 +48,11 @@ final class FakeEngine {
   var _moves = <String>[];
   var _multiPv = 1;
   var _depth = 0;
+  int? _targetDepth;
+
+  /// Every `go` command's position (the last `position fen`).
+  final searchedFens = <String>[];
+  String? _fen;
 
   void _onCommand(FakeTransport t, String c) {
     if (c == 'uci') {
@@ -58,12 +63,17 @@ final class FakeEngine {
       t.emit('readyok');
     } else if (c.startsWith('setoption name MultiPV value ')) {
       _multiPv = int.parse(c.split(' ').last);
+    } else if (c.startsWith('position fen ')) {
+      _fen = c.substring('position fen '.length);
     } else if (c.startsWith('go')) {
+      if (_fen != null) searchedFens.add(_fen!);
       final parts = c.split(' ');
       final sm = parts.indexOf('searchmoves');
       _moves = sm >= 0 ? parts.sublist(sm + 1) : scores.keys.toList();
       _depth = 0;
       _ticker = Timer.periodic(step, (_) => _tick(t));
+      final d = parts.indexOf('depth');
+      _targetDepth = d >= 0 ? int.parse(parts[d + 1]) : null;
       final mt = parts.indexOf('movetime');
       if (mt >= 0) {
         _deadline = Timer(
@@ -92,6 +102,7 @@ final class FakeEngine {
         'nodes ${_depth * 1000} nps $nps pv $m e7e5 g1f3',
       );
     }
+    if (_targetDepth != null && _depth >= _targetDepth!) _finish(t);
   }
 
   void _finish(FakeTransport t) {

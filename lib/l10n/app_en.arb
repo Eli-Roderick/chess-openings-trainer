@@ -1113,5 +1113,27 @@
     }
   },
   "playedWhite": "You played White",
-  "playedBlack": "You played Black"
+  "playedBlack": "You played Black",
+  "analyseRecentGames": "Analyse recent games",
+  "analysingGame": "Analysing game {index} of {total}",
+  "@analysingGame": {
+    "placeholders": {
+      "index": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "stopAnalysis": "Stop",
+  "analysisStoppedBattery": "Analysis stopped: battery low.",
+  "gameAccuracy": "Accuracy {value}",
+  "@gameAccuracy": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  }
 }

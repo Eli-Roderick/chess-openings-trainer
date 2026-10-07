@@ -2,6 +2,7 @@ package dev.eliroderick.repertoiretrainer
 
 import android.content.Intent
 import android.net.Uri
+import android.os.BatteryManager
 import android.os.Build
 import android.os.Process
 import android.os.SystemClock
@@ -30,6 +31,30 @@ class MainActivity : FlutterActivity() {
                     // Where Stockfish is installed (libstockfish.so); the
                     // only app directory Android lets us execute from.
                     "nativeLibraryDir" -> result.success(applicationInfo.nativeLibraryDir)
+                    else -> result.notImplemented()
+                }
+            }
+        // Batch game analysis (D-122): foreground notification, battery.
+        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "rt/analysis")
+            .setMethodCallHandler { call, result ->
+                when (call.method) {
+                    "show" -> {
+                        AnalysisService.show(this, call.argument<String>("text") ?: "")
+                        result.success(null)
+                    }
+                    "stop" -> {
+                        AnalysisService.stop(this)
+                        result.success(null)
+                    }
+                    "battery" -> {
+                        val bm = getSystemService(BATTERY_SERVICE) as BatteryManager
+                        result.success(
+                            mapOf(
+                                "level" to bm.getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY),
+                                "charging" to bm.isCharging,
+                            ),
+                        )
+                    }
                     else -> result.notImplemented()
                 }
             }
