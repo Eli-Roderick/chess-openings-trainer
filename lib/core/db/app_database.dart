@@ -21,6 +21,10 @@ part 'app_database.g.dart';
     Settings,
     SyncState,
     AppMeta,
+    ImportedGames,
+    GameArchives,
+    GameReviews,
+    GameAnalysis,
   ],
 )
 class AppDatabase extends _$AppDatabase {
@@ -45,7 +49,7 @@ class AppDatabase extends _$AppDatabase {
   factory memory() => AppDatabase(NativeDatabase.memory());
 
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 3;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -57,6 +61,14 @@ class AppDatabase extends _$AppDatabase {
         await m.createIndex(schema.runsDailyStats);
         await m.createIndex(schema.runsKeyUcis);
         await customStatement(plyStatsFillSql());
+      },
+      from2To3: (m, schema) async {
+        // G1: Game Review tables (additive).
+        await m.createTable(schema.importedGames);
+        await m.createIndex(schema.gamesByUser);
+        await m.createTable(schema.gameArchives);
+        await m.createTable(schema.gameReviews);
+        await m.createTable(schema.gameAnalysis);
       },
     ),
   );

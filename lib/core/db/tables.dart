@@ -221,3 +221,129 @@ class AppMeta extends Table {
   @override
   Set<Column<Object>> get primaryKey => {key};
 }
+
+/// Games fetched from chess.com for Game Review (device-local, not synced:
+/// they can be fetched again).
+@DataClassName('DbImportedGame')
+@TableIndex(name: 'games_by_user', columns: {#username, #endTime})
+class ImportedGames extends Table {
+  /// `chesscom:<game id>`.
+  TextColumn get id => text()();
+
+  /// The account the game was fetched for, lower case.
+  TextColumn get username => text()();
+  TextColumn get url => text()();
+
+  /// Unix seconds.
+  IntColumn get endTime => integer()();
+
+  /// `bullet`, `blitz`, `rapid` or `daily`.
+  TextColumn get timeClass => text()();
+
+  /// chess.com's time control, e.g. `180+2` or `1/86400`.
+  TextColumn get timeControl => text()();
+  BoolColumn get rated => boolean()();
+
+  /// Whether [username] had White.
+  BoolColumn get userWhite => boolean()();
+
+  /// From the user's side: `win`, `draw` or `loss`.
+  TextColumn get result => text()();
+
+  /// chess.com's result code for the losing (or drawing) side, e.g.
+  /// `checkmated`, `timeout`, `agreed`.
+  TextColumn get resultDetail => text()();
+  TextColumn get whiteName => text()();
+  TextColumn get blackName => text()();
+  IntColumn get whiteRating => integer()();
+  IntColumn get blackRating => integer()();
+  TextColumn get eco => text().nullable()();
+  TextColumn get opening => text().nullable()();
+
+  /// Mainline moves in UCI, space-separated.
+  TextColumn get ucis => text()();
+
+  /// Mainline moves in SAN, space-separated.
+  TextColumn get sans => text()();
+
+  /// Remaining clock after each ply in tenths of a second, comma-separated,
+  /// or null without `%clk`.
+  TextColumn get clocks => text().nullable()();
+  TextColumn get pgn => text()();
+  IntColumn get fetchedAt => integer()();
+
+  @override
+  Set<Column<Object>> get primaryKey => {id};
+}
+
+/// chess.com archive fetch state per account: the archive list (archive
+/// `''`) and each monthly archive (`YYYY/MM`) with its ETag.
+@DataClassName('DbGameArchive')
+class GameArchives extends Table {
+  TextColumn get username => text()();
+  TextColumn get archive => text()();
+  TextColumn get etag => text().nullable()();
+  TextColumn get lastModified => text().nullable()();
+  IntColumn get fetchedAt => integer()();
+
+  @override
+  Set<Column<Object>> get primaryKey => {username, archive};
+}
+
+/// One analysed game per analysis profile (Quick, Standard, Deep): engine,
+/// progress and the summary shown without reading every ply.
+@DataClassName('DbGameReview')
+class GameReviews extends Table {
+  TextColumn get gameId => text()();
+
+  /// 0 Quick, 1 Standard, 2 Deep.
+  IntColumn get profile => integer()();
+
+  /// Engine name and version; a different engine invalidates the rows.
+  TextColumn get engine => text()();
+
+  /// Positions analysed so far (resume point) and in total.
+  IntColumn get analysed => integer()();
+  IntColumn get total => integer()();
+  BoolColumn get complete => boolean()();
+  RealColumn get whiteAccuracy => real().nullable()();
+  RealColumn get blackAccuracy => real().nullable()();
+  IntColumn get whitePerformance => integer().nullable()();
+  IntColumn get blackPerformance => integer().nullable()();
+  IntColumn get updatedAt => integer()();
+
+  @override
+  Set<Column<Object>> get primaryKey => {gameId, profile};
+}
+
+/// Per-position engine results of a [GameReviews] row: position [ply] is
+/// the position after `ply` half-moves (0 = start). Scores are White's.
+@DataClassName('DbGameAnalysis')
+class GameAnalysis extends Table {
+  TextColumn get gameId => text()();
+  IntColumn get profile => integer()();
+  IntColumn get ply => integer()();
+
+  /// Best-line score: centipawns, or moves to mate when [mate] is set.
+  IntColumn get cp => integer().nullable()();
+  IntColumn get mate => integer().nullable()();
+
+  /// Best move and its line (UCI, space-separated, at most 10 plies).
+  TextColumn get pv => text().nullable()();
+  IntColumn get depth => integer()();
+
+  /// The per-position time cap stopped the search before [depth] was the
+  /// profile's depth.
+  BoolColumn get capped => boolean().withDefault(const Constant(false))();
+
+  /// Second-best move's score (MultiPV pass, candidates only).
+  IntColumn get secondCp => integer().nullable()();
+  IntColumn get secondMate => integer().nullable()();
+
+  /// Classification of the move that led here (null for ply 0 and until
+  /// classified); index into chess_core's `MoveLabel`.
+  IntColumn get label => integer().nullable()();
+
+  @override
+  Set<Column<Object>> get primaryKey => {gameId, profile, ply};
+}

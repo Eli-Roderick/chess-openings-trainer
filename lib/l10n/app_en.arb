@@ -1056,5 +1056,62 @@
         "type": "int"
       }
     }
-  }
+  },
+  "gameReview": "Game Review",
+  "chessComUsername": "chess.com username",
+  "fetchGames": "Fetch games",
+  "needsInternet": "Needs an internet connection",
+  "gamesOffline": "You are offline. Fetching games needs internet; saved games still open.",
+  "checkConnection": "Check again",
+  "archiveDelayNote": "chess.com updates its archives with a delay, so a game you just finished may not show yet.",
+  "invalidUsername": "Enter a chess.com username: 3 to 25 letters, digits, _ or -.",
+  "userNotFound": "No chess.com account has that name.",
+  "chessComBusy": "chess.com is busy. Try again in a minute.",
+  "chessComError": "chess.com answered with an error ({status}).",
+  "@chessComError": {
+    "placeholders": {
+      "status": {
+        "type": "int"
+      }
+    }
+  },
+  "newGames": "{count, plural, =0{No new games} =1{1 new game} other{{count} new games}}",
+  "@newGames": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "loadOlderGames": "Load older games",
+  "allGamesLoaded": "All games loaded",
+  "noGamesYet": "No games yet. Enter a chess.com username and fetch.",
+  "gameOpponent": "vs {name} ({rating})",
+  "@gameOpponent": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "rating": {
+        "type": "int"
+      }
+    }
+  },
+  "resultWin": "Win",
+  "resultDraw": "Draw",
+  "resultLoss": "Loss",
+  "timeClassBullet": "Bullet",
+  "timeClassBlitz": "Blitz",
+  "timeClassRapid": "Rapid",
+  "timeClassDaily": "Daily",
+  "timeControlDays": "{days, plural, =1{1 day} other{{days} days}} per move",
+  "@timeControlDays": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "playedWhite": "You played White",
+  "playedBlack": "You played Black"
 }

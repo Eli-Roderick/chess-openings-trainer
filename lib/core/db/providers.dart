@@ -9,6 +9,7 @@ import 'package:flutter_riverpod/misc.dart'
     show FutureProviderFamily, StreamProviderFamily;
 import 'package:repertoire_trainer/core/db/app_database.dart';
 import 'package:repertoire_trainer/core/db/merge_applier.dart';
+import 'package:repertoire_trainer/core/db/repositories/games_repository.dart';
 import 'package:repertoire_trainer/core/db/repositories/repertoire_repository.dart';
 import 'package:repertoire_trainer/core/db/repositories/run_repository.dart';
 import 'package:repertoire_trainer/core/db/repositories/settings_repository.dart';
@@ -41,6 +42,11 @@ final rngProvider = Provider<Rng>((ref) => SystemRng());
 final idGeneratorProvider = Provider<String Function()>(
   (ref) =>
       () => const Uuid().v4(),
+);
+
+/// Fetched games (Game Review).
+final gamesRepositoryProvider = Provider<GamesRepository>(
+  (ref) => GamesRepository(ref.watch(databaseProvider)),
 );
 
 /// Sync key/value state.

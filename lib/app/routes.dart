@@ -70,6 +70,9 @@ abstract final class Routes {
   /// Play on vs engine.
   static const playEngine = '/play-engine';
 
+  /// Game Review: chess.com games.
+  static const games = '/games';
+
   /// Hidden diagnostics.
   static const diagnostics = '/diagnostics';
 }

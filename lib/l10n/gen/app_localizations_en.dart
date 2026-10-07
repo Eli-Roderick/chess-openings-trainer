@@ -1569,4 +1569,107 @@ class AppLocalizationsEn extends AppLocalizations {
   String importBenchmarkResult(int lines, int total, int import, int store) {
     return '$lines lines: $total ms (import $import ms, store $store ms)';
   }
+
+  @override
+  String get gameReview => 'Game Review';
+
+  @override
+  String get chessComUsername => 'chess.com username';
+
+  @override
+  String get fetchGames => 'Fetch games';
+
+  @override
+  String get needsInternet => 'Needs an internet connection';
+
+  @override
+  String get gamesOffline =>
+      'You are offline. Fetching games needs internet; saved games still open.';
+
+  @override
+  String get checkConnection => 'Check again';
+
+  @override
+  String get archiveDelayNote =>
+      'chess.com updates its archives with a delay, so a game you just finished may not show yet.';
+
+  @override
+  String get invalidUsername =>
+      'Enter a chess.com username: 3 to 25 letters, digits, _ or -.';
+
+  @override
+  String get userNotFound => 'No chess.com account has that name.';
+
+  @override
+  String get chessComBusy => 'chess.com is busy. Try again in a minute.';
+
+  @override
+  String chessComError(int status) {
+    return 'chess.com answered with an error ($status).';
+  }
+
+  @override
+  String newGames(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count new games',
+      one: '1 new game',
+      zero: 'No new games',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get loadOlderGames => 'Load older games';
+
+  @override
+  String get allGamesLoaded => 'All games loaded';
+
+  @override
+  String get noGamesYet =>
+      'No games yet. Enter a chess.com username and fetch.';
+
+  @override
+  String gameOpponent(String name, int rating) {
+    return 'vs $name ($rating)';
+  }
+
+  @override
+  String get resultWin => 'Win';
+
+  @override
+  String get resultDraw => 'Draw';
+
+  @override
+  String get resultLoss => 'Loss';
+
+  @override
+  String get timeClassBullet => 'Bullet';
+
+  @override
+  String get timeClassBlitz => 'Blitz';
+
+  @override
+  String get timeClassRapid => 'Rapid';
+
+  @override
+  String get timeClassDaily => 'Daily';
+
+  @override
+  String timeControlDays(int days) {
+    String _temp0 = intl.Intl.pluralLogic(
+      days,
+      locale: localeName,
+      other: '$days days',
+      one: '1 day',
+    );
+    return '$_temp0 per move';
+  }
+
+  @override
+  String get playedWhite => 'You played White';
+
+  @override
+  String get playedBlack => 'You played Black';
 }

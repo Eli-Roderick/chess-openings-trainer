@@ -2655,6 +2655,162 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{lines} lines: {total} ms (import {import} ms, store {store} ms)'**
   String importBenchmarkResult(int lines, int total, int import, int store);
+
+  /// No description provided for @gameReview.
+  ///
+  /// In en, this message translates to:
+  /// **'Game Review'**
+  String get gameReview;
+
+  /// No description provided for @chessComUsername.
+  ///
+  /// In en, this message translates to:
+  /// **'chess.com username'**
+  String get chessComUsername;
+
+  /// No description provided for @fetchGames.
+  ///
+  /// In en, this message translates to:
+  /// **'Fetch games'**
+  String get fetchGames;
+
+  /// No description provided for @needsInternet.
+  ///
+  /// In en, this message translates to:
+  /// **'Needs an internet connection'**
+  String get needsInternet;
+
+  /// No description provided for @gamesOffline.
+  ///
+  /// In en, this message translates to:
+  /// **'You are offline. Fetching games needs internet; saved games still open.'**
+  String get gamesOffline;
+
+  /// No description provided for @checkConnection.
+  ///
+  /// In en, this message translates to:
+  /// **'Check again'**
+  String get checkConnection;
+
+  /// No description provided for @archiveDelayNote.
+  ///
+  /// In en, this message translates to:
+  /// **'chess.com updates its archives with a delay, so a game you just finished may not show yet.'**
+  String get archiveDelayNote;
+
+  /// No description provided for @invalidUsername.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a chess.com username: 3 to 25 letters, digits, _ or -.'**
+  String get invalidUsername;
+
+  /// No description provided for @userNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No chess.com account has that name.'**
+  String get userNotFound;
+
+  /// No description provided for @chessComBusy.
+  ///
+  /// In en, this message translates to:
+  /// **'chess.com is busy. Try again in a minute.'**
+  String get chessComBusy;
+
+  /// No description provided for @chessComError.
+  ///
+  /// In en, this message translates to:
+  /// **'chess.com answered with an error ({status}).'**
+  String chessComError(int status);
+
+  /// No description provided for @newGames.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{No new games} =1{1 new game} other{{count} new games}}'**
+  String newGames(int count);
+
+  /// No description provided for @loadOlderGames.
+  ///
+  /// In en, this message translates to:
+  /// **'Load older games'**
+  String get loadOlderGames;
+
+  /// No description provided for @allGamesLoaded.
+  ///
+  /// In en, this message translates to:
+  /// **'All games loaded'**
+  String get allGamesLoaded;
+
+  /// No description provided for @noGamesYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No games yet. Enter a chess.com username and fetch.'**
+  String get noGamesYet;
+
+  /// No description provided for @gameOpponent.
+  ///
+  /// In en, this message translates to:
+  /// **'vs {name} ({rating})'**
+  String gameOpponent(String name, int rating);
+
+  /// No description provided for @resultWin.
+  ///
+  /// In en, this message translates to:
+  /// **'Win'**
+  String get resultWin;
+
+  /// No description provided for @resultDraw.
+  ///
+  /// In en, this message translates to:
+  /// **'Draw'**
+  String get resultDraw;
+
+  /// No description provided for @resultLoss.
+  ///
+  /// In en, this message translates to:
+  /// **'Loss'**
+  String get resultLoss;
+
+  /// No description provided for @timeClassBullet.
+  ///
+  /// In en, this message translates to:
+  /// **'Bullet'**
+  String get timeClassBullet;
+
+  /// No description provided for @timeClassBlitz.
+  ///
+  /// In en, this message translates to:
+  /// **'Blitz'**
+  String get timeClassBlitz;
+
+  /// No description provided for @timeClassRapid.
+  ///
+  /// In en, this message translates to:
+  /// **'Rapid'**
+  String get timeClassRapid;
+
+  /// No description provided for @timeClassDaily.
+  ///
+  /// In en, this message translates to:
+  /// **'Daily'**
+  String get timeClassDaily;
+
+  /// No description provided for @timeControlDays.
+  ///
+  /// In en, this message translates to:
+  /// **'{days, plural, =1{1 day} other{{days} days}} per move'**
+  String timeControlDays(int days);
+
+  /// No description provided for @playedWhite.
+  ///
+  /// In en, this message translates to:
+  /// **'You played White'**
+  String get playedWhite;
+
+  /// No description provided for @playedBlack.
+  ///
+  /// In en, this message translates to:
+  /// **'You played Black'**
+  String get playedBlack;
 }
 
 class _AppLocalizationsDelegate

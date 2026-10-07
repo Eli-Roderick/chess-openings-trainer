@@ -45,3 +45,7 @@ Device checklist (Eli), still open: record the Diagnostics numbers on the phone 
 ## G0 (drill eval bar)
 
 **D-118 Drill eval bar.** Toggle in the drill app bar and Settings → Training, off by default; one short low-priority search per position, cached.
+
+## G1 (Game Review: fetch and store)
+
+**D-119, D-120.** Game Review screen (home app bar): chess.com username, Fetch, stored games with result, opponent, time control, date and opening, older months on demand, clear offline state. Schema v3 with migration tests.
