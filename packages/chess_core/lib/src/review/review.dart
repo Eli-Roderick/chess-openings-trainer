@@ -177,7 +177,8 @@ final class GameReview {
   /// See [whiteAccuracy].
   final double? blackAccuracy;
 
-  /// Rough performance estimate from average centipawn loss.
+  /// Estimated game rating, read off the accuracy (see
+  /// [ratingFromAccuracy]).
   final int? whitePerformance;
 
   /// See [whitePerformance].
@@ -380,12 +381,8 @@ final class ReviewedGame {
     double? accuracy({required bool white}) =>
         _accuracy(analyses, losses, white: white, decay: config.accuracyDecay);
     int? performance({required bool white}) {
-      final mine = [
-        for (var i = white ? 0 : 1; i < length; i += 2) ?cpLosses[i],
-      ];
-      if (mine.isEmpty) return null;
-      final acpl = mine.reduce((a, b) => a + b) / mine.length;
-      return (3000 * math.exp(-0.0115 * acpl)).round().clamp(100, 3200);
+      final acc = accuracy(white: white);
+      return acc == null ? null : ratingFromAccuracy(acc);
     }
 
     return GameReview(
@@ -550,4 +547,38 @@ double _volatility(List<double> xs) {
     sq += (x - mean) * (x - mean);
   }
   return math.sqrt(sq / xs.length).clamp(0.5, 12);
+}
+
+/// Accuracy (percent) to estimated rating anchors, rising together.
+/// chess.com does not publish its Game Rating; it says the rating compares
+/// the quality of the moves with what a player of each level is expected to
+/// play. These anchors are our own reading of typical accuracy by level
+/// (about 63% at 800, 69% at 1000, 80% at 1600, 90% at 2250), so the number
+/// is an estimate, not a copy of chess.com's.
+const List<(double, int)> _accuracyRatings = [
+  (0, 100),
+  (40, 250),
+  (55, 500),
+  (63, 800),
+  (69, 1000),
+  (75, 1300),
+  (80, 1600),
+  (85, 1900),
+  (90, 2250),
+  (94, 2600),
+  (97, 2950),
+  (100, 3200),
+];
+
+/// Estimated rating of a player whose moves score [accuracy] percent.
+int ratingFromAccuracy(double accuracy) {
+  final a = accuracy.clamp(0.0, 100.0);
+  for (var i = 1; i < _accuracyRatings.length; i++) {
+    final (x1, y1) = _accuracyRatings[i];
+    if (a <= x1) {
+      final (x0, y0) = _accuracyRatings[i - 1];
+      return (y0 + (y1 - y0) * (a - x0) / (x1 - x0)).round();
+    }
+  }
+  return _accuracyRatings.last.$2;
 }
