@@ -73,6 +73,9 @@ abstract class AppSettings with _$AppSettings {
     /// Drills start at the line's branch point instead of move 1 (the
     /// default for the mode sheet, 01-product-spec §7.1).
     @Default(false) bool startFromBranchPoint,
+
+    /// Eval bar beside the drill board (toggled from the drill app bar).
+    @Default(false) bool drillEvalBar,
     // Board and sound.
     @Default('brown') String boardTheme,
     @Default('cburnett') String pieceSet,

@@ -1444,6 +1444,18 @@ abstract class AppLocalizations {
   /// **'Show comment arrows'**
   String get showCommentArrows;
 
+  /// No description provided for @drillEvalBar.
+  ///
+  /// In en, this message translates to:
+  /// **'Eval bar in drills'**
+  String get drillEvalBar;
+
+  /// No description provided for @toggleEvalBar.
+  ///
+  /// In en, this message translates to:
+  /// **'Toggle eval bar'**
+  String get toggleEvalBar;
+
   /// No description provided for @drillLatency.
   ///
   /// In en, this message translates to:

@@ -27,6 +27,7 @@ import 'package:repertoire_trainer/features/board/repertoire_board.dart';
 import 'package:repertoire_trainer/features/board/training_settings_list.dart';
 import 'package:repertoire_trainer/features/drill/deviation.dart';
 import 'package:repertoire_trainer/features/drill/drill_controller.dart';
+import 'package:repertoire_trainer/features/drill/drill_eval_bar.dart';
 import 'package:repertoire_trainer/features/drill/drill_state.dart';
 import 'package:repertoire_trainer/features/drill/line_picker.dart';
 import 'package:repertoire_trainer/l10n/gen/app_localizations.dart';
@@ -353,7 +354,10 @@ class _DrillScreenState extends ConsumerState<DrillScreen> {
   }
 }
 
-class _DrillView extends StatelessWidget {
+/// Width of the drill eval bar.
+const double _evalBarWidth = 14;
+
+class _DrillView extends ConsumerWidget {
   const new({
     required this.title,
     required this.state,
@@ -389,7 +393,7 @@ class _DrillView extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
     if (state.phase == DrillPhase.empty) {
       return Scaffold(
@@ -444,6 +448,30 @@ class _DrillView extends StatelessWidget {
           ),
       ],
     );
+    final s = ref.watch(settingsProvider).value ?? const AppSettings();
+    final engineAvailable = ref.watch(
+      engineStatusProvider.select((s) => s.value?.isAvailable ?? true),
+    );
+    final showEval = s.drillEvalBar && engineAvailable;
+    // The board keeps its square; the bar takes [_evalBarWidth] beside it.
+    Widget boardWithBar(double side) => showEval
+        ? Row(
+            children: [
+              SizedBox(
+                width: _evalBarWidth,
+                height: side - _evalBarWidth,
+                child: DrillEvalBar(
+                  fen: state.board.fen,
+                  whiteAtBottom: state.board.orientation == Side.white,
+                ),
+              ),
+              SizedBox.square(
+                dimension: side - _evalBarWidth,
+                child: boardWidget,
+              ),
+            ],
+          )
+        : SizedBox.square(dimension: side, child: boardWidget);
     final info = _InfoPanel(state: state, controller: controller);
     final bottom = state.endBar != null
         ? _EndBar(
@@ -464,6 +492,22 @@ class _DrillView extends StatelessWidget {
             onPressed: controller.flip,
           ),
           IconButton(
+            key: const Key('toggle-eval-bar'),
+            tooltip: l10n.toggleEvalBar,
+            isSelected: s.drillEvalBar,
+            icon: const Icon(Icons.bar_chart_outlined),
+            selectedIcon: const Icon(Icons.bar_chart),
+            onPressed: engineAvailable
+                ? () => unawaited(
+                    ref
+                        .read(settingsRepositoryProvider)
+                        .update(
+                          (s) => s.copyWith(drillEvalBar: !s.drillEvalBar),
+                        ),
+                  )
+                : null,
+          ),
+          IconButton(
             key: const Key('drill-settings'),
             tooltip: l10n.trainingSettings,
             icon: const Icon(Icons.tune),
@@ -476,7 +520,7 @@ class _DrillView extends StatelessWidget {
           phone: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              AspectRatio(aspectRatio: 1, child: boardWidget),
+              LayoutBuilder(builder: (context, c) => boardWithBar(c.maxWidth)),
               Expanded(child: info),
               bottom,
             ],
@@ -489,7 +533,7 @@ class _DrillView extends StatelessWidget {
               return Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  SizedBox.square(dimension: side, child: boardWidget),
+                  boardWithBar(side),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,

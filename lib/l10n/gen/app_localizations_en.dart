@@ -787,6 +787,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get showCommentArrows => 'Show comment arrows';
 
   @override
+  String get drillEvalBar => 'Eval bar in drills';
+
+  @override
+  String get toggleEvalBar => 'Toggle eval bar';
+
+  @override
   String get drillLatency => 'Drill latency';
 
   @override
