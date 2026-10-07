@@ -305,3 +305,7 @@ Details of the plan corrections are in `docs/plan/corrections/P13.md`.
 
 **D-117 Performance pass (Linux AOT, CI-class machine).** Cold start main → Home data 185 ms; 30 s of dragging with analysis: 0 builds over budget, worst build 12 ms; drill over 20 lines: 0 of 626 frames over the build budget, worst build 13 ms, latency p95 280 ms (250 ms opponent delay); stats with 20k runs 148 ms; backup of 20k runs export 1.0 s, import 3.0 s; 1,000-line import benchmark < 1 s in `chess_core`. Nothing was over target, so no code path was changed for speed in P13.
 
+
+## G0 (drill eval bar)
+
+**D-118 Drill eval bar.** A toggle in the drill app bar (and Settings → Training) shows an eval bar beside the board; stored as `drillEvalBar`, off by default so drills stay engine-free unless asked. Each position gets one 500 ms MultiPV 1 `topLines` search at low priority (comparable checks preempt it; an infinite analysis would starve deviation picks, which share the low queue), cancelled when the position changes and cached per FEN for the screen's lifetime (128 entries). Hidden while the engine is unavailable.

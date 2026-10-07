@@ -522,6 +522,8 @@
   "opponentDelay": "Opponent move delay",
   "showCommentsInDrills": "Show comments during drills",
   "showCommentArrows": "Show comment arrows",
+  "drillEvalBar": "Eval bar in drills",
+  "toggleEvalBar": "Toggle eval bar",
   "drillLatency": "Drill latency",
   "latencyP50": "Median",
   "latencyP95": "95th percentile",

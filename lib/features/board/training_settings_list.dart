@@ -96,6 +96,12 @@ class TrainingSettingsList extends ConsumerWidget {
           onChanged: (v) => update((s) => s.copyWith(showCommentArrows: v)),
         ),
         SwitchListTile(
+          key: const Key('drill-eval-bar'),
+          title: Text(l10n.drillEvalBar),
+          value: s.drillEvalBar,
+          onChanged: (v) => update((s) => s.copyWith(drillEvalBar: v)),
+        ),
+        SwitchListTile(
           key: const Key('show-line-summary'),
           title: Text(l10n.showLineSummary),
           value: s.showLineSummary,

@@ -41,3 +41,7 @@ Details of the plan corrections are in `docs/plan/corrections/P13.md`.
 
 Device checklist (Eli), still open: record the Diagnostics numbers on the phone and Windows (release build); open a `.pgn` from the phone's file manager; install the tagged release APK over the test build and check that the data stays. Before the first tag: add the repository secrets `ANDROID_KEYSTORE_BASE64` and `ANDROID_KEY_PROPERTIES` (and the three Google OAuth ids for sync), then push `v0.1.0`.
 
+
+## G0 (drill eval bar)
+
+**D-118 Drill eval bar.** Toggle in the drill app bar and Settings → Training, off by default; one short low-priority search per position, cached.

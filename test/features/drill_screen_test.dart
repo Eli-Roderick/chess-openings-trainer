@@ -6,7 +6,10 @@ import 'package:repertoire_trainer/app/routes.dart';
 import 'package:repertoire_trainer/core/db/providers.dart';
 import 'package:repertoire_trainer/core/settings/app_settings.dart';
 import 'package:repertoire_trainer/core/sync/sync_controller.dart';
+import 'package:repertoire_trainer/features/board/eval_bar.dart';
 import 'package:repertoire_trainer/features/board/repertoire_board.dart';
+
+import 'package:uci_engine/uci_engine.dart';
 
 import '../app_harness.dart';
 import '../core/engine/fake_engine.dart';
@@ -112,6 +115,32 @@ void main() {
     await tester.tap(find.byKey(const Key('banner-comparable')));
     await tester.pump();
     expect(find.byKey(const Key('banner-comparable')), findsNothing);
+  });
+
+  testWidgets('the eval bar toggle is stored and shows a short search', (
+    tester,
+  ) async {
+    final engine = FakeEngine(scores: {'e2e4': 30, 'd2d4': 25});
+    final h = await AppHarness.pump(tester, engine: engine);
+    await openDrill(h);
+    expect(find.byType(EvalBar), findsNothing);
+    await tester.tap(find.byKey(const Key('toggle-eval-bar')));
+    for (var i = 0; i < 10; i++) {
+      await tester.runAsync(() => Future<void>.delayed(Duration.zero));
+      await tester.pump(const Duration(milliseconds: 100));
+    }
+    expect(h.container.read(settingsProvider).value!.drillEvalBar, isTrue);
+    expect(find.byType(EvalBar), findsOneWidget);
+    expect(engine.commands, contains('go movetime 500'));
+    final bar = tester.widget<EvalBar>(find.byType(EvalBar));
+    expect(bar.score, const EngineScore.cp(30));
+    expect(bar.whiteAtBottom, isTrue);
+    await tester.tap(find.byKey(const Key('toggle-eval-bar')));
+    for (var i = 0; i < 3; i++) {
+      await tester.runAsync(() => Future<void>.delayed(Duration.zero));
+      await tester.pump();
+    }
+    expect(find.byType(EvalBar), findsNothing);
   });
 
   testWidgets('without an engine a wrong move gets no banner', (tester) async {
