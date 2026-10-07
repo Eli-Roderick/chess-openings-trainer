@@ -57,3 +57,7 @@ Device checklist (Eli), still open: record the Diagnostics numbers on the phone 
 ## G3 (Game Review: review screen)
 
 **D-124.** Review screen (`/games/:id`): board with eval bar, win-chance graph, move list with the app's own classification marks, coach line, accuracy and performance for both sides, key-move navigation, retry at a key move with a hint, time per move, flip. Fills in live while the game is analysed. Profile budget added: open < 150 ms, no slow frames stepping through 120 plies.
+
+## G4 (Game Review: repertoire link)
+
+**D-125.** Review screen "Repertoire" sheet: where the game left the user's repertoire (user, opponent, line end, game end) and the repertoire's moves there, the record of stored games through that position, Drill this line, Add to repertoire (Browse with the reply), and the most frequent uncovered opponent replies across stored games.

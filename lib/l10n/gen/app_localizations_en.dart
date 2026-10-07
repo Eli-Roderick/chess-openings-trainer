@@ -1804,4 +1804,50 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get gameNotFound => 'This game is no longer stored.';
+
+  @override
+  String get repertoireLink => 'Repertoire';
+
+  @override
+  String get linkNoRepertoire => 'No repertoire for this colour.';
+
+  @override
+  String linkUserLeft(String move, String san, String book) {
+    return 'You left the repertoire at $move $san. The repertoire plays $book.';
+  }
+
+  @override
+  String linkOpponentLeft(String move, String san) {
+    return 'Your opponent left the repertoire at $move $san. Not covered yet.';
+  }
+
+  @override
+  String linkRepertoireEnd(String move, String san) {
+    return 'The game followed the repertoire to its end; $move $san came after it.';
+  }
+
+  @override
+  String get linkGameEnd => 'The game ended inside the repertoire.';
+
+  @override
+  String linkRecord(int wins, int draws, int losses) {
+    return 'Your games reaching this position: $wins W, $draws D, $losses L';
+  }
+
+  @override
+  String get addToRepertoire => 'Add to repertoire';
+
+  @override
+  String get uncoveredReplies => 'Uncovered opponent replies in your games';
+
+  @override
+  String uncoveredReply(String move, String san, String path, int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count games',
+      one: '1 game',
+    );
+    return '$move $san after $path: $_temp0';
+  }
 }

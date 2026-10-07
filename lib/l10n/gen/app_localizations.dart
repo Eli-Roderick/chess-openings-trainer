@@ -3021,6 +3021,66 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'This game is no longer stored.'**
   String get gameNotFound;
+
+  /// No description provided for @repertoireLink.
+  ///
+  /// In en, this message translates to:
+  /// **'Repertoire'**
+  String get repertoireLink;
+
+  /// No description provided for @linkNoRepertoire.
+  ///
+  /// In en, this message translates to:
+  /// **'No repertoire for this colour.'**
+  String get linkNoRepertoire;
+
+  /// No description provided for @linkUserLeft.
+  ///
+  /// In en, this message translates to:
+  /// **'You left the repertoire at {move} {san}. The repertoire plays {book}.'**
+  String linkUserLeft(String move, String san, String book);
+
+  /// No description provided for @linkOpponentLeft.
+  ///
+  /// In en, this message translates to:
+  /// **'Your opponent left the repertoire at {move} {san}. Not covered yet.'**
+  String linkOpponentLeft(String move, String san);
+
+  /// No description provided for @linkRepertoireEnd.
+  ///
+  /// In en, this message translates to:
+  /// **'The game followed the repertoire to its end; {move} {san} came after it.'**
+  String linkRepertoireEnd(String move, String san);
+
+  /// No description provided for @linkGameEnd.
+  ///
+  /// In en, this message translates to:
+  /// **'The game ended inside the repertoire.'**
+  String get linkGameEnd;
+
+  /// No description provided for @linkRecord.
+  ///
+  /// In en, this message translates to:
+  /// **'Your games reaching this position: {wins} W, {draws} D, {losses} L'**
+  String linkRecord(int wins, int draws, int losses);
+
+  /// No description provided for @addToRepertoire.
+  ///
+  /// In en, this message translates to:
+  /// **'Add to repertoire'**
+  String get addToRepertoire;
+
+  /// No description provided for @uncoveredReplies.
+  ///
+  /// In en, this message translates to:
+  /// **'Uncovered opponent replies in your games'**
+  String get uncoveredReplies;
+
+  /// No description provided for @uncoveredReply.
+  ///
+  /// In en, this message translates to:
+  /// **'{move} {san} after {path}: {count, plural, =1{1 game} other{{count} games}}'**
+  String uncoveredReply(String move, String san, String path, int count);
 }
 
 class _AppLocalizationsDelegate
