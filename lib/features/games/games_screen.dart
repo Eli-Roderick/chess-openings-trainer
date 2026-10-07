@@ -32,6 +32,7 @@ class _GamesScreenState extends ConsumerState<GamesScreen> {
   bool _busy = false;
   bool _hasOlder = false;
   String? _message;
+  final _selected = <String>{};
 
   @override
   void initState() {
@@ -95,6 +96,20 @@ class _GamesScreenState extends ConsumerState<GamesScreen> {
     }
   }
 
+  void _toggle(String id) => setState(() {
+    if (!_selected.remove(id)) _selected.add(id);
+  });
+
+  /// Reviews the selected games (newest first); [rerun] replaces results.
+  void _reviewSelected(List<DbImportedGame> games, {required bool rerun}) {
+    final picked = [
+      for (final g in games)
+        if (_selected.contains(g.id)) g,
+    ];
+    setState(_selected.clear);
+    unawaited(ref.read(batchProvider.notifier).start(picked, rerun: rerun));
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
@@ -106,131 +121,184 @@ class _GamesScreenState extends ConsumerState<GamesScreen> {
     final canFetch = online && !_busy;
     final batch = ref.watch(batchProvider);
     final accuracy = ref.watch(gameAccuracyProvider).value ?? const {};
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(l10n.gameReview),
-        actions: [
-          IconButton(
-            key: const Key('analyse-recent'),
-            tooltip: l10n.analyseRecentGames,
-            icon: const Icon(Icons.insights),
-            onPressed: games.isEmpty || batch.running
-                ? null
-                : () => unawaited(
-                    ref
-                        .read(batchProvider.notifier)
-                        .start(games.take(10).toList()),
-                  ),
-          ),
-        ],
-      ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          if (!online)
-            MaterialBanner(
-              key: const Key('games-offline'),
-              leading: const Icon(Icons.cloud_off),
-              content: Text(l10n.gamesOffline),
-              actions: [
-                TextButton(
-                  onPressed: () => ref.invalidate(chessComReachableProvider),
-                  child: Text(l10n.checkConnection),
+    final selecting = _selected.isNotEmpty;
+    final idle = !batch.running;
+    return PopScope(
+      canPop: !selecting,
+      onPopInvokedWithResult: (didPop, _) {
+        if (!didPop) setState(_selected.clear);
+      },
+      child: Scaffold(
+        appBar: selecting
+            ? AppBar(
+                leading: IconButton(
+                  key: const Key('selection-clear'),
+                  tooltip: l10n.clearSelection,
+                  icon: const Icon(Icons.close),
+                  onPressed: () => setState(_selected.clear),
                 ),
-              ],
-            ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(
-                  child: TextField(
-                    key: const Key('chesscom-username'),
-                    controller: _field,
-                    autocorrect: false,
-                    enableSuggestions: false,
-                    textInputAction: TextInputAction.search,
-                    decoration: InputDecoration(
-                      labelText: l10n.chessComUsername,
-                      isDense: true,
+                title: Text(l10n.selectedCount(_selected.length)),
+                actions: [
+                  IconButton(
+                    key: const Key('select-all'),
+                    tooltip: l10n.selectAllGames,
+                    icon: const Icon(Icons.select_all),
+                    onPressed: () => setState(
+                      () => _selected.addAll([for (final g in games) g.id]),
                     ),
-                    onSubmitted: canFetch
-                        ? (_) => unawaited(_run((s, u) => s.refresh(u)))
+                  ),
+                  IconButton(
+                    key: const Key('review-selected'),
+                    tooltip: l10n.reviewSelected,
+                    icon: const Icon(Icons.insights),
+                    onPressed: idle
+                        ? () => _reviewSelected(games, rerun: false)
                         : null,
                   ),
-                ),
-                const SizedBox(width: 12),
-                Tooltip(
-                  message: online ? '' : l10n.needsInternet,
-                  child: FilledButton(
-                    key: const Key('fetch-games'),
-                    onPressed: canFetch
-                        ? () => unawaited(_run((s, u) => s.refresh(u)))
+                  IconButton(
+                    key: const Key('rerun-selected'),
+                    tooltip: l10n.rerunSelected,
+                    icon: const Icon(Icons.refresh),
+                    onPressed: idle
+                        ? () => _reviewSelected(games, rerun: true)
                         : null,
-                    child: Text(l10n.fetchGames),
                   ),
-                ),
-              ],
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Text(
-              online ? (_message ?? l10n.archiveDelayNote) : l10n.needsInternet,
-              key: const Key('games-message'),
-              style: Theme.of(context).textTheme.bodySmall,
-            ),
-          ),
-          const SizedBox(height: 4),
-          if (_busy) const LinearProgressIndicator() else const Divider(),
-          if (batch.running)
-            _BatchBar(state: batch)
-          else if (batch.stoppedForBattery)
-            Padding(
-              padding: const EdgeInsets.all(12),
-              child: Text(l10n.analysisStoppedBattery),
-            ),
-          Expanded(
-            child: games.isEmpty
-                ? Center(
-                    child: Padding(
-                      padding: const EdgeInsets.all(24),
-                      child: Text(l10n.noGamesYet, textAlign: TextAlign.center),
-                    ),
-                  )
-                : ListView.builder(
-                    key: const Key('games-list'),
-                    itemCount: games.length + (_hasOlder ? 1 : 0),
-                    itemBuilder: (context, i) {
-                      if (i == games.length) {
-                        return Padding(
-                          padding: const EdgeInsets.all(12),
-                          child: Center(
-                            child: OutlinedButton(
-                              key: const Key('load-older'),
-                              onPressed: canFetch
-                                  ? () => unawaited(
-                                      _run((s, u) => s.loadOlder(u)),
-                                    )
-                                  : null,
-                              child: Text(l10n.loadOlderGames),
-                            ),
+                ],
+              )
+            : AppBar(
+                title: Text(l10n.gameReview),
+                actions: [
+                  IconButton(
+                    key: const Key('analyse-recent'),
+                    tooltip: l10n.analyseRecentGames,
+                    icon: const Icon(Icons.insights),
+                    onPressed: games.isEmpty || batch.running
+                        ? null
+                        : () => unawaited(
+                            ref
+                                .read(batchProvider.notifier)
+                                .start(games.take(10).toList()),
                           ),
-                        );
-                      }
-                      final g = games[i];
-                      return GameTile(
-                        game: g,
-                        accuracy: accuracy[g.id],
-                        onTap: widget.onOpen == null
-                            ? null
-                            : () => widget.onOpen!(g),
-                      );
-                    },
                   ),
-          ),
-        ],
+                ],
+              ),
+        body: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            if (!online)
+              MaterialBanner(
+                key: const Key('games-offline'),
+                leading: const Icon(Icons.cloud_off),
+                content: Text(l10n.gamesOffline),
+                actions: [
+                  TextButton(
+                    onPressed: () => ref.invalidate(chessComReachableProvider),
+                    child: Text(l10n.checkConnection),
+                  ),
+                ],
+              ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    child: TextField(
+                      key: const Key('chesscom-username'),
+                      controller: _field,
+                      autocorrect: false,
+                      enableSuggestions: false,
+                      textInputAction: TextInputAction.search,
+                      decoration: InputDecoration(
+                        labelText: l10n.chessComUsername,
+                        isDense: true,
+                      ),
+                      onSubmitted: canFetch
+                          ? (_) => unawaited(_run((s, u) => s.refresh(u)))
+                          : null,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Tooltip(
+                    message: online ? '' : l10n.needsInternet,
+                    child: FilledButton(
+                      key: const Key('fetch-games'),
+                      onPressed: canFetch
+                          ? () => unawaited(_run((s, u) => s.refresh(u)))
+                          : null,
+                      child: Text(l10n.fetchGames),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Text(
+                online
+                    ? (_message ?? l10n.archiveDelayNote)
+                    : l10n.needsInternet,
+                key: const Key('games-message'),
+                style: Theme.of(context).textTheme.bodySmall,
+              ),
+            ),
+            const SizedBox(height: 4),
+            if (_busy) const LinearProgressIndicator() else const Divider(),
+            if (batch.running)
+              _BatchBar(state: batch)
+            else if (batch.stoppedForBattery)
+              Padding(
+                padding: const EdgeInsets.all(12),
+                child: Text(l10n.analysisStoppedBattery),
+              ),
+            Expanded(
+              child: games.isEmpty
+                  ? Center(
+                      child: Padding(
+                        padding: const EdgeInsets.all(24),
+                        child: Text(
+                          l10n.noGamesYet,
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    )
+                  : ListView.builder(
+                      key: const Key('games-list'),
+                      itemCount: games.length + (_hasOlder ? 1 : 0),
+                      itemBuilder: (context, i) {
+                        if (i == games.length) {
+                          return Padding(
+                            padding: const EdgeInsets.all(12),
+                            child: Center(
+                              child: OutlinedButton(
+                                key: const Key('load-older'),
+                                onPressed: canFetch
+                                    ? () => unawaited(
+                                        _run((s, u) => s.loadOlder(u)),
+                                      )
+                                    : null,
+                                child: Text(l10n.loadOlderGames),
+                              ),
+                            ),
+                          );
+                        }
+                        final g = games[i];
+                        return GameTile(
+                          game: g,
+                          accuracy: accuracy[g.id],
+                          selected: _selected.contains(g.id),
+                          onLongPress: () => _toggle(g.id),
+                          onTap: selecting
+                              ? () => _toggle(g.id)
+                              : widget.onOpen == null
+                              ? null
+                              : () => widget.onOpen!(g),
+                        );
+                      },
+                    ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -239,7 +307,14 @@ class _GamesScreenState extends ConsumerState<GamesScreen> {
 /// One stored game: result, opponent, time control, date, opening.
 class GameTile extends StatelessWidget {
   /// Creates the tile.
-  const new({required this.game, super.key, this.onTap, this.accuracy});
+  const new({
+    required this.game,
+    super.key,
+    this.onTap,
+    this.onLongPress,
+    this.accuracy,
+    this.selected = false,
+  });
 
   /// The game.
   final DbImportedGame game;
@@ -249,6 +324,12 @@ class GameTile extends StatelessWidget {
 
   /// Opens it.
   final VoidCallback? onTap;
+
+  /// Starts or extends a selection.
+  final VoidCallback? onLongPress;
+
+  /// Part of the current selection.
+  final bool selected;
 
   @override
   Widget build(BuildContext context) {
@@ -273,25 +354,32 @@ class GameTile extends StatelessWidget {
     return ListTile(
       key: ValueKey('game-${g.id}'),
       onTap: onTap,
-      leading: Tooltip(
-        message: label,
-        child: Container(
-          width: 32,
-          height: 32,
-          alignment: Alignment.center,
-          decoration: BoxDecoration(
-            color: color,
-            borderRadius: BorderRadius.circular(6),
-          ),
-          child: Text(
-            label.characters.first,
-            style: const TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
+      onLongPress: onLongPress,
+      selected: selected,
+      leading: selected
+          ? const SizedBox.square(
+              dimension: 32,
+              child: Icon(Icons.check_circle, key: Key('game-selected')),
+            )
+          : Tooltip(
+              message: label,
+              child: Container(
+                width: 32,
+                height: 32,
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  color: color,
+                  borderRadius: BorderRadius.circular(6),
+                ),
+                child: Text(
+                  label.characters.first,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
             ),
-          ),
-        ),
-      ),
       title: Text(l10n.gameOpponent(opponent, rating)),
       subtitle: Text(details, maxLines: 2, overflow: TextOverflow.ellipsis),
       trailing: Row(

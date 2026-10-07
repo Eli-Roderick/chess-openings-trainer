@@ -384,6 +384,33 @@ void main() {
       expect(host.shown, ['1 / 3', '2 / 3', '3 / 3']);
       expect(find.byKey(const Key('batch-bar')), findsNothing);
       expect(find.byKey(const ValueKey('accuracy-chesscom:a')), findsOneWidget);
+
+      // Long-press selects, taps extend, Re-run replaces the results.
+      await tester.longPress(find.byType(GameTile).first);
+      await tester.pump();
+      expect(find.text('1 selected'), findsOneWidget);
+      await tester.tap(find.byType(GameTile).at(1));
+      await tester.pump();
+      expect(find.text('2 selected'), findsOneWidget);
+      host.shown.clear();
+      await tester.tap(find.byKey(const Key('rerun-selected')));
+      await spin(3);
+      expect(find.text('2 selected'), findsNothing);
+      expect(find.byKey(const Key('batch-bar')), findsOneWidget);
+      for (var i = 0; i < 300; i++) {
+        if (find.byKey(const Key('batch-bar')).evaluate().isEmpty) break;
+        await spin(1);
+      }
+      expect(host.shown, ['1 / 2', '2 / 2']);
+      expect(find.byKey(const ValueKey('accuracy-chesscom:a')), findsOneWidget);
+
+      // Review selected skips games that are already reviewed.
+      await tester.longPress(find.byType(GameTile).first);
+      await tester.pump();
+      host.shown.clear();
+      await tester.tap(find.byKey(const Key('review-selected')));
+      await spin(5);
+      expect(host.shown, isEmpty);
     });
   });
 
@@ -728,6 +755,42 @@ void main() {
         await spin(tester, 2);
       }
       expect(tester.takeException(), isNull);
+    });
+
+    testWidgets('re-run replaces the stored review; stale scores refresh', (
+      tester,
+    ) async {
+      final h = await open(tester);
+      final repo = h.container.read(gamesRepositoryProvider);
+      const standard = 1;
+      // The seeded summary has no stored accuracy; opening it stores the
+      // current one.
+      DbGameReview? row;
+      for (var i = 0; i < 100 && row?.whiteAccuracy == null; i++) {
+        row = await tester.runAsync<DbGameReview?>(
+          () => repo.review('chesscom:a', standard),
+        );
+        await spin(tester, 1);
+      }
+      expect(row?.whiteAccuracy, isNotNull);
+      expect(find.byKey(const Key('review-progress')), findsNothing);
+
+      await tester.tap(find.byKey(const Key('rerun-review')));
+      await tester.pump();
+      await tester.tap(find.byKey(const Key('rerun-confirm')));
+      await spin(tester, 2);
+      // The seeded summary was written at 1; the re-run writes a new one.
+      DbGameReview? again;
+      for (var i = 0; i < 300; i++) {
+        again = await tester.runAsync<DbGameReview?>(
+          () => repo.review('chesscom:a', standard),
+        );
+        if ((again?.complete ?? false) && again!.updatedAt != 1) break;
+        await spin(tester, 1);
+      }
+      expect(again?.updatedAt, isNot(1));
+      await spin(tester, 3);
+      expect(find.byKey(const Key('review-progress')), findsNothing);
     });
 
     testWidgets('opening an unanalysed game analyses it and fills in', (

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:chess_core/chess_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -5,6 +7,7 @@ import 'package:go_router/go_router.dart';
 import 'package:repertoire_trainer/app/layout/adaptive_layout.dart';
 import 'package:repertoire_trainer/app/routes.dart';
 import 'package:repertoire_trainer/core/analysis/game_analyzer.dart';
+import 'package:repertoire_trainer/core/db/providers.dart';
 import 'package:repertoire_trainer/features/games/eval_graph.dart';
 import 'package:repertoire_trainer/features/games/game_review.dart';
 import 'package:repertoire_trainer/features/games/move_marks.dart';
@@ -236,6 +239,14 @@ class GameSummaryScreen extends ConsumerWidget {
         title: Text(l10n.gameReview),
         actions: [
           IconButton(
+            key: const Key('rerun-review'),
+            tooltip: l10n.rerunReview,
+            icon: const Icon(Icons.refresh),
+            onPressed: data.finished
+                ? () => unawaited(_rerun(context, ref))
+                : null,
+          ),
+          IconButton(
             key: const Key('open-repertoire-link'),
             tooltip: l10n.repertoireLink,
             icon: const Icon(Icons.account_tree_outlined),
@@ -282,6 +293,35 @@ class GameSummaryScreen extends ConsumerWidget {
         ],
       ),
     );
+  }
+}
+
+extension on GameSummaryScreen {
+  /// Replaces the stored analysis after a confirmation: the review provider
+  /// is rebuilt, finds no stored result and analyses the game again.
+  Future<void> _rerun(BuildContext context, WidgetRef ref) async {
+    final l10n = AppLocalizations.of(context);
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(l10n.rerunReviewTitle),
+        content: Text(l10n.rerunReviewBody),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: Text(l10n.cancel),
+          ),
+          FilledButton(
+            key: const Key('rerun-confirm'),
+            onPressed: () => Navigator.of(context).pop(true),
+            child: Text(l10n.rerunConfirm),
+          ),
+        ],
+      ),
+    );
+    if (ok != true) return;
+    await ref.read(gamesRepositoryProvider).clearGame(gameId);
+    ref.invalidate(reviewDataProvider(gameId));
   }
 }
 
