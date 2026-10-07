@@ -128,6 +128,9 @@ class RepertoireDetailScreen extends ConsumerWidget {
           if (deleted && context.mounted) context.go(Routes.home);
         case _Menu.validate:
           await context.push(Routes.validate(id));
+        case _Menu.history:
+          await context.push(Routes.recovery(id));
+          ref.invalidate(lineRefsProvider(id));
       }
     }
 
@@ -258,7 +261,8 @@ enum _Menu {
   reimport,
   export,
   delete,
-  validate;
+  validate,
+  history;
 
   String label(AppLocalizations l10n) => switch (this) {
     rename => l10n.rename,
@@ -266,5 +270,6 @@ enum _Menu {
     export => l10n.exportPgn,
     delete => l10n.delete,
     validate => l10n.validateStored,
+    history => l10n.versionHistory,
   };
 }

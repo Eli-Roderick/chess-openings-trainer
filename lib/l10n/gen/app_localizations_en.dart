@@ -122,7 +122,8 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get deleteBody => 'Its stats and training history are deleted too.';
+  String get deleteBody =>
+      'It moves to the trash with its training history. Restore it from Settings, Sync and backup, Version history and trash.';
 
   @override
   String deletedSnack(String name) {
@@ -1562,5 +1563,129 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String importBenchmarkResult(int lines, int total, int import, int store) {
     return '$lines lines: $total ms (import $import ms, store $store ms)';
+  }
+
+  @override
+  String get versionHistory => 'Version history';
+
+  @override
+  String get recoveryTitle => 'Version history and trash';
+
+  @override
+  String get recoveryHint =>
+      'Earlier versions of your repertoires, and deleted repertoires';
+
+  @override
+  String get recoveryTrash => 'Deleted repertoires';
+
+  @override
+  String get recoveryVersions => 'Saved versions';
+
+  @override
+  String get recoveryRejected => 'Versions that did not import';
+
+  @override
+  String get recoveryEmpty =>
+      'Nothing saved yet. A version is saved here before every re-import, Replace all, and sync change that replaces or deletes a repertoire.';
+
+  @override
+  String recoveryInfo(int max) {
+    return 'Saved versions stay on this device only, up to $max per repertoire. Sync is not a backup: a deletion or re-import on one device reaches your other devices. Export a backup file to keep a separate copy.';
+  }
+
+  @override
+  String get snapshotReasonReimport => 'Before a re-import';
+
+  @override
+  String get snapshotReasonRestore => 'Before Replace all';
+
+  @override
+  String get snapshotReasonReplaced =>
+      'Replaced by a newer version from sync or a backup';
+
+  @override
+  String get snapshotReasonDeleted => 'Deleted on another device';
+
+  @override
+  String get snapshotReasonRejected => 'Did not import; your version was kept';
+
+  @override
+  String snapshotSubtitle(String reason, String date) {
+    return '$reason · $date';
+  }
+
+  @override
+  String get restoreVersion => 'Restore this version';
+
+  @override
+  String restoreVersionTitle(String name) {
+    return 'Restore this version of $name?';
+  }
+
+  @override
+  String get restoreVersionBody =>
+      'The current moves are replaced, and the current version is saved here first. Training history is kept.';
+
+  @override
+  String versionRestored(String name) {
+    return 'Restored $name';
+  }
+
+  @override
+  String get versionNotRestorable =>
+      'This version does not import, so it cannot be restored. Export it to inspect or fix it.';
+
+  @override
+  String get restore => 'Restore';
+
+  @override
+  String get deleteVersion => 'Delete this version';
+
+  @override
+  String get deleteForever => 'Delete forever';
+
+  @override
+  String deleteForeverTitle(String name) {
+    return 'Delete $name forever?';
+  }
+
+  @override
+  String get deleteForeverBody =>
+      'Its training history and saved versions are deleted. This cannot be undone.';
+
+  @override
+  String trashWithHistory(String date) {
+    return 'Deleted $date · training history kept';
+  }
+
+  @override
+  String trashMovesOnly(String date) {
+    return 'Deleted $date · moves only, no training history on this device';
+  }
+
+  @override
+  String recoveryFailed(String error) {
+    return 'Could not complete: $error';
+  }
+
+  @override
+  String restoreAborted(String names) {
+    return 'Nothing was changed. These repertoires in the backup do not import: $names';
+  }
+
+  @override
+  String get importRejectedTitle => 'Some repertoires were not imported';
+
+  @override
+  String importRejectedBody(String names) {
+    return 'These stayed as they were on this device because the PGN in the backup does not import: $names. The backup\'s versions are in Version history and trash.';
+  }
+
+  @override
+  String get openRecovery => 'Open version history';
+
+  @override
+  String syncRejected(String names) {
+    return 'Not taken from another device because its PGN does not import here: $names. Your version was kept; the other one is in Version history and trash.';
   }
 }

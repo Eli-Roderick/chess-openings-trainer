@@ -412,6 +412,7 @@ void main() {
         runs: bRuns,
         stats: bStats,
         buildTree: (r) async => importPgn(r.pgn, Side.white).tree,
+        clock: const SystemClock(),
       ),
       repertoires: bReps,
       runs: bRuns,

@@ -6271,6 +6271,726 @@ class AppMetaCompanion extends UpdateCompanion<DbAppMeta> {
   }
 }
 
+class $SnapshotsTable extends Snapshots
+    with TableInfo<$SnapshotsTable, DbSnapshot> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $SnapshotsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _repertoireIdMeta = const VerificationMeta(
+    'repertoireId',
+  );
+  @override
+  late final GeneratedColumn<String> repertoireId = GeneratedColumn<String>(
+    'repertoire_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+    'name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _colorMeta = const VerificationMeta('color');
+  @override
+  late final GeneratedColumn<String> color = GeneratedColumn<String>(
+    'color',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _pgnMeta = const VerificationMeta('pgn');
+  @override
+  late final GeneratedColumn<String> pgn = GeneratedColumn<String>(
+    'pgn',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _pgnHashMeta = const VerificationMeta(
+    'pgnHash',
+  );
+  @override
+  late final GeneratedColumn<String> pgnHash = GeneratedColumn<String>(
+    'pgn_hash',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _descriptionMeta = const VerificationMeta(
+    'description',
+  );
+  @override
+  late final GeneratedColumn<String> description = GeneratedColumn<String>(
+    'description',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _recordCreatedAtMeta = const VerificationMeta(
+    'recordCreatedAt',
+  );
+  @override
+  late final GeneratedColumn<int> recordCreatedAt = GeneratedColumn<int>(
+    'record_created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _recordUpdatedAtMeta = const VerificationMeta(
+    'recordUpdatedAt',
+  );
+  @override
+  late final GeneratedColumn<int> recordUpdatedAt = GeneratedColumn<int>(
+    'record_updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _recordUpdatedByMeta = const VerificationMeta(
+    'recordUpdatedBy',
+  );
+  @override
+  late final GeneratedColumn<String> recordUpdatedBy = GeneratedColumn<String>(
+    'record_updated_by',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _reasonMeta = const VerificationMeta('reason');
+  @override
+  late final GeneratedColumn<String> reason = GeneratedColumn<String>(
+    'reason',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<int> createdAt = GeneratedColumn<int>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    repertoireId,
+    name,
+    color,
+    pgn,
+    pgnHash,
+    description,
+    recordCreatedAt,
+    recordUpdatedAt,
+    recordUpdatedBy,
+    reason,
+    createdAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'snapshots';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<DbSnapshot> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('repertoire_id')) {
+      context.handle(
+        _repertoireIdMeta,
+        repertoireId.isAcceptableOrUnknown(
+          data['repertoire_id']!,
+          _repertoireIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_repertoireIdMeta);
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+        _nameMeta,
+        name.isAcceptableOrUnknown(data['name']!, _nameMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_nameMeta);
+    }
+    if (data.containsKey('color')) {
+      context.handle(
+        _colorMeta,
+        color.isAcceptableOrUnknown(data['color']!, _colorMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_colorMeta);
+    }
+    if (data.containsKey('pgn')) {
+      context.handle(
+        _pgnMeta,
+        pgn.isAcceptableOrUnknown(data['pgn']!, _pgnMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_pgnMeta);
+    }
+    if (data.containsKey('pgn_hash')) {
+      context.handle(
+        _pgnHashMeta,
+        pgnHash.isAcceptableOrUnknown(data['pgn_hash']!, _pgnHashMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_pgnHashMeta);
+    }
+    if (data.containsKey('description')) {
+      context.handle(
+        _descriptionMeta,
+        description.isAcceptableOrUnknown(
+          data['description']!,
+          _descriptionMeta,
+        ),
+      );
+    }
+    if (data.containsKey('record_created_at')) {
+      context.handle(
+        _recordCreatedAtMeta,
+        recordCreatedAt.isAcceptableOrUnknown(
+          data['record_created_at']!,
+          _recordCreatedAtMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_recordCreatedAtMeta);
+    }
+    if (data.containsKey('record_updated_at')) {
+      context.handle(
+        _recordUpdatedAtMeta,
+        recordUpdatedAt.isAcceptableOrUnknown(
+          data['record_updated_at']!,
+          _recordUpdatedAtMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_recordUpdatedAtMeta);
+    }
+    if (data.containsKey('record_updated_by')) {
+      context.handle(
+        _recordUpdatedByMeta,
+        recordUpdatedBy.isAcceptableOrUnknown(
+          data['record_updated_by']!,
+          _recordUpdatedByMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_recordUpdatedByMeta);
+    }
+    if (data.containsKey('reason')) {
+      context.handle(
+        _reasonMeta,
+        reason.isAcceptableOrUnknown(data['reason']!, _reasonMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_reasonMeta);
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  DbSnapshot map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return DbSnapshot(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      repertoireId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}repertoire_id'],
+      )!,
+      name: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}name'],
+      )!,
+      color: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}color'],
+      )!,
+      pgn: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}pgn'],
+      )!,
+      pgnHash: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}pgn_hash'],
+      )!,
+      description: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}description'],
+      ),
+      recordCreatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}record_created_at'],
+      )!,
+      recordUpdatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}record_updated_at'],
+      )!,
+      recordUpdatedBy: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}record_updated_by'],
+      )!,
+      reason: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}reason'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}created_at'],
+      )!,
+    );
+  }
+
+  @override
+  $SnapshotsTable createAlias(String alias) {
+    return $SnapshotsTable(attachedDatabase, alias);
+  }
+}
+
+class DbSnapshot extends DataClass implements Insertable<DbSnapshot> {
+  final int id;
+  final String repertoireId;
+  final String name;
+
+  /// `'w'` or `'b'`.
+  final String color;
+  final String pgn;
+  final String pgnHash;
+  final String? description;
+
+  /// The saved record's `createdAt`, `updatedAt` and `updatedBy`.
+  final int recordCreatedAt;
+  final int recordUpdatedAt;
+  final String recordUpdatedBy;
+
+  /// `SnapshotReason` name.
+  final String reason;
+
+  /// When saved (UTC ms).
+  final int createdAt;
+  const DbSnapshot({
+    required this.id,
+    required this.repertoireId,
+    required this.name,
+    required this.color,
+    required this.pgn,
+    required this.pgnHash,
+    this.description,
+    required this.recordCreatedAt,
+    required this.recordUpdatedAt,
+    required this.recordUpdatedBy,
+    required this.reason,
+    required this.createdAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['repertoire_id'] = Variable<String>(repertoireId);
+    map['name'] = Variable<String>(name);
+    map['color'] = Variable<String>(color);
+    map['pgn'] = Variable<String>(pgn);
+    map['pgn_hash'] = Variable<String>(pgnHash);
+    if (!nullToAbsent || description != null) {
+      map['description'] = Variable<String>(description);
+    }
+    map['record_created_at'] = Variable<int>(recordCreatedAt);
+    map['record_updated_at'] = Variable<int>(recordUpdatedAt);
+    map['record_updated_by'] = Variable<String>(recordUpdatedBy);
+    map['reason'] = Variable<String>(reason);
+    map['created_at'] = Variable<int>(createdAt);
+    return map;
+  }
+
+  SnapshotsCompanion toCompanion(bool nullToAbsent) {
+    return SnapshotsCompanion(
+      id: Value(id),
+      repertoireId: Value(repertoireId),
+      name: Value(name),
+      color: Value(color),
+      pgn: Value(pgn),
+      pgnHash: Value(pgnHash),
+      description: description == null && nullToAbsent
+          ? const Value.absent()
+          : Value(description),
+      recordCreatedAt: Value(recordCreatedAt),
+      recordUpdatedAt: Value(recordUpdatedAt),
+      recordUpdatedBy: Value(recordUpdatedBy),
+      reason: Value(reason),
+      createdAt: Value(createdAt),
+    );
+  }
+
+  factory DbSnapshot.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return DbSnapshot(
+      id: serializer.fromJson<int>(json['id']),
+      repertoireId: serializer.fromJson<String>(json['repertoireId']),
+      name: serializer.fromJson<String>(json['name']),
+      color: serializer.fromJson<String>(json['color']),
+      pgn: serializer.fromJson<String>(json['pgn']),
+      pgnHash: serializer.fromJson<String>(json['pgnHash']),
+      description: serializer.fromJson<String?>(json['description']),
+      recordCreatedAt: serializer.fromJson<int>(json['recordCreatedAt']),
+      recordUpdatedAt: serializer.fromJson<int>(json['recordUpdatedAt']),
+      recordUpdatedBy: serializer.fromJson<String>(json['recordUpdatedBy']),
+      reason: serializer.fromJson<String>(json['reason']),
+      createdAt: serializer.fromJson<int>(json['createdAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'repertoireId': serializer.toJson<String>(repertoireId),
+      'name': serializer.toJson<String>(name),
+      'color': serializer.toJson<String>(color),
+      'pgn': serializer.toJson<String>(pgn),
+      'pgnHash': serializer.toJson<String>(pgnHash),
+      'description': serializer.toJson<String?>(description),
+      'recordCreatedAt': serializer.toJson<int>(recordCreatedAt),
+      'recordUpdatedAt': serializer.toJson<int>(recordUpdatedAt),
+      'recordUpdatedBy': serializer.toJson<String>(recordUpdatedBy),
+      'reason': serializer.toJson<String>(reason),
+      'createdAt': serializer.toJson<int>(createdAt),
+    };
+  }
+
+  DbSnapshot copyWith({
+    int? id,
+    String? repertoireId,
+    String? name,
+    String? color,
+    String? pgn,
+    String? pgnHash,
+    Value<String?> description = const Value.absent(),
+    int? recordCreatedAt,
+    int? recordUpdatedAt,
+    String? recordUpdatedBy,
+    String? reason,
+    int? createdAt,
+  }) => DbSnapshot(
+    id: id ?? this.id,
+    repertoireId: repertoireId ?? this.repertoireId,
+    name: name ?? this.name,
+    color: color ?? this.color,
+    pgn: pgn ?? this.pgn,
+    pgnHash: pgnHash ?? this.pgnHash,
+    description: description.present ? description.value : this.description,
+    recordCreatedAt: recordCreatedAt ?? this.recordCreatedAt,
+    recordUpdatedAt: recordUpdatedAt ?? this.recordUpdatedAt,
+    recordUpdatedBy: recordUpdatedBy ?? this.recordUpdatedBy,
+    reason: reason ?? this.reason,
+    createdAt: createdAt ?? this.createdAt,
+  );
+  DbSnapshot copyWithCompanion(SnapshotsCompanion data) {
+    return DbSnapshot(
+      id: data.id.present ? data.id.value : this.id,
+      repertoireId: data.repertoireId.present
+          ? data.repertoireId.value
+          : this.repertoireId,
+      name: data.name.present ? data.name.value : this.name,
+      color: data.color.present ? data.color.value : this.color,
+      pgn: data.pgn.present ? data.pgn.value : this.pgn,
+      pgnHash: data.pgnHash.present ? data.pgnHash.value : this.pgnHash,
+      description: data.description.present
+          ? data.description.value
+          : this.description,
+      recordCreatedAt: data.recordCreatedAt.present
+          ? data.recordCreatedAt.value
+          : this.recordCreatedAt,
+      recordUpdatedAt: data.recordUpdatedAt.present
+          ? data.recordUpdatedAt.value
+          : this.recordUpdatedAt,
+      recordUpdatedBy: data.recordUpdatedBy.present
+          ? data.recordUpdatedBy.value
+          : this.recordUpdatedBy,
+      reason: data.reason.present ? data.reason.value : this.reason,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('DbSnapshot(')
+          ..write('id: $id, ')
+          ..write('repertoireId: $repertoireId, ')
+          ..write('name: $name, ')
+          ..write('color: $color, ')
+          ..write('pgn: $pgn, ')
+          ..write('pgnHash: $pgnHash, ')
+          ..write('description: $description, ')
+          ..write('recordCreatedAt: $recordCreatedAt, ')
+          ..write('recordUpdatedAt: $recordUpdatedAt, ')
+          ..write('recordUpdatedBy: $recordUpdatedBy, ')
+          ..write('reason: $reason, ')
+          ..write('createdAt: $createdAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    repertoireId,
+    name,
+    color,
+    pgn,
+    pgnHash,
+    description,
+    recordCreatedAt,
+    recordUpdatedAt,
+    recordUpdatedBy,
+    reason,
+    createdAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is DbSnapshot &&
+          other.id == this.id &&
+          other.repertoireId == this.repertoireId &&
+          other.name == this.name &&
+          other.color == this.color &&
+          other.pgn == this.pgn &&
+          other.pgnHash == this.pgnHash &&
+          other.description == this.description &&
+          other.recordCreatedAt == this.recordCreatedAt &&
+          other.recordUpdatedAt == this.recordUpdatedAt &&
+          other.recordUpdatedBy == this.recordUpdatedBy &&
+          other.reason == this.reason &&
+          other.createdAt == this.createdAt);
+}
+
+class SnapshotsCompanion extends UpdateCompanion<DbSnapshot> {
+  final Value<int> id;
+  final Value<String> repertoireId;
+  final Value<String> name;
+  final Value<String> color;
+  final Value<String> pgn;
+  final Value<String> pgnHash;
+  final Value<String?> description;
+  final Value<int> recordCreatedAt;
+  final Value<int> recordUpdatedAt;
+  final Value<String> recordUpdatedBy;
+  final Value<String> reason;
+  final Value<int> createdAt;
+  const SnapshotsCompanion({
+    this.id = const Value.absent(),
+    this.repertoireId = const Value.absent(),
+    this.name = const Value.absent(),
+    this.color = const Value.absent(),
+    this.pgn = const Value.absent(),
+    this.pgnHash = const Value.absent(),
+    this.description = const Value.absent(),
+    this.recordCreatedAt = const Value.absent(),
+    this.recordUpdatedAt = const Value.absent(),
+    this.recordUpdatedBy = const Value.absent(),
+    this.reason = const Value.absent(),
+    this.createdAt = const Value.absent(),
+  });
+  SnapshotsCompanion.insert({
+    this.id = const Value.absent(),
+    required String repertoireId,
+    required String name,
+    required String color,
+    required String pgn,
+    required String pgnHash,
+    this.description = const Value.absent(),
+    required int recordCreatedAt,
+    required int recordUpdatedAt,
+    required String recordUpdatedBy,
+    required String reason,
+    required int createdAt,
+  }) : repertoireId = Value(repertoireId),
+       name = Value(name),
+       color = Value(color),
+       pgn = Value(pgn),
+       pgnHash = Value(pgnHash),
+       recordCreatedAt = Value(recordCreatedAt),
+       recordUpdatedAt = Value(recordUpdatedAt),
+       recordUpdatedBy = Value(recordUpdatedBy),
+       reason = Value(reason),
+       createdAt = Value(createdAt);
+  static Insertable<DbSnapshot> custom({
+    Expression<int>? id,
+    Expression<String>? repertoireId,
+    Expression<String>? name,
+    Expression<String>? color,
+    Expression<String>? pgn,
+    Expression<String>? pgnHash,
+    Expression<String>? description,
+    Expression<int>? recordCreatedAt,
+    Expression<int>? recordUpdatedAt,
+    Expression<String>? recordUpdatedBy,
+    Expression<String>? reason,
+    Expression<int>? createdAt,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (repertoireId != null) 'repertoire_id': repertoireId,
+      if (name != null) 'name': name,
+      if (color != null) 'color': color,
+      if (pgn != null) 'pgn': pgn,
+      if (pgnHash != null) 'pgn_hash': pgnHash,
+      if (description != null) 'description': description,
+      if (recordCreatedAt != null) 'record_created_at': recordCreatedAt,
+      if (recordUpdatedAt != null) 'record_updated_at': recordUpdatedAt,
+      if (recordUpdatedBy != null) 'record_updated_by': recordUpdatedBy,
+      if (reason != null) 'reason': reason,
+      if (createdAt != null) 'created_at': createdAt,
+    });
+  }
+
+  SnapshotsCompanion copyWith({
+    Value<int>? id,
+    Value<String>? repertoireId,
+    Value<String>? name,
+    Value<String>? color,
+    Value<String>? pgn,
+    Value<String>? pgnHash,
+    Value<String?>? description,
+    Value<int>? recordCreatedAt,
+    Value<int>? recordUpdatedAt,
+    Value<String>? recordUpdatedBy,
+    Value<String>? reason,
+    Value<int>? createdAt,
+  }) {
+    return SnapshotsCompanion(
+      id: id ?? this.id,
+      repertoireId: repertoireId ?? this.repertoireId,
+      name: name ?? this.name,
+      color: color ?? this.color,
+      pgn: pgn ?? this.pgn,
+      pgnHash: pgnHash ?? this.pgnHash,
+      description: description ?? this.description,
+      recordCreatedAt: recordCreatedAt ?? this.recordCreatedAt,
+      recordUpdatedAt: recordUpdatedAt ?? this.recordUpdatedAt,
+      recordUpdatedBy: recordUpdatedBy ?? this.recordUpdatedBy,
+      reason: reason ?? this.reason,
+      createdAt: createdAt ?? this.createdAt,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (repertoireId.present) {
+      map['repertoire_id'] = Variable<String>(repertoireId.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (color.present) {
+      map['color'] = Variable<String>(color.value);
+    }
+    if (pgn.present) {
+      map['pgn'] = Variable<String>(pgn.value);
+    }
+    if (pgnHash.present) {
+      map['pgn_hash'] = Variable<String>(pgnHash.value);
+    }
+    if (description.present) {
+      map['description'] = Variable<String>(description.value);
+    }
+    if (recordCreatedAt.present) {
+      map['record_created_at'] = Variable<int>(recordCreatedAt.value);
+    }
+    if (recordUpdatedAt.present) {
+      map['record_updated_at'] = Variable<int>(recordUpdatedAt.value);
+    }
+    if (recordUpdatedBy.present) {
+      map['record_updated_by'] = Variable<String>(recordUpdatedBy.value);
+    }
+    if (reason.present) {
+      map['reason'] = Variable<String>(reason.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<int>(createdAt.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SnapshotsCompanion(')
+          ..write('id: $id, ')
+          ..write('repertoireId: $repertoireId, ')
+          ..write('name: $name, ')
+          ..write('color: $color, ')
+          ..write('pgn: $pgn, ')
+          ..write('pgnHash: $pgnHash, ')
+          ..write('description: $description, ')
+          ..write('recordCreatedAt: $recordCreatedAt, ')
+          ..write('recordUpdatedAt: $recordUpdatedAt, ')
+          ..write('recordUpdatedBy: $recordUpdatedBy, ')
+          ..write('reason: $reason, ')
+          ..write('createdAt: $createdAt')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -6287,6 +7007,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $SettingsTable settings = $SettingsTable(this);
   late final $SyncStateTable syncState = $SyncStateTable(this);
   late final $AppMetaTable appMeta = $AppMetaTable(this);
+  late final $SnapshotsTable snapshots = $SnapshotsTable(this);
   late final Index linesByOrdinal = Index(
     'lines_by_ordinal',
     'CREATE INDEX lines_by_ordinal ON lines (repertoire_id, ordinal)',
@@ -6311,6 +7032,10 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     'runs_key_ucis',
     'CREATE INDEX runs_key_ucis ON runs (repertoire_id, line_key, ucis)',
   );
+  late final Index snapshotsByRepertoire = Index(
+    'snapshots_by_repertoire',
+    'CREATE INDEX snapshots_by_repertoire ON snapshots (repertoire_id, created_at)',
+  );
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -6327,12 +7052,14 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     settings,
     syncState,
     appMeta,
+    snapshots,
     linesByOrdinal,
     runsByLine,
     runsByDay,
     runsBySynced,
     runsDailyStats,
     runsKeyUcis,
+    snapshotsByRepertoire,
   ];
 }
 
@@ -9463,6 +10190,347 @@ typedef $$AppMetaTableProcessedTableManager =
       DbAppMeta,
       PrefetchHooks Function()
     >;
+typedef $$SnapshotsTableCreateCompanionBuilder = SnapshotsCompanion Function({
+  Value<int> id,
+  required String repertoireId,
+  required String name,
+  required String color,
+  required String pgn,
+  required String pgnHash,
+  Value<String?> description,
+  required int recordCreatedAt,
+  required int recordUpdatedAt,
+  required String recordUpdatedBy,
+  required String reason,
+  required int createdAt,
+});
+typedef $$SnapshotsTableUpdateCompanionBuilder = SnapshotsCompanion Function({
+  Value<int> id,
+  Value<String> repertoireId,
+  Value<String> name,
+  Value<String> color,
+  Value<String> pgn,
+  Value<String> pgnHash,
+  Value<String?> description,
+  Value<int> recordCreatedAt,
+  Value<int> recordUpdatedAt,
+  Value<String> recordUpdatedBy,
+  Value<String> reason,
+  Value<int> createdAt,
+});
+
+class $$SnapshotsTableFilterComposer
+    extends Composer<_$AppDatabase, $SnapshotsTable> {
+  $$SnapshotsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get repertoireId => $composableBuilder(
+    column: $table.repertoireId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get color => $composableBuilder(
+    column: $table.color,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get pgn => $composableBuilder(
+    column: $table.pgn,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get pgnHash => $composableBuilder(
+    column: $table.pgnHash,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get description => $composableBuilder(
+    column: $table.description,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get recordCreatedAt => $composableBuilder(
+    column: $table.recordCreatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get recordUpdatedAt => $composableBuilder(
+    column: $table.recordUpdatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get recordUpdatedBy => $composableBuilder(
+    column: $table.recordUpdatedBy,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get reason => $composableBuilder(
+    column: $table.reason,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$SnapshotsTableOrderingComposer
+    extends Composer<_$AppDatabase, $SnapshotsTable> {
+  $$SnapshotsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get repertoireId => $composableBuilder(
+    column: $table.repertoireId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get color => $composableBuilder(
+    column: $table.color,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get pgn => $composableBuilder(
+    column: $table.pgn,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get pgnHash => $composableBuilder(
+    column: $table.pgnHash,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get description => $composableBuilder(
+    column: $table.description,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get recordCreatedAt => $composableBuilder(
+    column: $table.recordCreatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get recordUpdatedAt => $composableBuilder(
+    column: $table.recordUpdatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get recordUpdatedBy => $composableBuilder(
+    column: $table.recordUpdatedBy,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get reason => $composableBuilder(
+    column: $table.reason,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$SnapshotsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $SnapshotsTable> {
+  $$SnapshotsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get repertoireId => $composableBuilder(
+    column: $table.repertoireId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get name =>
+      $composableBuilder(column: $table.name, builder: (column) => column);
+
+  GeneratedColumn<String> get color =>
+      $composableBuilder(column: $table.color, builder: (column) => column);
+
+  GeneratedColumn<String> get pgn =>
+      $composableBuilder(column: $table.pgn, builder: (column) => column);
+
+  GeneratedColumn<String> get pgnHash =>
+      $composableBuilder(column: $table.pgnHash, builder: (column) => column);
+
+  GeneratedColumn<String> get description => $composableBuilder(
+    column: $table.description,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get recordCreatedAt => $composableBuilder(
+    column: $table.recordCreatedAt,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get recordUpdatedAt => $composableBuilder(
+    column: $table.recordUpdatedAt,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get recordUpdatedBy => $composableBuilder(
+    column: $table.recordUpdatedBy,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get reason =>
+      $composableBuilder(column: $table.reason, builder: (column) => column);
+
+  GeneratedColumn<int> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+}
+
+class $$SnapshotsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $SnapshotsTable,
+          DbSnapshot,
+          $$SnapshotsTableFilterComposer,
+          $$SnapshotsTableOrderingComposer,
+          $$SnapshotsTableAnnotationComposer,
+          $$SnapshotsTableCreateCompanionBuilder,
+          $$SnapshotsTableUpdateCompanionBuilder,
+          (
+            DbSnapshot,
+            BaseReferences<_$AppDatabase, $SnapshotsTable, DbSnapshot>,
+          ),
+          DbSnapshot,
+          PrefetchHooks Function()
+        > {
+  $$SnapshotsTableTableManager(_$AppDatabase db, $SnapshotsTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$SnapshotsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$SnapshotsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$SnapshotsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<String> repertoireId = const Value.absent(),
+                Value<String> name = const Value.absent(),
+                Value<String> color = const Value.absent(),
+                Value<String> pgn = const Value.absent(),
+                Value<String> pgnHash = const Value.absent(),
+                Value<String?> description = const Value.absent(),
+                Value<int> recordCreatedAt = const Value.absent(),
+                Value<int> recordUpdatedAt = const Value.absent(),
+                Value<String> recordUpdatedBy = const Value.absent(),
+                Value<String> reason = const Value.absent(),
+                Value<int> createdAt = const Value.absent(),
+              }) => SnapshotsCompanion(
+                id: id,
+                repertoireId: repertoireId,
+                name: name,
+                color: color,
+                pgn: pgn,
+                pgnHash: pgnHash,
+                description: description,
+                recordCreatedAt: recordCreatedAt,
+                recordUpdatedAt: recordUpdatedAt,
+                recordUpdatedBy: recordUpdatedBy,
+                reason: reason,
+                createdAt: createdAt,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required String repertoireId,
+                required String name,
+                required String color,
+                required String pgn,
+                required String pgnHash,
+                Value<String?> description = const Value.absent(),
+                required int recordCreatedAt,
+                required int recordUpdatedAt,
+                required String recordUpdatedBy,
+                required String reason,
+                required int createdAt,
+              }) => SnapshotsCompanion.insert(
+                id: id,
+                repertoireId: repertoireId,
+                name: name,
+                color: color,
+                pgn: pgn,
+                pgnHash: pgnHash,
+                description: description,
+                recordCreatedAt: recordCreatedAt,
+                recordUpdatedAt: recordUpdatedAt,
+                recordUpdatedBy: recordUpdatedBy,
+                reason: reason,
+                createdAt: createdAt,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$SnapshotsTable, DbSnapshot>(table),
+                  BaseReferences<_$AppDatabase, $SnapshotsTable, DbSnapshot>(
+                    db,
+                    table,
+                    e,
+                  ),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$SnapshotsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $SnapshotsTable,
+      DbSnapshot,
+      $$SnapshotsTableFilterComposer,
+      $$SnapshotsTableOrderingComposer,
+      $$SnapshotsTableAnnotationComposer,
+      $$SnapshotsTableCreateCompanionBuilder,
+      $$SnapshotsTableUpdateCompanionBuilder,
+      (DbSnapshot, BaseReferences<_$AppDatabase, $SnapshotsTable, DbSnapshot>),
+      DbSnapshot,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -9488,4 +10556,6 @@ class $AppDatabaseManager {
       $$SyncStateTableTableManager(_db, _db.syncState);
   $$AppMetaTableTableManager get appMeta =>
       $$AppMetaTableTableManager(_db, _db.appMeta);
+  $$SnapshotsTableTableManager get snapshots =>
+      $$SnapshotsTableTableManager(_db, _db.snapshots);
 }

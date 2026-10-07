@@ -3,6 +3,7 @@ import 'package:flutter/widgets.dart' show ValueKey;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:repertoire_trainer/core/files/file_service.dart';
+import 'package:repertoire_trainer/features/backup/recovery_screen.dart';
 import 'package:repertoire_trainer/features/backup/sync_backup_screen.dart';
 import 'package:repertoire_trainer/features/board/free_move.dart';
 import 'package:repertoire_trainer/features/browse/browse_screen.dart';
@@ -138,6 +139,11 @@ final routerProvider = Provider<GoRouter>((ref) {
               // Opened without a position (a restored deep link).
               _ => const HomeScreen(),
             },
+          ),
+          GoRoute(
+            path: 'recovery',
+            builder: (context, state) =>
+                RecoveryScreen(repertoireId: state.uri.queryParameters['id']),
           ),
           GoRoute(
             path: 'diagnostics',

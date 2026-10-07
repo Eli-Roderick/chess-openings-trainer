@@ -375,6 +375,7 @@ void main() {
           runs: runs,
           stats: stats,
           buildTree: (r) async => importPgn(r.pgn, Side.white).tree,
+          clock: const SystemClock(),
         ),
         queries: BackupQueries(db),
         deviceId: () async => 'dev',

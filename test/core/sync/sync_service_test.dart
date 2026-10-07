@@ -35,6 +35,7 @@ final class _Device {
       stats: t.service,
       buildTree: (r) async =>
           importPgn(r.pgn, r.color == 'b' ? Side.black : Side.white).tree,
+      clock: t.clock,
     ),
     repertoires: t.repertoires,
     runs: t.runs,

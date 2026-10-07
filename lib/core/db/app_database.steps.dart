@@ -1164,8 +1164,374 @@ i1.GeneratedColumn<String> _column_81(String aliasedName) =>
       type: i1.DriftSqlType.string,
       $customConstraints: 'NOT NULL',
     );
+
+final class Schema3 extends i0.VersionedSchema {
+  Schema3({required super.database}) : super(version: 3);
+  @override
+  late final List<i1.DatabaseSchemaEntity> entities = [
+    repertoires,
+    nodes,
+    lines,
+    runs,
+    moveGrades,
+    deviationEvents,
+    lineStats,
+    plyStats,
+    settings,
+    syncState,
+    appMeta,
+    snapshots,
+    linesByOrdinal,
+    runsByLine,
+    runsByDay,
+    runsBySynced,
+    runsDailyStats,
+    runsKeyUcis,
+    snapshotsByRepertoire,
+  ];
+  late final Shape0 repertoires = Shape0(
+    source: i0.VersionedTable(
+      entityName: 'repertoires',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: ['PRIMARY KEY(id)'],
+      columns: [
+        _column_0,
+        _column_1,
+        _column_2,
+        _column_3,
+        _column_4,
+        _column_5,
+        _column_6,
+        _column_7,
+        _column_8,
+        _column_9,
+        _column_10,
+        _column_11,
+        _column_12,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape1 nodes = Shape1(
+    source: i0.VersionedTable(
+      entityName: 'nodes',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: ['PRIMARY KEY(repertoire_id, node_id)'],
+      columns: [
+        _column_13,
+        _column_14,
+        _column_15,
+        _column_16,
+        _column_17,
+        _column_18,
+        _column_19,
+        _column_20,
+        _column_21,
+        _column_22,
+        _column_23,
+        _column_24,
+        _column_25,
+        _column_26,
+        _column_27,
+        _column_28,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape2 lines = Shape2(
+    source: i0.VersionedTable(
+      entityName: 'lines',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: ['PRIMARY KEY(repertoire_id, line_key)'],
+      columns: [
+        _column_13,
+        _column_29,
+        _column_30,
+        _column_31,
+        _column_32,
+        _column_33,
+        _column_34,
+        _column_35,
+        _column_36,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape3 runs = Shape3(
+    source: i0.VersionedTable(
+      entityName: 'runs',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: ['PRIMARY KEY(id)'],
+      columns: [
+        _column_0,
+        _column_13,
+        _column_29,
+        _column_36,
+        _column_37,
+        _column_38,
+        _column_39,
+        _column_40,
+        _column_41,
+        _column_42,
+        _column_43,
+        _column_44,
+        _column_45,
+        _column_46,
+        _column_47,
+        _column_48,
+        _column_49,
+        _column_50,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape4 moveGrades = Shape4(
+    source: i0.VersionedTable(
+      entityName: 'move_grades',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: ['PRIMARY KEY(run_id, ply)'],
+      columns: [
+        _column_51,
+        _column_16,
+        _column_52,
+        _column_53,
+        _column_54,
+        _column_55,
+        _column_56,
+        _column_57,
+        _column_58,
+        _column_59,
+        _column_60,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape5 deviationEvents = Shape5(
+    source: i0.VersionedTable(
+      entityName: 'deviation_events',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: ['PRIMARY KEY(run_id)'],
+      columns: [
+        _column_51,
+        _column_16,
+        _column_61,
+        _column_62,
+        _column_63,
+        _column_64,
+        _column_65,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape6 lineStats = Shape6(
+    source: i0.VersionedTable(
+      entityName: 'line_stats',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: ['PRIMARY KEY(repertoire_id, line_key)'],
+      columns: [
+        _column_13,
+        _column_29,
+        _column_66,
+        _column_67,
+        _column_68,
+        _column_69,
+        _column_70,
+        _column_71,
+        _column_72,
+        _column_73,
+        _column_74,
+        _column_75,
+        _column_76,
+        _column_77,
+        _column_78,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape7 plyStats = Shape7(
+    source: i0.VersionedTable(
+      entityName: 'ply_stats',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: ['PRIMARY KEY(repertoire_id, ucis, ply)'],
+      columns: [_column_13, _column_36, _column_16, _column_57, _column_79],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape8 settings = Shape8(
+    source: i0.VersionedTable(
+      entityName: 'settings',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: ['PRIMARY KEY("key")'],
+      columns: [_column_80, _column_81],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape8 syncState = Shape8(
+    source: i0.VersionedTable(
+      entityName: 'sync_state',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: ['PRIMARY KEY("key")'],
+      columns: [_column_80, _column_81],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape8 appMeta = Shape8(
+    source: i0.VersionedTable(
+      entityName: 'app_meta',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: ['PRIMARY KEY("key")'],
+      columns: [_column_80, _column_81],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape9 snapshots = Shape9(
+    source: i0.VersionedTable(
+      entityName: 'snapshots',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: [],
+      columns: [
+        _column_82,
+        _column_13,
+        _column_1,
+        _column_2,
+        _column_3,
+        _column_4,
+        _column_5,
+        _column_83,
+        _column_84,
+        _column_85,
+        _column_86,
+        _column_6,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  final i1.Index linesByOrdinal = i1.Index(
+    'lines_by_ordinal',
+    'CREATE INDEX lines_by_ordinal ON lines (repertoire_id, ordinal)',
+  );
+  final i1.Index runsByLine = i1.Index(
+    'runs_by_line',
+    'CREATE INDEX runs_by_line ON runs (repertoire_id, line_key, finished_at)',
+  );
+  final i1.Index runsByDay = i1.Index(
+    'runs_by_day',
+    'CREATE INDEX runs_by_day ON runs (local_day)',
+  );
+  final i1.Index runsBySynced = i1.Index(
+    'runs_by_synced',
+    'CREATE INDEX runs_by_synced ON runs (synced_at)',
+  );
+  final i1.Index runsDailyStats = i1.Index(
+    'runs_daily_stats',
+    'CREATE INDEX runs_daily_stats ON runs (repertoire_id, completed, local_day, graded_count, credit_sum)',
+  );
+  final i1.Index runsKeyUcis = i1.Index(
+    'runs_key_ucis',
+    'CREATE INDEX runs_key_ucis ON runs (repertoire_id, line_key, ucis)',
+  );
+  final i1.Index snapshotsByRepertoire = i1.Index(
+    'snapshots_by_repertoire',
+    'CREATE INDEX snapshots_by_repertoire ON snapshots (repertoire_id, created_at)',
+  );
+}
+
+class Shape9 extends i0.VersionedTable {
+  Shape9({required super.source, required super.alias}) : super.aliased();
+  i1.GeneratedColumn<int> get id =>
+      columnsByName['id']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<String> get repertoireId =>
+      columnsByName['repertoire_id']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get name =>
+      columnsByName['name']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get color =>
+      columnsByName['color']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get pgn =>
+      columnsByName['pgn']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get pgnHash =>
+      columnsByName['pgn_hash']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get description =>
+      columnsByName['description']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<int> get recordCreatedAt =>
+      columnsByName['record_created_at']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get recordUpdatedAt =>
+      columnsByName['record_updated_at']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<String> get recordUpdatedBy =>
+      columnsByName['record_updated_by']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get reason =>
+      columnsByName['reason']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<int> get createdAt =>
+      columnsByName['created_at']! as i1.GeneratedColumn<int>;
+}
+
+i1.GeneratedColumn<int> _column_82(String aliasedName) =>
+    i1.GeneratedColumn<int>(
+      'id',
+      aliasedName,
+      false,
+      hasAutoIncrement: true,
+      type: i1.DriftSqlType.int,
+      $customConstraints: 'NOT NULL PRIMARY KEY AUTOINCREMENT',
+    );
+i1.GeneratedColumn<int> _column_83(String aliasedName) =>
+    i1.GeneratedColumn<int>(
+      'record_created_at',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.int,
+      $customConstraints: 'NOT NULL',
+    );
+i1.GeneratedColumn<int> _column_84(String aliasedName) =>
+    i1.GeneratedColumn<int>(
+      'record_updated_at',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.int,
+      $customConstraints: 'NOT NULL',
+    );
+i1.GeneratedColumn<String> _column_85(String aliasedName) =>
+    i1.GeneratedColumn<String>(
+      'record_updated_by',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.string,
+      $customConstraints: 'NOT NULL',
+    );
+i1.GeneratedColumn<String> _column_86(String aliasedName) =>
+    i1.GeneratedColumn<String>(
+      'reason',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.string,
+      $customConstraints: 'NOT NULL',
+    );
 i0.MigrationStepWithVersion migrationSteps({
   required Future<void> Function(i1.Migrator m, Schema2 schema) from1To2,
+  required Future<void> Function(i1.Migrator m, Schema3 schema) from2To3,
 }) {
   return (currentVersion, database) async {
     switch (currentVersion) {
@@ -1174,6 +1540,11 @@ i0.MigrationStepWithVersion migrationSteps({
         final migrator = i1.Migrator(database, schema);
         await from1To2(migrator, schema);
         return 2;
+      case 2:
+        final schema = Schema3(database: database);
+        final migrator = i1.Migrator(database, schema);
+        await from2To3(migrator, schema);
+        return 3;
       default:
         throw ArgumentError.value('Unknown migration from $currentVersion');
     }
@@ -1182,6 +1553,7 @@ i0.MigrationStepWithVersion migrationSteps({
 
 i1.OnUpgrade stepByStep({
   required Future<void> Function(i1.Migrator m, Schema2 schema) from1To2,
+  required Future<void> Function(i1.Migrator m, Schema3 schema) from2To3,
 }) => i0.VersionedSchema.stepByStepHelper(
-  step: migrationSteps(from1To2: from1To2),
+  step: migrationSteps(from1To2: from1To2, from2To3: from2To3),
 );

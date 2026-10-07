@@ -21,6 +21,7 @@ part 'app_database.g.dart';
     Settings,
     SyncState,
     AppMeta,
+    Snapshots,
   ],
 )
 class AppDatabase extends _$AppDatabase {
@@ -45,7 +46,7 @@ class AppDatabase extends _$AppDatabase {
   factory memory() => AppDatabase(NativeDatabase.memory());
 
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 3;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -57,6 +58,11 @@ class AppDatabase extends _$AppDatabase {
         await m.createIndex(schema.runsDailyStats);
         await m.createIndex(schema.runsKeyUcis);
         await customStatement(plyStatsFillSql());
+      },
+      from2To3: (m, schema) async {
+        // Version history and trash (audit R4).
+        await m.createTable(schema.snapshots);
+        await m.createIndex(schema.snapshotsByRepertoire);
       },
     ),
   );

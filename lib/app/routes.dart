@@ -70,6 +70,12 @@ abstract final class Routes {
   /// Play on vs engine.
   static const playEngine = '/play-engine';
 
+  /// Version history and trash; with [repertoireId], that repertoire's
+  /// versions only.
+  static String recovery([String? repertoireId]) => repertoireId == null
+      ? '/recovery'
+      : '/recovery?id=${Uri.encodeQueryComponent(repertoireId)}';
+
   /// Hidden diagnostics.
   static const diagnostics = '/diagnostics';
 }

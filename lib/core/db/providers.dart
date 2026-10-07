@@ -9,9 +9,11 @@ import 'package:flutter_riverpod/misc.dart'
     show FutureProviderFamily, StreamProviderFamily;
 import 'package:repertoire_trainer/core/db/app_database.dart';
 import 'package:repertoire_trainer/core/db/merge_applier.dart';
+import 'package:repertoire_trainer/core/db/recovery_service.dart';
 import 'package:repertoire_trainer/core/db/repositories/repertoire_repository.dart';
 import 'package:repertoire_trainer/core/db/repositories/run_repository.dart';
 import 'package:repertoire_trainer/core/db/repositories/settings_repository.dart';
+import 'package:repertoire_trainer/core/db/repositories/snapshot_repository.dart';
 import 'package:repertoire_trainer/core/db/repositories/stats_repository.dart';
 import 'package:repertoire_trainer/core/db/repositories/sync_state_repository.dart';
 import 'package:repertoire_trainer/core/db/stats_queries.dart';
@@ -163,6 +165,22 @@ final streakProvider = StreamProvider<Streak>((ref) {
       .map((days) => computeStreak(days, today));
 });
 
+/// Imports a stored PGN record into a tree on an isolate; null when it
+/// does not import.
+final treeBuilderProvider = Provider<TreeBuilder>(
+  (ref) => (record) async {
+    final runner = ref.read(importRunnerProvider);
+    final side = record.color == 'b' ? Side.black : Side.white;
+    await for (final p in runner(
+      Uint8List.fromList(utf8.encode(record.pgn)),
+      side,
+    )) {
+      if (p case ImportFinished(:final result)) return result.tree;
+    }
+    return null;
+  },
+);
+
 /// Applies merged records (sync, backup import); trees are imported on an
 /// isolate.
 final mergeApplierProvider = Provider<MergeApplier>(
@@ -171,16 +189,25 @@ final mergeApplierProvider = Provider<MergeApplier>(
     repertoires: ref.watch(repertoireRepositoryProvider),
     runs: ref.watch(runRepositoryProvider),
     stats: ref.watch(statsServiceProvider),
-    buildTree: (record) async {
-      final runner = ref.read(importRunnerProvider);
-      final side = record.color == 'b' ? Side.black : Side.white;
-      await for (final p in runner(
-        Uint8List.fromList(utf8.encode(record.pgn)),
-        side,
-      )) {
-        if (p case ImportFinished(:final result)) return result.tree;
-      }
-      return null;
-    },
+    buildTree: ref.watch(treeBuilderProvider),
+    clock: ref.watch(clockProvider),
+  ),
+);
+
+/// Saved repertoire versions (version history, trash).
+final snapshotRepositoryProvider = Provider<SnapshotRepository>(
+  (ref) => SnapshotRepository(ref.watch(databaseProvider)),
+);
+
+/// Restores saved versions and deleted repertoires.
+final recoveryServiceProvider = Provider<RecoveryService>(
+  (ref) => RecoveryService(
+    db: ref.watch(databaseProvider),
+    repertoires: ref.watch(repertoireRepositoryProvider),
+    snapshots: ref.watch(snapshotRepositoryProvider),
+    stats: ref.watch(statsServiceProvider),
+    buildTree: ref.watch(treeBuilderProvider),
+    clock: ref.watch(clockProvider),
+    deviceId: ref.watch(syncStateRepositoryProvider).deviceId,
   ),
 );

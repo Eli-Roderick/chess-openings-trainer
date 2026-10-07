@@ -221,3 +221,35 @@ class AppMeta extends Table {
   @override
   Set<Column<Object>> get primaryKey => {key};
 }
+
+/// Device-local saved versions of repertoire sources (schema 3): taken
+/// before a re-import, a "Replace all" restore, a merge that replaces or
+/// deletes a local PGN, and for incoming versions that did not import.
+/// Not synced and not in backups.
+@DataClassName('DbSnapshot')
+@TableIndex(
+  name: 'snapshots_by_repertoire',
+  columns: {#repertoireId, #createdAt},
+)
+class Snapshots extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  TextColumn get repertoireId => text()();
+  TextColumn get name => text()();
+
+  /// `'w'` or `'b'`.
+  TextColumn get color => text()();
+  TextColumn get pgn => text()();
+  TextColumn get pgnHash => text()();
+  TextColumn get description => text().nullable()();
+
+  /// The saved record's `createdAt`, `updatedAt` and `updatedBy`.
+  IntColumn get recordCreatedAt => integer()();
+  IntColumn get recordUpdatedAt => integer()();
+  TextColumn get recordUpdatedBy => text()();
+
+  /// `SnapshotReason` name.
+  TextColumn get reason => text()();
+
+  /// When saved (UTC ms).
+  IntColumn get createdAt => integer()();
+}

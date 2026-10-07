@@ -47,6 +47,7 @@ final class SyncStatus {
     this.lastSyncAt,
     this.message,
     this.warnings = const [],
+    this.rejected = const [],
   });
 
   /// Phase.
@@ -64,6 +65,10 @@ final class SyncStatus {
   /// Files the last sync skipped.
   final List<SyncWarning> warnings;
 
+  /// Names of repertoires whose version from another device did not
+  /// import in the last sync (the local version was kept).
+  final List<String> rejected;
+
   /// Sync is on.
   bool get enabled =>
       phase != SyncPhase.off && phase != SyncPhase.notConfigured;
@@ -76,12 +81,14 @@ final class SyncStatus {
     String? message,
     bool clearMessage = false,
     List<SyncWarning>? warnings,
+    List<String>? rejected,
   }) => SyncStatus(
     phase: phase ?? this.phase,
     account: account ?? this.account,
     lastSyncAt: lastSyncAt ?? this.lastSyncAt,
     message: clearMessage ? null : message ?? this.message,
     warnings: warnings ?? this.warnings,
+    rejected: rejected ?? this.rejected,
   );
 }
 
@@ -309,6 +316,7 @@ final class SyncController extends Notifier<SyncStatus> {
         phase: SyncPhase.idle,
         lastSyncAt: now,
         warnings: report.warnings,
+        rejected: [for (final r in report.merge.rejected) r.name],
       );
       _announce(report);
     } on SyncOffline catch (e) {

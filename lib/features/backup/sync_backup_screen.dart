@@ -3,9 +3,12 @@ import 'dart:async';
 import 'package:chess_core/chess_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:repertoire_trainer/app/layout/adaptive_layout.dart';
+import 'package:repertoire_trainer/app/routes.dart';
 import 'package:repertoire_trainer/core/db/backup_queries.dart';
+import 'package:repertoire_trainer/core/db/merge_applier.dart';
 import 'package:repertoire_trainer/core/db/providers.dart';
 import 'package:repertoire_trainer/core/errors/describe_error.dart';
 import 'package:repertoire_trainer/core/files/providers.dart';
@@ -147,6 +150,18 @@ class _SyncBackupState extends ConsumerState<SyncBackupScreen> {
           ),
         ),
       );
+      if (report.rejected.isNotEmpty && mounted) {
+        await _showRejected([for (final r in report.rejected) r.name]);
+      }
+    } on RestoreAborted catch (e, st) {
+      reportError('Backup restore stopped', e, st);
+      _show(
+        messenger,
+        SnackBar(
+          content: Text(l10n.restoreAborted(e.names.join(', '))),
+          duration: const Duration(seconds: 10),
+        ),
+      );
     } on Object catch (e, st) {
       _show(
         messenger,
@@ -159,6 +174,32 @@ class _SyncBackupState extends ConsumerState<SyncBackupScreen> {
     } finally {
       if (mounted) setState(() => _busy = null);
     }
+  }
+
+  /// Lists the repertoires of an import that were not taken.
+  Future<void> _showRejected(List<String> names) async {
+    final open = await showDialog<bool>(
+      context: context,
+      builder: (context) {
+        final l10n = AppLocalizations.of(context);
+        return AlertDialog(
+          key: const Key('import-rejected'),
+          title: Text(l10n.importRejectedTitle),
+          content: Text(l10n.importRejectedBody(names.join(', '))),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: Text(l10n.close),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.of(context).pop(true),
+              child: Text(l10n.openRecovery),
+            ),
+          ],
+        );
+      },
+    );
+    if ((open ?? false) && mounted) await context.push(Routes.recovery());
   }
 
   @override
@@ -205,6 +246,13 @@ class _SyncBackupState extends ConsumerState<SyncBackupScreen> {
               subtitle: Text(l10n.importBackupHint),
               enabled: busy == null,
               onTap: () => unawaited(_import()),
+            ),
+            ListTile(
+              key: const Key('open-recovery'),
+              leading: const Icon(Icons.history),
+              title: Text(l10n.recoveryTitle),
+              subtitle: Text(l10n.recoveryHint),
+              onTap: () => unawaited(context.push(Routes.recovery())),
             ),
           ],
         ),
@@ -413,6 +461,13 @@ class _SyncSection extends ConsumerWidget {
                   )
                 : null,
           ),
+          if (status.rejected.isNotEmpty)
+            ListTile(
+              key: const Key('sync-rejected'),
+              leading: const Icon(Icons.warning_amber),
+              title: Text(l10n.syncRejected(status.rejected.join(', '))),
+              onTap: () => unawaited(context.push(Routes.recovery())),
+            ),
           for (final w in status.warnings)
             ListTile(
               leading: const Icon(Icons.warning_amber),

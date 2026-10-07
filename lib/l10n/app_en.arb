@@ -73,7 +73,7 @@
       }
     }
   },
-  "deleteBody": "Its stats and training history are deleted too.",
+  "deleteBody": "It moves to the trash with its training history. Restore it from Settings, Sync and backup, Version history and trash.",
   "deletedSnack": "Deleted {name}",
   "@deletedSnack": {
     "placeholders": {
@@ -1052,6 +1052,118 @@
       },
       "store": {
         "type": "int"
+      }
+    }
+  },
+  "versionHistory": "Version history",
+  "recoveryTitle": "Version history and trash",
+  "recoveryHint": "Earlier versions of your repertoires, and deleted repertoires",
+  "recoveryTrash": "Deleted repertoires",
+  "recoveryVersions": "Saved versions",
+  "recoveryRejected": "Versions that did not import",
+  "recoveryEmpty": "Nothing saved yet. A version is saved here before every re-import, Replace all, and sync change that replaces or deletes a repertoire.",
+  "recoveryInfo": "Saved versions stay on this device only, up to {max} per repertoire. Sync is not a backup: a deletion or re-import on one device reaches your other devices. Export a backup file to keep a separate copy.",
+  "@recoveryInfo": {
+    "placeholders": {
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "snapshotReasonReimport": "Before a re-import",
+  "snapshotReasonRestore": "Before Replace all",
+  "snapshotReasonReplaced": "Replaced by a newer version from sync or a backup",
+  "snapshotReasonDeleted": "Deleted on another device",
+  "snapshotReasonRejected": "Did not import; your version was kept",
+  "snapshotSubtitle": "{reason} · {date}",
+  "@snapshotSubtitle": {
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      },
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "restoreVersion": "Restore this version",
+  "restoreVersionTitle": "Restore this version of {name}?",
+  "@restoreVersionTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "restoreVersionBody": "The current moves are replaced, and the current version is saved here first. Training history is kept.",
+  "versionRestored": "Restored {name}",
+  "@versionRestored": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "versionNotRestorable": "This version does not import, so it cannot be restored. Export it to inspect or fix it.",
+  "restore": "Restore",
+  "deleteVersion": "Delete this version",
+  "deleteForever": "Delete forever",
+  "deleteForeverTitle": "Delete {name} forever?",
+  "@deleteForeverTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "deleteForeverBody": "Its training history and saved versions are deleted. This cannot be undone.",
+  "trashWithHistory": "Deleted {date} · training history kept",
+  "@trashWithHistory": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "trashMovesOnly": "Deleted {date} · moves only, no training history on this device",
+  "@trashMovesOnly": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "recoveryFailed": "Could not complete: {error}",
+  "@recoveryFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "restoreAborted": "Nothing was changed. These repertoires in the backup do not import: {names}",
+  "@restoreAborted": {
+    "placeholders": {
+      "names": {
+        "type": "String"
+      }
+    }
+  },
+  "importRejectedTitle": "Some repertoires were not imported",
+  "importRejectedBody": "These stayed as they were on this device because the PGN in the backup does not import: {names}. The backup's versions are in Version history and trash.",
+  "@importRejectedBody": {
+    "placeholders": {
+      "names": {
+        "type": "String"
+      }
+    }
+  },
+  "openRecovery": "Open version history",
+  "syncRejected": "Not taken from another device because its PGN does not import here: {names}. Your version was kept; the other one is in Version history and trash.",
+  "@syncRejected": {
+    "placeholders": {
+      "names": {
+        "type": "String"
       }
     }
   }

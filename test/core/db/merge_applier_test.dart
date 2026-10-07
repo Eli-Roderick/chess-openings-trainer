@@ -6,6 +6,7 @@ import 'package:dartchess/dartchess.dart' show Side;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:repertoire_trainer/core/db/backup_queries.dart';
 import 'package:repertoire_trainer/core/db/merge_applier.dart';
+import 'package:repertoire_trainer/core/db/repositories/snapshot_repository.dart';
 import 'package:repertoire_trainer/core/db/stats_queries.dart';
 import 'package:repertoire_trainer/core/settings/app_settings.dart';
 import 'package:repertoire_trainer/features/backup/backup_service.dart';
@@ -13,20 +14,32 @@ import 'package:repertoire_trainer/features/backup/backup_service.dart';
 import '../../run_fixtures.dart';
 import 'db_test_helpers.dart';
 
-MergeApplier _applier(TestDb t) => MergeApplier(
+MergeApplier _applier(
+  TestDb t, {
+  void Function(String stage)? hook,
+  TreeBuilder? buildTree,
+}) => MergeApplier(
   db: t.db,
   repertoires: t.repertoires,
   runs: t.runs,
   stats: t.service,
-  buildTree: (r) async =>
-      importPgn(r.pgn, r.color == 'b' ? Side.black : Side.white).tree,
+  buildTree:
+      buildTree ??
+      (r) async =>
+          importPgn(r.pgn, r.color == 'b' ? Side.black : Side.white).tree,
+  clock: t.clock,
+  debugHook: hook,
 );
 
-BackupService _backup(TestDb t) => BackupService(
+BackupService _backup(
+  TestDb t, {
+  void Function(String stage)? hook,
+  TreeBuilder? buildTree,
+}) => BackupService(
   repertoires: t.repertoires,
   runs: t.runs,
   settings: t.settings,
-  applier: _applier(t),
+  applier: _applier(t, hook: hook, buildTree: buildTree),
   queries: BackupQueries(t.db),
   deviceId: t.sync.deviceId,
   clock: t.clock,
@@ -282,6 +295,165 @@ void main() {
     expect((await b.repertoires.loadTree('new')).lines, isNotEmpty);
     expect(await b.stats.lineStats('new'), isNotEmpty);
     expect(await b.stats.lineStats('unknown'), isEmpty);
+  });
+
+  group('Replace all is atomic (audit R1)', () {
+    late Object original;
+    late RawBackup file;
+
+    setUp(() async {
+      final other = await b.repertoires.create(
+        name: 'Other',
+        color: Side.black,
+        pgn: _pgn2,
+        result: importPgn(_pgn2, Side.black),
+      );
+      final line = (await b.repertoires.lineRefs(other)).first;
+      await b.service.recordRun(
+        fixtureRun(
+          other,
+          id: 'b-run',
+          key: line.key,
+          ucis: line.ucis,
+          day: '2026-10-05',
+          credits: [1, 0],
+        ),
+      );
+      original = await _snapshot(b);
+      file = await _backup(b).read((await _backup(a).export()).bytes);
+    });
+
+    for (final stage in ['trees', 'snapshots', 'records', 'runs', 'derive']) {
+      test('a failure at "$stage" leaves repertoires, runs and stats '
+          'as they were', () async {
+        final service = _backup(
+          b,
+          hook: (s) {
+            if (s == stage) throw StateError('injected at $s');
+          },
+        );
+        await expectLater(
+          service.import(file, replace: true, restoreSettings: false),
+          throwsA(isA<StateError>()),
+        );
+        expect(await _snapshot(b), original);
+        expect(await SnapshotRepository(b.db).watchAll().first, isEmpty);
+      });
+    }
+
+    test('a tree builder that throws, or an incoming PGN that does not '
+        'import, stops the restore before anything changes', () async {
+      await expectLater(
+        _backup(
+          b,
+          buildTree: (_) => throw StateError('isolate died'),
+        ).import(file, replace: true, restoreSettings: false),
+        throwsA(isA<RestoreAborted>()),
+      );
+      await expectLater(
+        _backup(
+          b,
+          buildTree: (_) async => null,
+        ).import(file, replace: true, restoreSettings: false),
+        throwsA(isA<RestoreAborted>().having((e) => e.names, 'names', ['R'])),
+      );
+      expect(await _snapshot(b), original);
+    });
+
+    test(
+      'a successful replace saves the replaced repertoires as versions',
+      () async {
+        await _backup(b).import(file, replace: true, restoreSettings: false);
+        expect(await _snapshot(b), await _snapshot(a));
+        final saved = await SnapshotRepository(b.db).watchAll().first;
+        expect(
+          [for (final s in saved) (s.record.name, s.reason)],
+          [('Other', SnapshotReason.restore)],
+        );
+      },
+    );
+  });
+
+  group('an incoming PGN that does not import (audit R2)', () {
+    test('keeps the local record, PGN and tree together and saves the '
+        'rejected version', () async {
+      final local = (await a.repertoires.records()).single;
+      final treeBefore = await a.repertoires.lineRefs(rep);
+      final bad = local.copyWith(
+        name: 'Renamed remotely',
+        pgn: '1. e4 e5 2. Ke3 *',
+        pgnHash: 'bad',
+        updatedAt: local.updatedAt + 10,
+        updatedBy: 'zz',
+      );
+      final report = await _applier(a).apply(remote: [bad]);
+      expect(report.failedTrees, {rep});
+      expect(report.changedIds, isEmpty);
+      expect(report.effects.rebuildTrees, isEmpty);
+      expect([for (final r in report.rejected) r.pgnHash], ['bad']);
+      // Export and training use the same, original version.
+      expect((await a.repertoires.records()).single, local);
+      expect(await a.repertoires.lineRefs(rep), treeBefore);
+      final saved = await SnapshotRepository(a.db).watchAll().first;
+      expect(
+        [for (final s in saved) (s.reason, s.record.pgn, s.record.name)],
+        [(SnapshotReason.rejected, bad.pgn, 'Renamed remotely')],
+      );
+      // The same rejected version again is not saved twice.
+      await _applier(a).apply(remote: [bad]);
+      expect(await SnapshotRepository(a.db).watchAll().first, hasLength(1));
+    });
+
+    test('a new repertoire that does not import is not added but its '
+        'version is kept', () async {
+      const record = RepertoireRecord(
+        id: 'new',
+        name: 'New',
+        color: 'w',
+        pgn: '1. e4 e5 2. Ke3 *',
+        pgnHash: 'bad',
+        createdAt: 1,
+        updatedAt: 1,
+        updatedBy: 'dev2',
+      );
+      final report = await _applier(b).apply(remote: [record]);
+      expect(report.failedTrees, {'new'});
+      expect(await b.repertoires.get('new'), isNull);
+      final saved = await SnapshotRepository(b.db).watchAll().first;
+      expect(saved.single.reason, SnapshotReason.rejected);
+      // Rejected versions are not in the trash.
+      expect(await SnapshotRepository(b.db).watchTrash().first, isEmpty);
+    });
+  });
+
+  test('a merge saves the local version a newer PGN replaces and the one a '
+      'tombstone deletes (audit R4)', () async {
+    final local = (await a.repertoires.records()).single;
+    final newer = local.copyWith(
+      pgn: _pgn2,
+      pgnHash: 'other',
+      updatedAt: local.updatedAt + 1,
+      updatedBy: 'zz',
+    );
+    await _applier(a).apply(remote: [newer]);
+    final tomb = newer.copyWith(deleted: true, updatedAt: newer.updatedAt + 1);
+    await _applier(a).apply(remote: [tomb]);
+    final saved = await SnapshotRepository(a.db).watchAll().first;
+    expect(
+      [for (final s in saved) (s.reason, s.record.pgnHash)],
+      [
+        (SnapshotReason.deleted, 'other'),
+        (SnapshotReason.replaced, local.pgnHash),
+      ],
+    );
+    expect(await SnapshotRepository(a.db).watchTrash().first, [
+      TrashEntry(
+        repertoireId: rep,
+        name: 'R',
+        deletedAt: tomb.updatedAt,
+        hasData: false,
+      ),
+    ]);
   });
 
   test('backup checks: typed errors like the codec', () async {

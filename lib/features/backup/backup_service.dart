@@ -103,18 +103,25 @@ final class BackupService {
   }
 
   /// Imports [backup]: a merge (like sync), or with [replace] everything
-  /// local is deleted first. [restoreSettings] also applies its settings.
+  /// local is replaced. Either way it is one transaction: on any failure
+  /// the local data stays as it was, and "Replace all" throws
+  /// [RestoreAborted] before changing anything when a repertoire of the
+  /// backup does not import. [restoreSettings] also applies its settings.
   Future<MergeReport> import(
     RawBackup backup, {
     required bool replace,
     required bool restoreSettings,
   }) async {
-    if (replace) await repertoires.deleteAll();
-    final report = await applier.apply(
-      remote: backup.header.repertoires,
-      backupDoc: backup.docId,
-    );
-    await queries.clear();
+    final MergeReport report;
+    try {
+      report = await applier.apply(
+        remote: backup.header.repertoires,
+        backupDoc: backup.docId,
+        replaceAll: replace,
+      );
+    } finally {
+      await queries.clear();
+    }
     if (restoreSettings) {
       final restored = {
         for (final e in backup.header.settings.entries)

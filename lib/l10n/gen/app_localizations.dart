@@ -283,7 +283,7 @@ abstract class AppLocalizations {
   /// No description provided for @deleteBody.
   ///
   /// In en, this message translates to:
-  /// **'Its stats and training history are deleted too.'**
+  /// **'It moves to the trash with its training history. Restore it from Settings, Sync and backup, Version history and trash.'**
   String get deleteBody;
 
   /// No description provided for @deletedSnack.
@@ -2643,6 +2643,198 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{lines} lines: {total} ms (import {import} ms, store {store} ms)'**
   String importBenchmarkResult(int lines, int total, int import, int store);
+
+  /// No description provided for @versionHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'Version history'**
+  String get versionHistory;
+
+  /// No description provided for @recoveryTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Version history and trash'**
+  String get recoveryTitle;
+
+  /// No description provided for @recoveryHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Earlier versions of your repertoires, and deleted repertoires'**
+  String get recoveryHint;
+
+  /// No description provided for @recoveryTrash.
+  ///
+  /// In en, this message translates to:
+  /// **'Deleted repertoires'**
+  String get recoveryTrash;
+
+  /// No description provided for @recoveryVersions.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved versions'**
+  String get recoveryVersions;
+
+  /// No description provided for @recoveryRejected.
+  ///
+  /// In en, this message translates to:
+  /// **'Versions that did not import'**
+  String get recoveryRejected;
+
+  /// No description provided for @recoveryEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing saved yet. A version is saved here before every re-import, Replace all, and sync change that replaces or deletes a repertoire.'**
+  String get recoveryEmpty;
+
+  /// No description provided for @recoveryInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved versions stay on this device only, up to {max} per repertoire. Sync is not a backup: a deletion or re-import on one device reaches your other devices. Export a backup file to keep a separate copy.'**
+  String recoveryInfo(int max);
+
+  /// No description provided for @snapshotReasonReimport.
+  ///
+  /// In en, this message translates to:
+  /// **'Before a re-import'**
+  String get snapshotReasonReimport;
+
+  /// No description provided for @snapshotReasonRestore.
+  ///
+  /// In en, this message translates to:
+  /// **'Before Replace all'**
+  String get snapshotReasonRestore;
+
+  /// No description provided for @snapshotReasonReplaced.
+  ///
+  /// In en, this message translates to:
+  /// **'Replaced by a newer version from sync or a backup'**
+  String get snapshotReasonReplaced;
+
+  /// No description provided for @snapshotReasonDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Deleted on another device'**
+  String get snapshotReasonDeleted;
+
+  /// No description provided for @snapshotReasonRejected.
+  ///
+  /// In en, this message translates to:
+  /// **'Did not import; your version was kept'**
+  String get snapshotReasonRejected;
+
+  /// No description provided for @snapshotSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'{reason} · {date}'**
+  String snapshotSubtitle(String reason, String date);
+
+  /// No description provided for @restoreVersion.
+  ///
+  /// In en, this message translates to:
+  /// **'Restore this version'**
+  String get restoreVersion;
+
+  /// No description provided for @restoreVersionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Restore this version of {name}?'**
+  String restoreVersionTitle(String name);
+
+  /// No description provided for @restoreVersionBody.
+  ///
+  /// In en, this message translates to:
+  /// **'The current moves are replaced, and the current version is saved here first. Training history is kept.'**
+  String get restoreVersionBody;
+
+  /// No description provided for @versionRestored.
+  ///
+  /// In en, this message translates to:
+  /// **'Restored {name}'**
+  String versionRestored(String name);
+
+  /// No description provided for @versionNotRestorable.
+  ///
+  /// In en, this message translates to:
+  /// **'This version does not import, so it cannot be restored. Export it to inspect or fix it.'**
+  String get versionNotRestorable;
+
+  /// No description provided for @restore.
+  ///
+  /// In en, this message translates to:
+  /// **'Restore'**
+  String get restore;
+
+  /// No description provided for @deleteVersion.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete this version'**
+  String get deleteVersion;
+
+  /// No description provided for @deleteForever.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete forever'**
+  String get deleteForever;
+
+  /// No description provided for @deleteForeverTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete {name} forever?'**
+  String deleteForeverTitle(String name);
+
+  /// No description provided for @deleteForeverBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Its training history and saved versions are deleted. This cannot be undone.'**
+  String get deleteForeverBody;
+
+  /// No description provided for @trashWithHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'Deleted {date} · training history kept'**
+  String trashWithHistory(String date);
+
+  /// No description provided for @trashMovesOnly.
+  ///
+  /// In en, this message translates to:
+  /// **'Deleted {date} · moves only, no training history on this device'**
+  String trashMovesOnly(String date);
+
+  /// No description provided for @recoveryFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not complete: {error}'**
+  String recoveryFailed(String error);
+
+  /// No description provided for @restoreAborted.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing was changed. These repertoires in the backup do not import: {names}'**
+  String restoreAborted(String names);
+
+  /// No description provided for @importRejectedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Some repertoires were not imported'**
+  String get importRejectedTitle;
+
+  /// No description provided for @importRejectedBody.
+  ///
+  /// In en, this message translates to:
+  /// **'These stayed as they were on this device because the PGN in the backup does not import: {names}. The backup\'s versions are in Version history and trash.'**
+  String importRejectedBody(String names);
+
+  /// No description provided for @openRecovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Open version history'**
+  String get openRecovery;
+
+  /// No description provided for @syncRejected.
+  ///
+  /// In en, this message translates to:
+  /// **'Not taken from another device because its PGN does not import here: {names}. Your version was kept; the other one is in Version history and trash.'**
+  String syncRejected(String names);
 }
 
 class _AppLocalizationsDelegate

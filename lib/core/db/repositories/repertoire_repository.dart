@@ -7,6 +7,7 @@ import 'package:drift/drift.dart';
 import 'package:meta/meta.dart';
 import 'package:repertoire_trainer/core/db/app_database.dart';
 import 'package:repertoire_trainer/core/db/repositories/mappers.dart';
+import 'package:repertoire_trainer/core/db/repositories/snapshot_repository.dart';
 
 /// One Home card (docs/plan/01-product-spec.md §4).
 @immutable
@@ -109,8 +110,9 @@ abstract interface class RepertoireRepository {
     required ImportResult result,
   });
 
-  /// Replaces the PGN, nodes and lines of [id]; runs are untouched. Returns
-  /// the diff against the previous version. Call
+  /// Replaces the PGN, nodes and lines of [id]; runs are untouched. The
+  /// previous version is saved in the version history. Returns the diff
+  /// against the previous version. Call
   /// `StatsService.rebuildRepertoire` afterwards.
   Future<ReimportDiff> reimport(
     String id, {
@@ -412,7 +414,16 @@ ORDER BY r.last_trained_at IS NULL, r.last_trained_at DESC, r.created_at DESC
       newLines: lineRefsOf(tree),
       commentChanges: countCommentChanges(oldTree, tree),
     );
+    final old = await get(id);
     await _db.transaction(() async {
+      if (old != null && old.pgnHash != pgnHashOf(text)) {
+        await saveSnapshot(
+          _db,
+          repertoireRecordOf(old),
+          SnapshotReason.reimport,
+          now: _now,
+        );
+      }
       await (_db.delete(
         _db.nodes,
       )..where((n) => n.repertoireId.equals(id))).go();
@@ -496,18 +507,7 @@ ORDER BY r.last_trained_at IS NULL, r.last_trained_at DESC, r.created_at DESC
     for (final r in await (_db.select(
       _db.repertoires,
     )..orderBy([(r) => OrderingTerm.asc(r.id)])).get())
-      RepertoireRecord(
-        id: r.id,
-        name: r.name,
-        color: r.color,
-        pgn: r.pgn,
-        pgnHash: r.pgnHash,
-        description: r.description,
-        createdAt: r.createdAt,
-        updatedAt: r.updatedAt,
-        updatedBy: r.updatedBy,
-        deleted: r.deleted,
-      ),
+      repertoireRecordOf(r),
   ];
 
   @override
