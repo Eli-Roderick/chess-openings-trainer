@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'dart:convert';
 
 import 'package:chess_core/chess_core.dart';
@@ -161,7 +160,7 @@ void main() {
           maxActive = ++active > maxActive ? active : maxActive;
           await Future<void>.delayed(const Duration(milliseconds: 5));
           active--;
-          return http.Response('${r.url.path}', 200);
+          return http.Response(r.url.path, 200);
         }),
       );
       final results = await Future.wait([
