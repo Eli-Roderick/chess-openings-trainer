@@ -105,7 +105,7 @@ dart run tool/bench_import.dart --lines 1000 --depth 16
 
 ### CI and releases
 
-CI (`.github/workflows/ci.yml`) runs all of the above plus Android and Windows release builds on every push and pull request. To release: set `version:` in `pubspec.yaml`, add a `## <version>` section to `CHANGELOG.md`, merge, then push the tag `v<version>`. `.github/workflows/release.yml` checks that the tag, pubspec and changelog agree, builds the APKs (signed with the release key from the repository secrets `ANDROID_KEYSTORE_BASE64` and `ANDROID_KEY_PROPERTIES`; a release without them fails) and the Windows zip, and publishes them as a GitHub release whose notes are the changelog section plus the Stockfish source link.
+CI (`.github/workflows/ci.yml`) runs all of the above plus Android and Windows release builds on every push and pull request. To release: set `version:` in `pubspec.yaml`, add a `## <version>` section to `CHANGELOG.md`, merge, then push the tag `v<version>`. `.github/workflows/release.yml` checks that the tag, pubspec and changelog agree, builds the APKs (signed with the release key from the repository secrets `ANDROID_KEYSTORE_BASE64` and `ANDROID_KEY_PROPERTIES`; a release without them fails) and the Windows zip, and publishes them as a GitHub release whose notes are the changelog section plus the Stockfish source link. It checks that each APK contains Stockfish and is release-signed, and that the release ends up with both APKs and the zip. Creating the release in the GitHub UI instead of pushing the tag also works: the workflow fills in the existing release. To re-publish a tag (after a failed run, say), run Actions → Release → Run workflow with the tag, e.g. `v0.1.0`.
 
 ## Licence
 

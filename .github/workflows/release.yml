@@ -3,9 +3,25 @@ name: Release
 on:
   push:
     tags: ['v*']
+  # Re-publishes an existing tag with the workflow from the selected branch
+  # (normally main), e.g. after a failed run or a release created in the UI.
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Existing tag to build and publish (e.g. v0.1.0)
+        required: true
 
 permissions:
   contents: read
+
+# The tag being released, for both triggers. Every job checks it out.
+env:
+  TAG: ${{ inputs.tag || github.ref_name }}
+
+# One publish per tag at a time; a second run for the same tag waits.
+concurrency:
+  group: release-${{ inputs.tag || github.ref_name }}
+  cancel-in-progress: false
 
 jobs:
   # Fails fast, before the builds, when the tag does not match the app
@@ -14,12 +30,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: refs/tags/${{ env.TAG }}
       - name: Tag, pubspec version and CHANGELOG agree
         run: |
-          version="${GITHUB_REF_NAME#v}"
+          version="${TAG#v}"
           pubspec="$(sed -n 's/^version: \([^+]*\).*/\1/p' pubspec.yaml)"
           if [ "$version" != "$pubspec" ]; then
-            echo "::error::Tag $GITHUB_REF_NAME does not match pubspec.yaml version $pubspec."
+            echo "::error::Tag $TAG does not match pubspec.yaml version $pubspec."
             exit 1
           fi
           if ! grep -qx "## $version" CHANGELOG.md; then
@@ -33,6 +51,8 @@ jobs:
     timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: refs/tags/${{ env.TAG }}
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
@@ -77,7 +97,32 @@ jobs:
           mkdir -p dist
           for abi in arm64-v8a armeabi-v7a; do
             cp "build/app/outputs/flutter-apk/app-$abi-release.apk" \
-              "dist/repertoire-trainer-$GITHUB_REF_NAME-android-$abi.apk"
+              "dist/repertoire-trainer-$TAG-android-$abi.apk"
+          done
+      # A release APK must carry the engine and the release key. A missing
+      # libstockfish.so means no engine on the phone; a debug signature means
+      # the APK cannot update (or be updated by) any other release.
+      - name: Verify APKs (engine, release signature)
+        run: |
+          apksigner="$(ls -d "$ANDROID_HOME"/build-tools/* | sort -V | tail -1)/apksigner"
+          for abi in arm64-v8a armeabi-v7a; do
+            apk="dist/repertoire-trainer-$TAG-android-$abi.apk"
+            if ! unzip -l "$apk" | grep -q " lib/$abi/libstockfish.so$"; then
+              echo "::error::$apk does not contain lib/$abi/libstockfish.so."
+              exit 1
+            fi
+            certs="$("$apksigner" verify --print-certs "$apk")"
+            if printf '%s' "$certs" | grep -q 'CN=Android Debug'; then
+              echo "::error::$apk is signed with the debug key."
+              exit 1
+            fi
+            {
+              echo "### $abi"
+              echo '```'
+              unzip -l "$apk" | grep " lib/$abi/"
+              printf '%s\n' "$certs" | grep -E 'Signer #1 certificate (DN|SHA-256)'
+              echo '```'
+            } >> "$GITHUB_STEP_SUMMARY"
           done
       - uses: actions/upload-artifact@v4
         with:
@@ -91,6 +136,8 @@ jobs:
     timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: refs/tags/${{ env.TAG }}
       - uses: ./.github/actions/setup-flutter
       - uses: actions/cache@v4
         with:
@@ -118,7 +165,21 @@ jobs:
         run: |
           New-Item -ItemType Directory -Force dist | Out-Null
           Compress-Archive -Path build/windows/x64/runner/Release/* `
-            -DestinationPath "dist/repertoire-trainer-$env:GITHUB_REF_NAME-windows-x64.zip"
+            -DestinationPath "dist/repertoire-trainer-$env:TAG-windows-x64.zip"
+      - name: Verify zip (app and engines)
+        shell: pwsh
+        run: |
+          Add-Type -AssemblyName System.IO.Compression.FileSystem
+          $zip = "dist/repertoire-trainer-$env:TAG-windows-x64.zip"
+          $archive = [System.IO.Compression.ZipFile]::OpenRead((Resolve-Path $zip))
+          $names = $archive.Entries | ForEach-Object { $_.FullName -replace '\\', '/' }
+          $archive.Dispose()
+          foreach ($f in 'repertoire_trainer.exe', 'engine/stockfish-avx2.exe', 'engine/stockfish-sse41.exe') {
+            if ($names -notcontains $f) {
+              Write-Output "::error::$zip does not contain $f."
+              exit 1
+            }
+          }
       - uses: actions/upload-artifact@v4
         with:
           name: windows
@@ -132,6 +193,8 @@ jobs:
       contents: write
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: refs/tags/${{ env.TAG }}
       - uses: actions/download-artifact@v4
         with:
           path: dist
@@ -142,7 +205,7 @@ jobs:
         run: |
           tag="$(jq -r .stockfish.tag engine/checksums.json)"
           source="$(jq -r .stockfish.source engine/checksums.json)"
-          version="${GITHUB_REF_NAME#v}"
+          version="${TAG#v}"
           # This version's CHANGELOG section (up to the next "## " heading).
           changes="$(awk -v h="## $version" '$0 == h {on = 1; next} /^## / {on = 0} on' CHANGELOG.md)"
           if [ -z "$(printf '%s' "$changes" | tr -d '[:space:]')" ]; then
@@ -150,17 +213,37 @@ jobs:
             exit 1
           fi
           cat > notes.md <<NOTES
-          Repertoire Trainer $GITHUB_REF_NAME.
+          Repertoire Trainer $TAG.
           $changes
 
-          Development progress per phase: [docs/PROGRESS.md](https://github.com/$GITHUB_REPOSITORY/blob/$GITHUB_REF_NAME/docs/PROGRESS.md).
+          Development progress per phase: [docs/PROGRESS.md](https://github.com/$GITHUB_REPOSITORY/blob/$TAG/docs/PROGRESS.md).
 
-          - Android: install \`repertoire-trainer-$GITHUB_REF_NAME-android-arm64-v8a.apk\` (armeabi-v7a only for old 32-bit phones).
-          - Windows: unzip \`repertoire-trainer-$GITHUB_REF_NAME-windows-x64.zip\` and run \`repertoire_trainer.exe\`.
+          - Android: install \`repertoire-trainer-$TAG-android-arm64-v8a.apk\` (armeabi-v7a only for old 32-bit phones).
+          - Windows: unzip \`repertoire-trainer-$TAG-windows-x64.zip\` and run \`repertoire_trainer.exe\`.
 
-          Licensed GPL-3.0-or-later; source is this repository at $GITHUB_REF_NAME.
+          Licensed GPL-3.0-or-later; source is this repository at $TAG.
           Bundles Stockfish $tag (GPL-3.0), source: $source
           NOTES
-          gh release create "$GITHUB_REF_NAME" dist/* \
-            --title "Repertoire Trainer $GITHUB_REF_NAME" \
-            --notes-file notes.md
+          # A release for the tag may already exist: created in the GitHub UI
+          # (which also pushes the tag and starts this workflow) or by an
+          # earlier run. Update it in place instead of failing.
+          title="Repertoire Trainer $TAG"
+          if gh release view "$TAG" > /dev/null 2>&1; then
+            gh release edit "$TAG" --title "$title" --notes-file notes.md --draft=false
+            gh release upload "$TAG" dist/* --clobber
+          else
+            gh release create "$TAG" dist/* --verify-tag --title "$title" --notes-file notes.md
+          fi
+      - name: Verify release assets
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          assets="$(gh release view "$TAG" --json assets --jq '.assets[] | select(.size > 0) | .name')"
+          printf '%s\n' "$assets"
+          for f in android-arm64-v8a.apk android-armeabi-v7a.apk windows-x64.zip; do
+            name="repertoire-trainer-$TAG-$f"
+            if ! printf '%s\n' "$assets" | grep -qx "$name"; then
+              echo "::error::Release $TAG is missing $name."
+              exit 1
+            fi
+          done
