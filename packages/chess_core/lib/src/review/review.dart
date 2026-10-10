@@ -67,7 +67,8 @@ final class ReviewConfig {
     this.alreadyLostCp = -600,
     this.candidateLow = 0.03,
     this.candidateHigh = 0.97,
-    this.accuracyDecay = 0.045,
+    this.accuracyDecay = defaultAccuracyDecay,
+    this.bookAsPerfect = false,
   });
 
   /// Band upper limits of loss.
@@ -139,10 +140,23 @@ final class ReviewConfig {
   final double candidateHigh;
 
   /// Per-move accuracy decay: `103.17 * e^(-k * win% lost) - 3.17`.
-  /// Lichess uses 0.04354; 0.045 fits 12 of Eli's player-games against
-  /// chess.com best (D-131).
+  /// Lichess uses 0.04354; the app refits it against chess.com's own
+  /// accuracies (D-133).
   final double accuracyDecay;
+
+  /// Whether book moves count as perfect moves in the accuracy mean
+  /// (otherwise they are left out).
+  final bool bookAsPerfect;
 }
+
+/// Decay used until the app has fitted one to chess.com's accuracies.
+/// The plain mean (D-133) reads higher per blunder than the old blend, so
+/// this is above the blend's 0.045; a starting guess, not a measurement.
+const double defaultAccuracyDecay = 0.07;
+
+/// Bump when the accuracy or rating formula changes: stored scores with
+/// an older revision are stale and get re-scored.
+const int reviewFormulaRevision = 2;
 
 /// Engine result for one position, White's point of view.
 final class PositionAnalysis {
@@ -169,6 +183,8 @@ final class GameReview {
   const new({
     required this.labels,
     required this.losses,
+    required this.accuracyLosses,
+    required this.book,
     required this.whiteAccuracy,
     required this.blackAccuracy,
     required this.whitePerformance,
@@ -183,7 +199,16 @@ final class GameReview {
   /// and unanalysed moves).
   final List<double?> losses;
 
-  /// Accuracy 0 to 100 (null without an analysed, non-book move).
+  /// Like [losses] for the accuracy: an engine move keeps its measured
+  /// loss (floored at the minimum) instead of being set to zero, so both
+  /// kinds of move carry the same search noise. Null for book (see [book]),
+  /// forced and unanalysed moves.
+  final List<double?> accuracyLosses;
+
+  /// Whether ply `i + 1` is a book move.
+  final List<bool> book;
+
+  /// Accuracy 0 to 100 (null without an analysed move).
   final double? whiteAccuracy;
 
   /// See [whiteAccuracy].
@@ -195,6 +220,52 @@ final class GameReview {
 
   /// See [whitePerformance].
   final int? blackPerformance;
+
+  /// One side's accuracy under another decay or book setting, from the
+  /// stored losses (no engine work).
+  double? accuracyWith({
+    required bool white,
+    required double decay,
+    required bool bookAsPerfect,
+  }) => accuracyOf(
+    accuracyLosses,
+    book,
+    white: white,
+    decay: decay,
+    bookAsPerfect: bookAsPerfect,
+  );
+}
+
+/// Game accuracy of one side: the plain mean of per-move accuracies
+/// `103.1668 * e^(-decay * win% lost) - 3.1669`. [losses] and [book] are
+/// per ply; null losses (forced, unanalysed) are left out, book moves
+/// count as perfect when [bookAsPerfect] and are left out otherwise.
+double? accuracyOf(
+  List<double?> losses,
+  List<bool> book, {
+  required bool white,
+  required double decay,
+  required bool bookAsPerfect,
+}) {
+  var sum = 0.0;
+  var n = 0;
+  for (var i = white ? 0 : 1; i < losses.length; i += 2) {
+    final double loss;
+    if (book[i]) {
+      if (!bookAsPerfect) continue;
+      loss = 0;
+    } else {
+      final l = losses[i];
+      if (l == null) continue;
+      loss = l;
+    }
+    sum += (103.1668 * math.exp(-decay * loss * 100) - 3.1669).clamp(
+      0.0,
+      100.0,
+    );
+    n++;
+  }
+  return n == 0 ? null : sum / n;
 }
 
 /// A game's positions and per-move board facts, computed once.
@@ -354,6 +425,7 @@ final class ReviewedGame {
     }
     final labels = List<MoveLabel?>.filled(length, null);
     final losses = List<double?>.filled(length, null);
+    final accuracyLosses = List<double?>.filled(length, null);
     for (var ply = 1; ply <= length; ply++) {
       final f = facts[ply - 1];
       if (book.contains(ply)) {
@@ -375,6 +447,7 @@ final class ReviewedGame {
           ? 0.0
           : math.max(config.minLoss, epBefore - epAfter);
       losses[ply - 1] = loss;
+      accuracyLosses[ply - 1] = math.max(config.minLoss, epBefore - epAfter);
       labels[ply - 1] = _label(
         ply,
         before,
@@ -387,8 +460,14 @@ final class ReviewedGame {
         secondPass: secondPass,
       );
     }
-    double? accuracy({required bool white}) =>
-        _accuracy(analyses, losses, white: white, decay: config.accuracyDecay);
+    final isBook = [for (var ply = 1; ply <= length; ply++) book.contains(ply)];
+    double? accuracy({required bool white}) => accuracyOf(
+      accuracyLosses,
+      isBook,
+      white: white,
+      decay: config.accuracyDecay,
+      bookAsPerfect: config.bookAsPerfect,
+    );
     int? performance({required bool white}) {
       final acc = accuracy(white: white);
       return acc == null ? null : ratingFromAccuracy(acc);
@@ -397,6 +476,8 @@ final class ReviewedGame {
     return GameReview(
       labels: labels,
       losses: losses,
+      accuracyLosses: accuracyLosses,
+      book: isBook,
       whiteAccuracy: accuracy(white: true),
       blackAccuracy: accuracy(white: false),
       whitePerformance: performance(white: true),
@@ -496,67 +577,6 @@ final class ReviewedGame {
     if (loss <= config.mistake) return MoveLabel.mistake;
     return MoveLabel.blunder;
   }
-
-  /// lichess-style game accuracy: the mean of the volatility-weighted mean
-  /// and the harmonic mean of per-move accuracies; book, forced and
-  /// unanalysed moves are left out.
-  double? _accuracy(
-    List<PositionAnalysis?> analyses,
-    List<double?> losses, {
-    required bool white,
-    required double decay,
-  }) {
-    // White's win % per position; unanalysed positions repeat the last.
-    final wins = <double>[];
-    var last = 50.0;
-    for (final a in analyses) {
-      if (a != null) last = a.score.white * 100;
-      wins.add(last);
-    }
-    final window = (length / 10).floor().clamp(2, 8);
-    final weights = <double>[];
-    final first = wins.take(window).toList();
-    for (var i = 0; i < math.min(window, wins.length) - 2; i++) {
-      weights.add(_volatility(first));
-    }
-    for (var i = 0; i + window <= wins.length; i++) {
-      weights.add(_volatility(wins.sublist(i, i + window)));
-    }
-    final accs = <double>[];
-    final ws = <double>[];
-    for (var ply = white ? 1 : 2; ply <= length; ply += 2) {
-      final loss = losses[ply - 1];
-      if (loss == null) continue;
-      final acc = (103.1668 * math.exp(-decay * loss * 100) - 3.1669).clamp(
-        0.0,
-        100.0,
-      );
-      accs.add(acc);
-      ws.add(ply - 1 < weights.length ? weights[ply - 1] : 0.5);
-    }
-    if (accs.isEmpty) return null;
-    var weighted = 0.0;
-    var total = 0.0;
-    for (var i = 0; i < accs.length; i++) {
-      weighted += accs[i] * ws[i];
-      total += ws[i];
-    }
-    var inverse = 0.0;
-    for (final a in accs) {
-      inverse += 1 / math.max(a, 1);
-    }
-    final harmonic = accs.length / inverse;
-    return (weighted / total + harmonic) / 2;
-  }
-}
-
-double _volatility(List<double> xs) {
-  final mean = xs.reduce((a, b) => a + b) / xs.length;
-  var sq = 0.0;
-  for (final x in xs) {
-    sq += (x - mean) * (x - mean);
-  }
-  return math.sqrt(sq / xs.length).clamp(0.5, 12);
 }
 
 /// Accuracy (percent) to estimated rating anchors, rising together. From

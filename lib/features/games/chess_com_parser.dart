@@ -99,7 +99,15 @@ ImportedGamesCompanion? _row(Map<String, dynamic> g, String user, int now) {
     ucis: parsed.ucis.join(' '),
     sans: parsed.sans.join(' '),
     clocks: Value(parsed.clocks?.join(',')),
+    chessComWhiteAccuracy: Value(_accuracy(g['accuracies'], 'white')),
+    chessComBlackAccuracy: Value(_accuracy(g['accuracies'], 'black')),
     pgn: pgn,
     fetchedAt: now,
   );
+}
+
+double? _accuracy(Object? accuracies, String side) {
+  if (accuracies is! Map) return null;
+  final v = accuracies[side];
+  return v is num ? v.toDouble() : null;
 }

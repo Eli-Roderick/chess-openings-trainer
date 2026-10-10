@@ -269,6 +269,11 @@ class ImportedGames extends Table {
   /// Remaining clock after each ply in tenths of a second, comma-separated,
   /// or null without `%clk`.
   TextColumn get clocks => text().nullable()();
+
+  /// chess.com's own accuracy of White and Black, for games it analysed
+  /// (calibration target); null otherwise.
+  RealColumn get chessComWhiteAccuracy => real().nullable()();
+  RealColumn get chessComBlackAccuracy => real().nullable()();
   TextColumn get pgn => text()();
   IntColumn get fetchedAt => integer()();
 

@@ -10,6 +10,7 @@ import 'package:repertoire_trainer/core/db/app_database.dart';
 import 'package:repertoire_trainer/core/db/providers.dart';
 import 'package:repertoire_trainer/features/games/game_analysis.dart';
 import 'package:repertoire_trainer/features/games/review_model.dart';
+import 'package:repertoire_trainer/features/games/scoring.dart';
 
 /// Everything the review screen shows, rebuilt when a position is stored.
 final class ReviewData {
@@ -24,6 +25,7 @@ final class ReviewData {
     required this.done,
     required this.total,
     required this.complete,
+    required this.capped,
     required this.clocks,
     required this.keys,
   });
@@ -55,6 +57,10 @@ final class ReviewData {
   /// [profile]'s review is complete.
   final bool complete;
 
+  /// Positions of [profile] whose search hit the time cap before the
+  /// profile's depth (their evaluation is shallower).
+  final int capped;
+
   /// Remaining clock after each ply, in tenths (null without `%clk`).
   final List<int>? clocks;
 
@@ -83,6 +89,7 @@ final StreamProviderFamily<ReviewData, String> reviewDataProvider =
       Future<void> start() async {
         final game = await repo.game(id);
         if (game == null) throw StateError('No game $id');
+        final scoring = await ref.read(scoringProvider.future);
         final ucis = game.ucis.isEmpty ? <String>[] : game.ucis.split(' ');
         final standardDone =
             (await repo.review(id, AnalysisProfile.standard.index))?.complete ??
@@ -117,21 +124,11 @@ final StreamProviderFamily<ReviewData, String> reviewDataProvider =
               ? AnalysisProfile.standard
               : AnalysisProfile.quick;
           final rows = useStandard ? standard : quick;
-          final analyses = List<PositionAnalysis?>.filled(
-            replay.length + 1,
-            null,
-          );
-          for (final r in rows) {
-            if (r.ply <= replay.length) analyses[r.ply] = analysisFromRow(r);
-          }
-          for (var i = 0; i <= replay.length; i++) {
-            if (analyses[i] == null && replay.isTerminal(i)) {
-              analyses[i] = PositionAnalysis(score: replay.terminalScore(i));
-            }
-          }
+          final analyses = analysesFromRows(replay, rows);
           final review = replay.review(
             analyses,
             book: book,
+            config: scoring.config,
             secondPass: profile.secondPass,
           );
           // A complete review stores its scores; keep them current when the
@@ -140,6 +137,7 @@ final StreamProviderFamily<ReviewData, String> reviewDataProvider =
               .where((r) => r.profile == profile.index && r.complete)
               .firstOrNull;
           final changed =
+              profile == AnalysisProfile.standard &&
               stored != null &&
               (!_sameScore(stored.whiteAccuracy, review.whiteAccuracy) ||
                   !_sameScore(stored.blackAccuracy, review.blackAccuracy) ||
@@ -170,6 +168,7 @@ final StreamProviderFamily<ReviewData, String> reviewDataProvider =
               complete: reviews.any(
                 (r) => r.profile == profile.index && r.complete,
               ),
+              capped: rows.where((r) => r.capped).length,
               clocks: clocks,
               keys: keyPlies(review.labels),
             ),
@@ -202,7 +201,14 @@ final StreamProviderFamily<ReviewData, String> reviewDataProvider =
         subs.add(
           ref
               .read(gameAnalyzerProvider)
-              .analyse(AnalysisRequest(gameId: id, ucis: ucis, book: book))
+              .analyse(
+                AnalysisRequest(
+                  gameId: id,
+                  ucis: ucis,
+                  book: book,
+                  config: scoring.config,
+                ),
+              )
               .listen(null, onError: out.addError),
         );
       }

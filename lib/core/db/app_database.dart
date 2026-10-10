@@ -49,7 +49,7 @@ class AppDatabase extends _$AppDatabase {
   factory memory() => AppDatabase(NativeDatabase.memory());
 
   @override
-  int get schemaVersion => 3;
+  int get schemaVersion => 4;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -69,6 +69,17 @@ class AppDatabase extends _$AppDatabase {
         await m.createTable(schema.gameArchives);
         await m.createTable(schema.gameReviews);
         await m.createTable(schema.gameAnalysis);
+      },
+      from3To4: (m, schema) async {
+        // chess.com's own accuracies, the calibration target (additive).
+        await m.addColumn(
+          schema.importedGames,
+          schema.importedGames.chessComWhiteAccuracy,
+        );
+        await m.addColumn(
+          schema.importedGames,
+          schema.importedGames.chessComBlackAccuracy,
+        );
       },
     ),
   );

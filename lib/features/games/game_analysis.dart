@@ -7,6 +7,7 @@ import 'package:repertoire_trainer/core/analysis/analysis_providers.dart';
 import 'package:repertoire_trainer/core/analysis/game_analyzer.dart';
 import 'package:repertoire_trainer/core/db/app_database.dart';
 import 'package:repertoire_trainer/core/db/providers.dart';
+import 'package:repertoire_trainer/features/games/scoring.dart';
 
 /// Book plies of [game]: the user's repertoires of that colour first,
 /// then the lichess opening table.
@@ -29,6 +30,7 @@ Future<AnalysisRequest> requestFor(Ref ref, DbImportedGame game) async =>
       gameId: game.id,
       ucis: game.ucis.split(' '),
       book: await bookFor(ref, game),
+      config: (await ref.read(scoringProvider.future)).config,
     );
 
 /// Batch state.
@@ -134,7 +136,7 @@ final batchProvider = NotifierProvider<BatchController, BatchState>(
   BatchController.new,
 );
 
-/// The user's accuracy per game id (Standard over Quick).
+/// The user's accuracy per game id (complete Standard reviews only).
 final StreamProvider<Map<String, double>> gameAccuracyProvider =
     StreamProvider<Map<String, double>>(
       (ref) => ref.watch(gamesRepositoryProvider).watchUserAccuracies(),

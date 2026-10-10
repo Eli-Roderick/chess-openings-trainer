@@ -1400,5 +1400,41 @@
   "rerunReview": "Re-run review",
   "rerunReviewTitle": "Re-run this review?",
   "rerunReviewBody": "The stored analysis of this game is replaced by a new one. It takes a minute or two.",
-  "rerunConfirm": "Re-run"
+  "rerunConfirm": "Re-run",
+  "summaryChessComAccuracy": "chess.com accuracy",
+  "summaryCapped": "{count} positions hit the time limit and were searched less deeply than Standard depth, so these scores may be slightly off.",
+  "@summaryCapped": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "calibrateScores": "Fit accuracy to chess.com",
+  "calibrateTitle": "Fit accuracy to chess.com",
+  "calibrateTooFew": "Needs at least {count} reviewed games that carry chess.com's own accuracy. Fetch the games again, then analyse them.",
+  "@calibrateTooFew": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "calibrateDone": "Fitted to {games} player-games: decay {decay}, mean difference to chess.com {error} points (bias {bias}). All reviewed games were re-scored.",
+  "@calibrateDone": {
+    "placeholders": {
+      "games": {
+        "type": "int"
+      },
+      "decay": {
+        "type": "String"
+      },
+      "error": {
+        "type": "String"
+      },
+      "bias": {
+        "type": "String"
+      }
+    }
+  }
 }

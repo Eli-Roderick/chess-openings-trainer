@@ -1030,6 +1030,84 @@ class LineStats extends Table with TableInfo {
   bool get dontWriteConstraints => true;
 }
 
+class PlyStats extends Table with TableInfo {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  PlyStats(this.attachedDatabase, [this._alias]);
+  late final GeneratedColumn<String> repertoireId = GeneratedColumn<String>(
+    'repertoire_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  late final GeneratedColumn<String> ucis = GeneratedColumn<String>(
+    'ucis',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  late final GeneratedColumn<int> ply = GeneratedColumn<int>(
+    'ply',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  late final GeneratedColumn<int> attempts = GeneratedColumn<int>(
+    'attempts',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  late final GeneratedColumn<int> misses = GeneratedColumn<int>(
+    'misses',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    repertoireId,
+    ucis,
+    ply,
+    attempts,
+    misses,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'ply_stats';
+  @override
+  Set<GeneratedColumn> get $primaryKey => {repertoireId, ucis, ply};
+  @override
+  Never map(Map<String, dynamic> data, {String? tablePrefix}) {
+    throw UnsupportedError('TableInfo.map in schema verification code');
+  }
+
+  @override
+  PlyStats createAlias(String alias) {
+    return PlyStats(attachedDatabase, alias);
+  }
+
+  @override
+  List<String> get customConstraints => const [
+    'PRIMARY KEY(repertoire_id, ucis, ply)',
+  ];
+  @override
+  bool get dontWriteConstraints => true;
+}
+
 class Settings extends Table with TableInfo {
   @override
   final GeneratedDatabase attachedDatabase;
@@ -1168,8 +1246,589 @@ class AppMeta extends Table with TableInfo {
   bool get dontWriteConstraints => true;
 }
 
-class DatabaseAtV1 extends GeneratedDatabase {
-  DatabaseAtV1(QueryExecutor e) : super(e);
+class ImportedGames extends Table with TableInfo {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  ImportedGames(this.attachedDatabase, [this._alias]);
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  late final GeneratedColumn<String> username = GeneratedColumn<String>(
+    'username',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  late final GeneratedColumn<String> url = GeneratedColumn<String>(
+    'url',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  late final GeneratedColumn<int> endTime = GeneratedColumn<int>(
+    'end_time',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  late final GeneratedColumn<String> timeClass = GeneratedColumn<String>(
+    'time_class',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  late final GeneratedColumn<String> timeControl = GeneratedColumn<String>(
+    'time_control',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  late final GeneratedColumn<int> rated = GeneratedColumn<int>(
+    'rated',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL CHECK (rated IN (0, 1))',
+  );
+  late final GeneratedColumn<int> userWhite = GeneratedColumn<int>(
+    'user_white',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL CHECK (user_white IN (0, 1))',
+  );
+  late final GeneratedColumn<String> result = GeneratedColumn<String>(
+    'result',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  late final GeneratedColumn<String> resultDetail = GeneratedColumn<String>(
+    'result_detail',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  late final GeneratedColumn<String> whiteName = GeneratedColumn<String>(
+    'white_name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  late final GeneratedColumn<String> blackName = GeneratedColumn<String>(
+    'black_name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  late final GeneratedColumn<int> whiteRating = GeneratedColumn<int>(
+    'white_rating',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  late final GeneratedColumn<int> blackRating = GeneratedColumn<int>(
+    'black_rating',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  late final GeneratedColumn<String> eco = GeneratedColumn<String>(
+    'eco',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    $customConstraints: 'NULL',
+  );
+  late final GeneratedColumn<String> opening = GeneratedColumn<String>(
+    'opening',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    $customConstraints: 'NULL',
+  );
+  late final GeneratedColumn<String> ucis = GeneratedColumn<String>(
+    'ucis',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  late final GeneratedColumn<String> sans = GeneratedColumn<String>(
+    'sans',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  late final GeneratedColumn<String> clocks = GeneratedColumn<String>(
+    'clocks',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    $customConstraints: 'NULL',
+  );
+  late final GeneratedColumn<double> chessComWhiteAccuracy =
+      GeneratedColumn<double>(
+        'chess_com_white_accuracy',
+        aliasedName,
+        true,
+        type: DriftSqlType.double,
+        requiredDuringInsert: false,
+        $customConstraints: 'NULL',
+      );
+  late final GeneratedColumn<double> chessComBlackAccuracy =
+      GeneratedColumn<double>(
+        'chess_com_black_accuracy',
+        aliasedName,
+        true,
+        type: DriftSqlType.double,
+        requiredDuringInsert: false,
+        $customConstraints: 'NULL',
+      );
+  late final GeneratedColumn<String> pgn = GeneratedColumn<String>(
+    'pgn',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  late final GeneratedColumn<int> fetchedAt = GeneratedColumn<int>(
+    'fetched_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    username,
+    url,
+    endTime,
+    timeClass,
+    timeControl,
+    rated,
+    userWhite,
+    result,
+    resultDetail,
+    whiteName,
+    blackName,
+    whiteRating,
+    blackRating,
+    eco,
+    opening,
+    ucis,
+    sans,
+    clocks,
+    chessComWhiteAccuracy,
+    chessComBlackAccuracy,
+    pgn,
+    fetchedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'imported_games';
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  Never map(Map<String, dynamic> data, {String? tablePrefix}) {
+    throw UnsupportedError('TableInfo.map in schema verification code');
+  }
+
+  @override
+  ImportedGames createAlias(String alias) {
+    return ImportedGames(attachedDatabase, alias);
+  }
+
+  @override
+  List<String> get customConstraints => const ['PRIMARY KEY(id)'];
+  @override
+  bool get dontWriteConstraints => true;
+}
+
+class GameArchives extends Table with TableInfo {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  GameArchives(this.attachedDatabase, [this._alias]);
+  late final GeneratedColumn<String> username = GeneratedColumn<String>(
+    'username',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  late final GeneratedColumn<String> archive = GeneratedColumn<String>(
+    'archive',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  late final GeneratedColumn<String> etag = GeneratedColumn<String>(
+    'etag',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    $customConstraints: 'NULL',
+  );
+  late final GeneratedColumn<String> lastModified = GeneratedColumn<String>(
+    'last_modified',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    $customConstraints: 'NULL',
+  );
+  late final GeneratedColumn<int> fetchedAt = GeneratedColumn<int>(
+    'fetched_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    username,
+    archive,
+    etag,
+    lastModified,
+    fetchedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'game_archives';
+  @override
+  Set<GeneratedColumn> get $primaryKey => {username, archive};
+  @override
+  Never map(Map<String, dynamic> data, {String? tablePrefix}) {
+    throw UnsupportedError('TableInfo.map in schema verification code');
+  }
+
+  @override
+  GameArchives createAlias(String alias) {
+    return GameArchives(attachedDatabase, alias);
+  }
+
+  @override
+  List<String> get customConstraints => const [
+    'PRIMARY KEY(username, archive)',
+  ];
+  @override
+  bool get dontWriteConstraints => true;
+}
+
+class GameReviews extends Table with TableInfo {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  GameReviews(this.attachedDatabase, [this._alias]);
+  late final GeneratedColumn<String> gameId = GeneratedColumn<String>(
+    'game_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  late final GeneratedColumn<int> profile = GeneratedColumn<int>(
+    'profile',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  late final GeneratedColumn<String> engine = GeneratedColumn<String>(
+    'engine',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  late final GeneratedColumn<int> analysed = GeneratedColumn<int>(
+    'analysed',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  late final GeneratedColumn<int> total = GeneratedColumn<int>(
+    'total',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  late final GeneratedColumn<int> complete = GeneratedColumn<int>(
+    'complete',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL CHECK (complete IN (0, 1))',
+  );
+  late final GeneratedColumn<double> whiteAccuracy = GeneratedColumn<double>(
+    'white_accuracy',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+    $customConstraints: 'NULL',
+  );
+  late final GeneratedColumn<double> blackAccuracy = GeneratedColumn<double>(
+    'black_accuracy',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+    $customConstraints: 'NULL',
+  );
+  late final GeneratedColumn<int> whitePerformance = GeneratedColumn<int>(
+    'white_performance',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    $customConstraints: 'NULL',
+  );
+  late final GeneratedColumn<int> blackPerformance = GeneratedColumn<int>(
+    'black_performance',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    $customConstraints: 'NULL',
+  );
+  late final GeneratedColumn<int> updatedAt = GeneratedColumn<int>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    gameId,
+    profile,
+    engine,
+    analysed,
+    total,
+    complete,
+    whiteAccuracy,
+    blackAccuracy,
+    whitePerformance,
+    blackPerformance,
+    updatedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'game_reviews';
+  @override
+  Set<GeneratedColumn> get $primaryKey => {gameId, profile};
+  @override
+  Never map(Map<String, dynamic> data, {String? tablePrefix}) {
+    throw UnsupportedError('TableInfo.map in schema verification code');
+  }
+
+  @override
+  GameReviews createAlias(String alias) {
+    return GameReviews(attachedDatabase, alias);
+  }
+
+  @override
+  List<String> get customConstraints => const ['PRIMARY KEY(game_id, profile)'];
+  @override
+  bool get dontWriteConstraints => true;
+}
+
+class GameAnalysis extends Table with TableInfo {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  GameAnalysis(this.attachedDatabase, [this._alias]);
+  late final GeneratedColumn<String> gameId = GeneratedColumn<String>(
+    'game_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  late final GeneratedColumn<int> profile = GeneratedColumn<int>(
+    'profile',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  late final GeneratedColumn<int> ply = GeneratedColumn<int>(
+    'ply',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  late final GeneratedColumn<int> cp = GeneratedColumn<int>(
+    'cp',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    $customConstraints: 'NULL',
+  );
+  late final GeneratedColumn<int> mate = GeneratedColumn<int>(
+    'mate',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    $customConstraints: 'NULL',
+  );
+  late final GeneratedColumn<String> pv = GeneratedColumn<String>(
+    'pv',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    $customConstraints: 'NULL',
+  );
+  late final GeneratedColumn<int> depth = GeneratedColumn<int>(
+    'depth',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  late final GeneratedColumn<int> capped = GeneratedColumn<int>(
+    'capped',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    $customConstraints: 'NOT NULL DEFAULT 0 CHECK (capped IN (0, 1))',
+    defaultValue: const CustomExpression('0'),
+  );
+  late final GeneratedColumn<int> secondCp = GeneratedColumn<int>(
+    'second_cp',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    $customConstraints: 'NULL',
+  );
+  late final GeneratedColumn<int> secondMate = GeneratedColumn<int>(
+    'second_mate',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    $customConstraints: 'NULL',
+  );
+  late final GeneratedColumn<int> label = GeneratedColumn<int>(
+    'label',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    $customConstraints: 'NULL',
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    gameId,
+    profile,
+    ply,
+    cp,
+    mate,
+    pv,
+    depth,
+    capped,
+    secondCp,
+    secondMate,
+    label,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'game_analysis';
+  @override
+  Set<GeneratedColumn> get $primaryKey => {gameId, profile, ply};
+  @override
+  Never map(Map<String, dynamic> data, {String? tablePrefix}) {
+    throw UnsupportedError('TableInfo.map in schema verification code');
+  }
+
+  @override
+  GameAnalysis createAlias(String alias) {
+    return GameAnalysis(attachedDatabase, alias);
+  }
+
+  @override
+  List<String> get customConstraints => const [
+    'PRIMARY KEY(game_id, profile, ply)',
+  ];
+  @override
+  bool get dontWriteConstraints => true;
+}
+
+class DatabaseAtV4 extends GeneratedDatabase {
+  DatabaseAtV4(QueryExecutor e) : super(e);
   late final Repertoires repertoires = Repertoires(this);
   late final Nodes nodes = Nodes(this);
   late final Lines lines = Lines(this);
@@ -1177,9 +1836,14 @@ class DatabaseAtV1 extends GeneratedDatabase {
   late final MoveGrades moveGrades = MoveGrades(this);
   late final DeviationEvents deviationEvents = DeviationEvents(this);
   late final LineStats lineStats = LineStats(this);
+  late final PlyStats plyStats = PlyStats(this);
   late final Settings settings = Settings(this);
   late final SyncState syncState = SyncState(this);
   late final AppMeta appMeta = AppMeta(this);
+  late final ImportedGames importedGames = ImportedGames(this);
+  late final GameArchives gameArchives = GameArchives(this);
+  late final GameReviews gameReviews = GameReviews(this);
+  late final GameAnalysis gameAnalysis = GameAnalysis(this);
   late final Index linesByOrdinal = Index(
     'lines_by_ordinal',
     'CREATE INDEX lines_by_ordinal ON lines (repertoire_id, ordinal)',
@@ -1196,6 +1860,18 @@ class DatabaseAtV1 extends GeneratedDatabase {
     'runs_by_synced',
     'CREATE INDEX runs_by_synced ON runs (synced_at)',
   );
+  late final Index runsDailyStats = Index(
+    'runs_daily_stats',
+    'CREATE INDEX runs_daily_stats ON runs (repertoire_id, completed, local_day, graded_count, credit_sum)',
+  );
+  late final Index runsKeyUcis = Index(
+    'runs_key_ucis',
+    'CREATE INDEX runs_key_ucis ON runs (repertoire_id, line_key, ucis)',
+  );
+  late final Index gamesByUser = Index(
+    'games_by_user',
+    'CREATE INDEX games_by_user ON imported_games (username, end_time)',
+  );
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -1208,14 +1884,22 @@ class DatabaseAtV1 extends GeneratedDatabase {
     moveGrades,
     deviationEvents,
     lineStats,
+    plyStats,
     settings,
     syncState,
     appMeta,
+    importedGames,
+    gameArchives,
+    gameReviews,
+    gameAnalysis,
     linesByOrdinal,
     runsByLine,
     runsByDay,
     runsBySynced,
+    runsDailyStats,
+    runsKeyUcis,
+    gamesByUser,
   ];
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 4;
 }

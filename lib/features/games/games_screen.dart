@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:chess_core/chess_core.dart' show minFitSamples;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -9,6 +10,7 @@ import 'package:repertoire_trainer/core/db/providers.dart';
 import 'package:repertoire_trainer/features/games/chess_com_client.dart';
 import 'package:repertoire_trainer/features/games/game_analysis.dart';
 import 'package:repertoire_trainer/features/games/games_service.dart';
+import 'package:repertoire_trainer/features/games/scoring.dart';
 import 'package:repertoire_trainer/l10n/gen/app_localizations.dart';
 
 /// Game Review entry: a chess.com username, a fetch, the stored games.
@@ -39,6 +41,50 @@ class _GamesScreenState extends ConsumerState<GamesScreen> {
     super.initState();
     final u = _username;
     if (u != null) unawaited(_checkOlder(u));
+    unawaited(_rescoreIfStale());
+  }
+
+  Future<void> _rescoreIfStale() async {
+    final current = await ref.read(scoringProvider.future);
+    if (!mounted) return;
+    final repo = ref.read(gamesRepositoryProvider);
+    if (await rescoreIfStale(repo, current)) ref.invalidate(scoringProvider);
+  }
+
+  /// Refits the accuracy to chess.com's own and re-scores every game.
+  Future<void> _calibrate() async {
+    final l10n = AppLocalizations.of(context);
+    final result = await rescoreGames(
+      ref.read(gamesRepositoryProvider),
+      await ref.read(scoringProvider.future),
+      fit: true,
+    );
+    ref.invalidate(scoringProvider);
+    final fit = result.fit;
+    if (!mounted) return;
+    await showDialog<void>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(l10n.calibrateTitle),
+        content: Text(
+          key: const Key('calibrate-result'),
+          fit == null
+              ? l10n.calibrateTooFew(minFitSamples)
+              : l10n.calibrateDone(
+                  fit.samples,
+                  fit.decay.toStringAsFixed(4),
+                  fit.meanError.toStringAsFixed(1),
+                  fit.bias.toStringAsFixed(1),
+                ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: Text(l10n.close),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -168,6 +214,14 @@ class _GamesScreenState extends ConsumerState<GamesScreen> {
             : AppBar(
                 title: Text(l10n.gameReview),
                 actions: [
+                  IconButton(
+                    key: const Key('calibrate'),
+                    tooltip: l10n.calibrateScores,
+                    icon: const Icon(Icons.tune),
+                    onPressed: games.isEmpty || batch.running
+                        ? null
+                        : () => unawaited(_calibrate()),
+                  ),
                   IconButton(
                     key: const Key('analyse-recent'),
                     tooltip: l10n.analyseRecentGames,
