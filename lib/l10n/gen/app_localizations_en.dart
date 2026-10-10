@@ -1938,4 +1938,28 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get rerunConfirm => 'Re-run';
+
+  @override
+  String get summaryChessComAccuracy => 'chess.com accuracy';
+
+  @override
+  String summaryCapped(int count) {
+    return '$count positions hit the time limit and were searched less deeply than Standard depth, so these scores may be slightly off.';
+  }
+
+  @override
+  String get calibrateScores => 'Fit accuracy to chess.com';
+
+  @override
+  String get calibrateTitle => 'Fit accuracy to chess.com';
+
+  @override
+  String calibrateTooFew(int count) {
+    return 'Needs at least $count reviewed games that carry chess.com\'s own accuracy. Fetch the games again, then analyse them.';
+  }
+
+  @override
+  String calibrateDone(int games, String decay, String error, String bias) {
+    return 'Fitted to $games player-games: decay $decay, mean difference to chess.com $error points (bias $bias). All reviewed games were re-scored.';
+  }
 }

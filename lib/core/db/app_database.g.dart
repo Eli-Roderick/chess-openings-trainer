@@ -6476,6 +6476,28 @@ class $ImportedGamesTable extends ImportedGames
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _chessComWhiteAccuracyMeta =
+      const VerificationMeta('chessComWhiteAccuracy');
+  @override
+  late final GeneratedColumn<double> chessComWhiteAccuracy =
+      GeneratedColumn<double>(
+        'chess_com_white_accuracy',
+        aliasedName,
+        true,
+        type: DriftSqlType.double,
+        requiredDuringInsert: false,
+      );
+  static const VerificationMeta _chessComBlackAccuracyMeta =
+      const VerificationMeta('chessComBlackAccuracy');
+  @override
+  late final GeneratedColumn<double> chessComBlackAccuracy =
+      GeneratedColumn<double>(
+        'chess_com_black_accuracy',
+        aliasedName,
+        true,
+        type: DriftSqlType.double,
+        requiredDuringInsert: false,
+      );
   static const VerificationMeta _pgnMeta = const VerificationMeta('pgn');
   @override
   late final GeneratedColumn<String> pgn = GeneratedColumn<String>(
@@ -6517,6 +6539,8 @@ class $ImportedGamesTable extends ImportedGames
     ucis,
     sans,
     clocks,
+    chessComWhiteAccuracy,
+    chessComBlackAccuracy,
     pgn,
     fetchedAt,
   ];
@@ -6687,6 +6711,24 @@ class $ImportedGamesTable extends ImportedGames
         clocks.isAcceptableOrUnknown(data['clocks']!, _clocksMeta),
       );
     }
+    if (data.containsKey('chess_com_white_accuracy')) {
+      context.handle(
+        _chessComWhiteAccuracyMeta,
+        chessComWhiteAccuracy.isAcceptableOrUnknown(
+          data['chess_com_white_accuracy']!,
+          _chessComWhiteAccuracyMeta,
+        ),
+      );
+    }
+    if (data.containsKey('chess_com_black_accuracy')) {
+      context.handle(
+        _chessComBlackAccuracyMeta,
+        chessComBlackAccuracy.isAcceptableOrUnknown(
+          data['chess_com_black_accuracy']!,
+          _chessComBlackAccuracyMeta,
+        ),
+      );
+    }
     if (data.containsKey('pgn')) {
       context.handle(
         _pgnMeta,
@@ -6788,6 +6830,14 @@ class $ImportedGamesTable extends ImportedGames
         DriftSqlType.string,
         data['${effectivePrefix}clocks'],
       ),
+      chessComWhiteAccuracy: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}chess_com_white_accuracy'],
+      ),
+      chessComBlackAccuracy: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}chess_com_black_accuracy'],
+      ),
       pgn: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}pgn'],
@@ -6848,6 +6898,11 @@ class DbImportedGame extends DataClass implements Insertable<DbImportedGame> {
   /// Remaining clock after each ply in tenths of a second, comma-separated,
   /// or null without `%clk`.
   final String? clocks;
+
+  /// chess.com's own accuracy of White and Black, for games it analysed
+  /// (calibration target); null otherwise.
+  final double? chessComWhiteAccuracy;
+  final double? chessComBlackAccuracy;
   final String pgn;
   final int fetchedAt;
   const DbImportedGame({
@@ -6870,6 +6925,8 @@ class DbImportedGame extends DataClass implements Insertable<DbImportedGame> {
     required this.ucis,
     required this.sans,
     this.clocks,
+    this.chessComWhiteAccuracy,
+    this.chessComBlackAccuracy,
     required this.pgn,
     required this.fetchedAt,
   });
@@ -6901,6 +6958,12 @@ class DbImportedGame extends DataClass implements Insertable<DbImportedGame> {
     if (!nullToAbsent || clocks != null) {
       map['clocks'] = Variable<String>(clocks);
     }
+    if (!nullToAbsent || chessComWhiteAccuracy != null) {
+      map['chess_com_white_accuracy'] = Variable<double>(chessComWhiteAccuracy);
+    }
+    if (!nullToAbsent || chessComBlackAccuracy != null) {
+      map['chess_com_black_accuracy'] = Variable<double>(chessComBlackAccuracy);
+    }
     map['pgn'] = Variable<String>(pgn);
     map['fetched_at'] = Variable<int>(fetchedAt);
     return map;
@@ -6931,6 +6994,12 @@ class DbImportedGame extends DataClass implements Insertable<DbImportedGame> {
       clocks: clocks == null && nullToAbsent
           ? const Value.absent()
           : Value(clocks),
+      chessComWhiteAccuracy: chessComWhiteAccuracy == null && nullToAbsent
+          ? const Value.absent()
+          : Value(chessComWhiteAccuracy),
+      chessComBlackAccuracy: chessComBlackAccuracy == null && nullToAbsent
+          ? const Value.absent()
+          : Value(chessComBlackAccuracy),
       pgn: Value(pgn),
       fetchedAt: Value(fetchedAt),
     );
@@ -6961,6 +7030,12 @@ class DbImportedGame extends DataClass implements Insertable<DbImportedGame> {
       ucis: serializer.fromJson<String>(json['ucis']),
       sans: serializer.fromJson<String>(json['sans']),
       clocks: serializer.fromJson<String?>(json['clocks']),
+      chessComWhiteAccuracy: serializer.fromJson<double?>(
+        json['chessComWhiteAccuracy'],
+      ),
+      chessComBlackAccuracy: serializer.fromJson<double?>(
+        json['chessComBlackAccuracy'],
+      ),
       pgn: serializer.fromJson<String>(json['pgn']),
       fetchedAt: serializer.fromJson<int>(json['fetchedAt']),
     );
@@ -6988,6 +7063,12 @@ class DbImportedGame extends DataClass implements Insertable<DbImportedGame> {
       'ucis': serializer.toJson<String>(ucis),
       'sans': serializer.toJson<String>(sans),
       'clocks': serializer.toJson<String?>(clocks),
+      'chessComWhiteAccuracy': serializer.toJson<double?>(
+        chessComWhiteAccuracy,
+      ),
+      'chessComBlackAccuracy': serializer.toJson<double?>(
+        chessComBlackAccuracy,
+      ),
       'pgn': serializer.toJson<String>(pgn),
       'fetchedAt': serializer.toJson<int>(fetchedAt),
     };
@@ -7013,6 +7094,8 @@ class DbImportedGame extends DataClass implements Insertable<DbImportedGame> {
     String? ucis,
     String? sans,
     Value<String?> clocks = const Value.absent(),
+    Value<double?> chessComWhiteAccuracy = const Value.absent(),
+    Value<double?> chessComBlackAccuracy = const Value.absent(),
     String? pgn,
     int? fetchedAt,
   }) => DbImportedGame(
@@ -7035,6 +7118,12 @@ class DbImportedGame extends DataClass implements Insertable<DbImportedGame> {
     ucis: ucis ?? this.ucis,
     sans: sans ?? this.sans,
     clocks: clocks.present ? clocks.value : this.clocks,
+    chessComWhiteAccuracy: chessComWhiteAccuracy.present
+        ? chessComWhiteAccuracy.value
+        : this.chessComWhiteAccuracy,
+    chessComBlackAccuracy: chessComBlackAccuracy.present
+        ? chessComBlackAccuracy.value
+        : this.chessComBlackAccuracy,
     pgn: pgn ?? this.pgn,
     fetchedAt: fetchedAt ?? this.fetchedAt,
   );
@@ -7067,6 +7156,12 @@ class DbImportedGame extends DataClass implements Insertable<DbImportedGame> {
       ucis: data.ucis.present ? data.ucis.value : this.ucis,
       sans: data.sans.present ? data.sans.value : this.sans,
       clocks: data.clocks.present ? data.clocks.value : this.clocks,
+      chessComWhiteAccuracy: data.chessComWhiteAccuracy.present
+          ? data.chessComWhiteAccuracy.value
+          : this.chessComWhiteAccuracy,
+      chessComBlackAccuracy: data.chessComBlackAccuracy.present
+          ? data.chessComBlackAccuracy.value
+          : this.chessComBlackAccuracy,
       pgn: data.pgn.present ? data.pgn.value : this.pgn,
       fetchedAt: data.fetchedAt.present ? data.fetchedAt.value : this.fetchedAt,
     );
@@ -7094,6 +7189,8 @@ class DbImportedGame extends DataClass implements Insertable<DbImportedGame> {
           ..write('ucis: $ucis, ')
           ..write('sans: $sans, ')
           ..write('clocks: $clocks, ')
+          ..write('chessComWhiteAccuracy: $chessComWhiteAccuracy, ')
+          ..write('chessComBlackAccuracy: $chessComBlackAccuracy, ')
           ..write('pgn: $pgn, ')
           ..write('fetchedAt: $fetchedAt')
           ..write(')'))
@@ -7121,6 +7218,8 @@ class DbImportedGame extends DataClass implements Insertable<DbImportedGame> {
     ucis,
     sans,
     clocks,
+    chessComWhiteAccuracy,
+    chessComBlackAccuracy,
     pgn,
     fetchedAt,
   ]);
@@ -7147,6 +7246,8 @@ class DbImportedGame extends DataClass implements Insertable<DbImportedGame> {
           other.ucis == this.ucis &&
           other.sans == this.sans &&
           other.clocks == this.clocks &&
+          other.chessComWhiteAccuracy == this.chessComWhiteAccuracy &&
+          other.chessComBlackAccuracy == this.chessComBlackAccuracy &&
           other.pgn == this.pgn &&
           other.fetchedAt == this.fetchedAt);
 }
@@ -7171,6 +7272,8 @@ class ImportedGamesCompanion extends UpdateCompanion<DbImportedGame> {
   final Value<String> ucis;
   final Value<String> sans;
   final Value<String?> clocks;
+  final Value<double?> chessComWhiteAccuracy;
+  final Value<double?> chessComBlackAccuracy;
   final Value<String> pgn;
   final Value<int> fetchedAt;
   final Value<int> rowid;
@@ -7194,6 +7297,8 @@ class ImportedGamesCompanion extends UpdateCompanion<DbImportedGame> {
     this.ucis = const Value.absent(),
     this.sans = const Value.absent(),
     this.clocks = const Value.absent(),
+    this.chessComWhiteAccuracy = const Value.absent(),
+    this.chessComBlackAccuracy = const Value.absent(),
     this.pgn = const Value.absent(),
     this.fetchedAt = const Value.absent(),
     this.rowid = const Value.absent(),
@@ -7218,6 +7323,8 @@ class ImportedGamesCompanion extends UpdateCompanion<DbImportedGame> {
     required String ucis,
     required String sans,
     this.clocks = const Value.absent(),
+    this.chessComWhiteAccuracy = const Value.absent(),
+    this.chessComBlackAccuracy = const Value.absent(),
     required String pgn,
     required int fetchedAt,
     this.rowid = const Value.absent(),
@@ -7259,6 +7366,8 @@ class ImportedGamesCompanion extends UpdateCompanion<DbImportedGame> {
     Expression<String>? ucis,
     Expression<String>? sans,
     Expression<String>? clocks,
+    Expression<double>? chessComWhiteAccuracy,
+    Expression<double>? chessComBlackAccuracy,
     Expression<String>? pgn,
     Expression<int>? fetchedAt,
     Expression<int>? rowid,
@@ -7283,6 +7392,10 @@ class ImportedGamesCompanion extends UpdateCompanion<DbImportedGame> {
       if (ucis != null) 'ucis': ucis,
       if (sans != null) 'sans': sans,
       if (clocks != null) 'clocks': clocks,
+      if (chessComWhiteAccuracy != null)
+        'chess_com_white_accuracy': chessComWhiteAccuracy,
+      if (chessComBlackAccuracy != null)
+        'chess_com_black_accuracy': chessComBlackAccuracy,
       if (pgn != null) 'pgn': pgn,
       if (fetchedAt != null) 'fetched_at': fetchedAt,
       if (rowid != null) 'rowid': rowid,
@@ -7309,6 +7422,8 @@ class ImportedGamesCompanion extends UpdateCompanion<DbImportedGame> {
     Value<String>? ucis,
     Value<String>? sans,
     Value<String?>? clocks,
+    Value<double?>? chessComWhiteAccuracy,
+    Value<double?>? chessComBlackAccuracy,
     Value<String>? pgn,
     Value<int>? fetchedAt,
     Value<int>? rowid,
@@ -7333,6 +7448,10 @@ class ImportedGamesCompanion extends UpdateCompanion<DbImportedGame> {
       ucis: ucis ?? this.ucis,
       sans: sans ?? this.sans,
       clocks: clocks ?? this.clocks,
+      chessComWhiteAccuracy:
+          chessComWhiteAccuracy ?? this.chessComWhiteAccuracy,
+      chessComBlackAccuracy:
+          chessComBlackAccuracy ?? this.chessComBlackAccuracy,
       pgn: pgn ?? this.pgn,
       fetchedAt: fetchedAt ?? this.fetchedAt,
       rowid: rowid ?? this.rowid,
@@ -7399,6 +7518,16 @@ class ImportedGamesCompanion extends UpdateCompanion<DbImportedGame> {
     if (clocks.present) {
       map['clocks'] = Variable<String>(clocks.value);
     }
+    if (chessComWhiteAccuracy.present) {
+      map['chess_com_white_accuracy'] = Variable<double>(
+        chessComWhiteAccuracy.value,
+      );
+    }
+    if (chessComBlackAccuracy.present) {
+      map['chess_com_black_accuracy'] = Variable<double>(
+        chessComBlackAccuracy.value,
+      );
+    }
     if (pgn.present) {
       map['pgn'] = Variable<String>(pgn.value);
     }
@@ -7433,6 +7562,8 @@ class ImportedGamesCompanion extends UpdateCompanion<DbImportedGame> {
           ..write('ucis: $ucis, ')
           ..write('sans: $sans, ')
           ..write('clocks: $clocks, ')
+          ..write('chessComWhiteAccuracy: $chessComWhiteAccuracy, ')
+          ..write('chessComBlackAccuracy: $chessComBlackAccuracy, ')
           ..write('pgn: $pgn, ')
           ..write('fetchedAt: $fetchedAt, ')
           ..write('rowid: $rowid')
@@ -12388,6 +12519,8 @@ typedef $$ImportedGamesTableCreateCompanionBuilder =
       required String ucis,
       required String sans,
       Value<String?> clocks,
+      Value<double?> chessComWhiteAccuracy,
+      Value<double?> chessComBlackAccuracy,
       required String pgn,
       required int fetchedAt,
       Value<int> rowid,
@@ -12413,6 +12546,8 @@ typedef $$ImportedGamesTableUpdateCompanionBuilder =
       Value<String> ucis,
       Value<String> sans,
       Value<String?> clocks,
+      Value<double?> chessComWhiteAccuracy,
+      Value<double?> chessComBlackAccuracy,
       Value<String> pgn,
       Value<int> fetchedAt,
       Value<int> rowid,
@@ -12519,6 +12654,16 @@ class $$ImportedGamesTableFilterComposer
 
   ColumnFilters<String> get clocks => $composableBuilder(
     column: $table.clocks,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get chessComWhiteAccuracy => $composableBuilder(
+    column: $table.chessComWhiteAccuracy,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get chessComBlackAccuracy => $composableBuilder(
+    column: $table.chessComBlackAccuracy,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -12637,6 +12782,16 @@ class $$ImportedGamesTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<double> get chessComWhiteAccuracy => $composableBuilder(
+    column: $table.chessComWhiteAccuracy,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get chessComBlackAccuracy => $composableBuilder(
+    column: $table.chessComBlackAccuracy,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get pgn => $composableBuilder(
     column: $table.pgn,
     builder: (column) => ColumnOrderings(column),
@@ -12722,6 +12877,16 @@ class $$ImportedGamesTableAnnotationComposer
   GeneratedColumn<String> get clocks =>
       $composableBuilder(column: $table.clocks, builder: (column) => column);
 
+  GeneratedColumn<double> get chessComWhiteAccuracy => $composableBuilder(
+    column: $table.chessComWhiteAccuracy,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<double> get chessComBlackAccuracy => $composableBuilder(
+    column: $table.chessComBlackAccuracy,
+    builder: (column) => column,
+  );
+
   GeneratedColumn<String> get pgn =>
       $composableBuilder(column: $table.pgn, builder: (column) => column);
 
@@ -12779,6 +12944,8 @@ class $$ImportedGamesTableTableManager
                 Value<String> ucis = const Value.absent(),
                 Value<String> sans = const Value.absent(),
                 Value<String?> clocks = const Value.absent(),
+                Value<double?> chessComWhiteAccuracy = const Value.absent(),
+                Value<double?> chessComBlackAccuracy = const Value.absent(),
                 Value<String> pgn = const Value.absent(),
                 Value<int> fetchedAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
@@ -12802,6 +12969,8 @@ class $$ImportedGamesTableTableManager
                 ucis: ucis,
                 sans: sans,
                 clocks: clocks,
+                chessComWhiteAccuracy: chessComWhiteAccuracy,
+                chessComBlackAccuracy: chessComBlackAccuracy,
                 pgn: pgn,
                 fetchedAt: fetchedAt,
                 rowid: rowid,
@@ -12827,6 +12996,8 @@ class $$ImportedGamesTableTableManager
                 required String ucis,
                 required String sans,
                 Value<String?> clocks = const Value.absent(),
+                Value<double?> chessComWhiteAccuracy = const Value.absent(),
+                Value<double?> chessComBlackAccuracy = const Value.absent(),
                 required String pgn,
                 required int fetchedAt,
                 Value<int> rowid = const Value.absent(),
@@ -12850,6 +13021,8 @@ class $$ImportedGamesTableTableManager
                 ucis: ucis,
                 sans: sans,
                 clocks: clocks,
+                chessComWhiteAccuracy: chessComWhiteAccuracy,
+                chessComBlackAccuracy: chessComBlackAccuracy,
                 pgn: pgn,
                 fetchedAt: fetchedAt,
                 rowid: rowid,

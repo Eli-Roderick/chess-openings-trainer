@@ -3225,6 +3225,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Re-run'**
   String get rerunConfirm;
+
+  /// No description provided for @summaryChessComAccuracy.
+  ///
+  /// In en, this message translates to:
+  /// **'chess.com accuracy'**
+  String get summaryChessComAccuracy;
+
+  /// No description provided for @summaryCapped.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} positions hit the time limit and were searched less deeply than Standard depth, so these scores may be slightly off.'**
+  String summaryCapped(int count);
+
+  /// No description provided for @calibrateScores.
+  ///
+  /// In en, this message translates to:
+  /// **'Fit accuracy to chess.com'**
+  String get calibrateScores;
+
+  /// No description provided for @calibrateTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Fit accuracy to chess.com'**
+  String get calibrateTitle;
+
+  /// No description provided for @calibrateTooFew.
+  ///
+  /// In en, this message translates to:
+  /// **'Needs at least {count} reviewed games that carry chess.com\'s own accuracy. Fetch the games again, then analyse them.'**
+  String calibrateTooFew(int count);
+
+  /// No description provided for @calibrateDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Fitted to {games} player-games: decay {decay}, mean difference to chess.com {error} points (bias {bias}). All reviewed games were re-scored.'**
+  String calibrateDone(int games, String decay, String error, String bias);
 }
 
 class _AppLocalizationsDelegate

@@ -198,6 +198,21 @@ void main() {
     });
   });
 
+  test("parseMonth keeps chess.com's own accuracies when present", () {
+    final withAcc = {
+      ..._game('acc'),
+      'accuracies': {'white': 62.6, 'black': 51},
+    };
+    final rows = parseMonth((
+      body: _month([withAcc, _game('none')]),
+      username: 'eli',
+      fetchedAt: 1,
+    ));
+    expect(rows[0].chessComWhiteAccuracy.value, 62.6);
+    expect(rows[0].chessComBlackAccuracy.value, 51);
+    expect(rows[1].chessComWhiteAccuracy.value, isNull);
+  });
+
   test('parseArchiveList and parseMonth', () {
     expect(
       parseArchiveList(

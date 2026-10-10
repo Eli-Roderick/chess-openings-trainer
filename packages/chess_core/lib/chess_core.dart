@@ -26,6 +26,7 @@ export 'src/pgn/pgn_importer.dart';
 export 'src/pgn/pgn_reader.dart';
 export 'src/pgn/report.dart';
 export 'src/pgn/synthetic_pgn.dart';
+export 'src/review/accuracy_fit.dart';
 export 'src/review/book.dart';
 export 'src/review/move_facts.dart'
     show MoveFacts, bestCapture, material, pvSacrifice, see;

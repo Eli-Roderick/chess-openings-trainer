@@ -382,4 +382,65 @@ void main() {
       last = r;
     }
   });
+
+  group('accuracy (D-133)', () {
+    test('plain mean: one blunder costs its share, not a harmonic crash', () {
+      final losses = <double?>[for (var i = 0; i < 20; i++) 0.001];
+      losses[8] = 0.6;
+      final book = List.filled(20, false);
+      final acc = accuracyOf(
+        losses,
+        book,
+        white: true,
+        decay: 0.045,
+        bookAsPerfect: false,
+      )!;
+      // Nine of ten white moves perfect, one at 0.6: about (9 * 99.5 + 4.6) / 10.
+      expect(acc, closeTo(90, 0.5));
+    });
+
+    test('book moves are left out or counted as perfect', () {
+      final losses = <double?>[null, null, 0.2, 0.2];
+      final book = [true, true, false, false];
+      double? acc({required bool perfect}) => accuracyOf(
+        losses,
+        book,
+        white: true,
+        decay: 0.05,
+        bookAsPerfect: perfect,
+      );
+      expect(acc(perfect: true), greaterThan(acc(perfect: false)!));
+    });
+
+    test('an engine move keeps its measured loss for the accuracy', () {
+      final g = ReviewedGame.of(['e2e4', 'e7e5']);
+      final r = g.review([
+        a(30, ['e2e4']),
+        a(-100),
+        a(-100),
+      ]);
+      expect(r.losses.first, 0);
+      expect(r.accuracyLosses.first, greaterThan(0.01));
+    });
+
+    test('fitAccuracy recovers the decay that produced the targets', () {
+      final g = ReviewedGame.of(['e2e4', 'e7e5', 'g1f3', 'd7d6']);
+      final r = g.review([a(0), a(-40), a(-40), a(-800), null]);
+      final samples = [
+        for (var i = 0; i < 5; i++)
+          AccuracySample(
+            review: r,
+            white: true,
+            target: r.accuracyWith(
+              white: true,
+              decay: 0.06,
+              bookAsPerfect: false,
+            )!,
+          ),
+      ];
+      final fit = fitAccuracy(samples)!;
+      expect(fit.meanError, lessThan(1));
+      expect(fitAccuracy(samples.take(2).toList()), isNull);
+    });
+  });
 }

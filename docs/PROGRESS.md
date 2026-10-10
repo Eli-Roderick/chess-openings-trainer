@@ -77,3 +77,7 @@ Device checklist (Eli), still open: record the Diagnostics numbers on the phone 
 ## G4 (Game Review: repertoire link)
 
 **D-125.** Review screen "Repertoire" sheet: where the game left the user's repertoire (user, opponent, line end, game end) and the repertoire's moves there, the record of stored games through that position, Drill this line, Add to repertoire (Browse with the reply), and the most frequent uncovered opponent replies across stored games.
+
+## G3f (Game Review: audit fixes)
+
+**D-133.** Plain-mean accuracy, Standard-only accuracy and rating, chess.com accuracy stored (schema v4) and fitted, re-score without the engine, capped-position warning. Audit phase 1 must renumber its migration to v5.

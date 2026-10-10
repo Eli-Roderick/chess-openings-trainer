@@ -207,15 +207,15 @@ final class GamesRepository {
             ),
           );
 
-  /// The user's accuracy per game id from complete Quick or Standard
-  /// reviews (Standard wins).
+  /// The user's accuracy per game id from complete Standard reviews only:
+  /// a Quick number reads higher and is rewritten when Standard finishes.
   Stream<Map<String, double>> watchUserAccuracies() => _db
       .customSelect(
-        'SELECT r.game_id AS id, r.profile AS profile, '
+        'SELECT r.game_id AS id, '
         'CASE WHEN g.user_white THEN r.white_accuracy '
         'ELSE r.black_accuracy END AS acc '
         'FROM game_reviews r JOIN imported_games g ON g.id = r.game_id '
-        'WHERE r.complete = 1 AND r.profile <= 1 ORDER BY r.profile',
+        'WHERE r.complete = 1 AND r.profile = 1',
         readsFrom: {_db.gameReviews, _db.importedGames},
       )
       .watch()
@@ -226,4 +226,30 @@ final class GamesRepository {
               r.read<String>('id'): r.read<double>('acc'),
         },
       );
+
+  /// Games with a complete Standard review, newest first.
+  Future<List<DbImportedGame>> standardReviewedGames() async {
+    final g = _db.importedGames;
+    final r = _db.gameReviews;
+    final query = _db.select(g).join([innerJoin(r, r.gameId.equalsExp(g.id))])
+      ..where(r.profile.equals(1) & r.complete.equals(true))
+      ..orderBy([OrderingTerm.desc(g.endTime)]);
+    return [for (final row in await query.get()) row.readTable(g)];
+  }
+
+  /// The scoring settings (`review.*` rows of the settings table).
+  Future<Map<String, String>> reviewSettings() async {
+    final rows = await (_db.select(
+      _db.settings,
+    )..where((s) => s.key.like('review.%'))).get();
+    return {for (final r in rows) r.key: r.value};
+  }
+
+  /// Stores scoring settings.
+  Future<void> saveReviewSettings(Map<String, String> values) => _db.batch(
+    (b) => b.insertAll(_db.settings, [
+      for (final e in values.entries)
+        SettingsCompanion.insert(key: e.key, value: e.value),
+    ], mode: InsertMode.insertOrReplace),
+  );
 }

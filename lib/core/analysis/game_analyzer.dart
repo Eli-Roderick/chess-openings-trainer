@@ -45,6 +45,7 @@ final class AnalysisRequest {
     required this.ucis,
     this.book = const {},
     this.profiles = const [AnalysisProfile.quick, AnalysisProfile.standard],
+    this.config = const ReviewConfig(),
   });
 
   /// `imported_games.id`.
@@ -58,6 +59,9 @@ final class AnalysisRequest {
 
   /// Tiers, in order.
   final List<AnalysisProfile> profiles;
+
+  /// Classifier and accuracy settings for the stored scores.
+  final ReviewConfig config;
 }
 
 /// Progress of one tier.
@@ -293,6 +297,7 @@ final class GameAnalyzer {
       game,
       analyses,
       request.book,
+      request.config,
       secondPass: profile.secondPass,
     );
     await store.completeReview(
@@ -408,10 +413,12 @@ Future<ReviewedGame> _replay(List<String> ucis) =>
 Future<GameReview> _review(
   ReviewedGame game,
   List<PositionAnalysis?> analyses,
-  Set<int> book, {
+  Set<int> book,
+  ReviewConfig config, {
   required bool secondPass,
 }) => Isolate.run(
-  () => game.review(analyses, book: book, secondPass: secondPass),
+  () =>
+      game.review(analyses, book: book, config: config, secondPass: secondPass),
 );
 
 EvalScore _white(EngineScore s, bool whiteToMove) {

@@ -188,6 +188,17 @@ class GameSummaryScreen extends ConsumerWidget {
               ),
             ),
           ),
+        if (data.finished && data.capped > 0)
+          Padding(
+            padding: const EdgeInsets.only(top: 8),
+            child: Text(
+              l10n.summaryCapped(data.capped),
+              key: const Key('summary-capped'),
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.colorScheme.error,
+              ),
+            ),
+          ),
         const SizedBox(height: 12),
         ClipRRect(
           borderRadius: BorderRadius.circular(8),
@@ -218,17 +229,25 @@ class GameSummaryScreen extends ConsumerWidget {
         ),
         pair(
           l10n.summaryAccuracy,
-          _percent(r.whiteAccuracy),
-          _percent(r.blackAccuracy),
+          _percent(data.finished ? r.whiteAccuracy : null),
+          _percent(data.finished ? r.blackAccuracy : null),
           key: 'summary-accuracy',
         ),
+        if (game.chessComWhiteAccuracy != null ||
+            game.chessComBlackAccuracy != null)
+          pair(
+            l10n.summaryChessComAccuracy,
+            _percent(game.chessComWhiteAccuracy),
+            _percent(game.chessComBlackAccuracy),
+            key: 'summary-chesscom-accuracy',
+          ),
         const Divider(height: 24),
         table,
         const Divider(height: 24),
         pair(
           l10n.summaryRating,
-          '${r.whitePerformance ?? '-'}',
-          '${r.blackPerformance ?? '-'}',
+          '${data.finished ? r.whitePerformance ?? '-' : '-'}',
+          '${data.finished ? r.blackPerformance ?? '-' : '-'}',
           key: 'summary-rating',
         ),
       ],
